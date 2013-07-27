@@ -1,0 +1,141 @@
+body.cxSSC *, body.cxSSC > * {
+    opacity: 0.25 !important; }
+body.cxSSC > .sscWRAPPER {
+    opacity: 1.0 !important; }
+body.cxSSC .sscWRAPPER > * { opacity: 0.25 !important;}
+body.cxSSC .sscWRAPPER > .sscWRAPPER,
+body.cxSSC .sscWRAPPER > .sscSELECTED {
+    opacity: 1.0 !important;}
+body.cxSSC .sscSELECTED * {
+    opacity: 1.0 !important;}
+
+body.cxSSC .sscSELECTED.sscFOCUS {
+  background-color: rgba(255,0,0,0.25) !important;}
+
+/* Compact display rules */
+/* Compact mode hides everything that isn't selected */
+
+body.cxSSC.cxSSCOMPACT p,
+body.cxSSC.cxSSCOMPACT div, 
+body.cxSSC.cxSSCOMPACT blockquote, 
+body.cxSSC.cxSSCOMPACT section, 
+body.cxSSC.cxSSCOMPACT aside,
+body.cxSSC.cxSSCOMPACT h1, 
+body.cxSSC.cxSSCOMPACT h2, 
+body.cxSSC.cxSSCOMPACT h3, 
+body.cxSSC.cxSSCOMPACT h4, 
+body.cxSSC.cxSSCOMPACT h5,
+body.cxSSC.cxSSCOMPACT h6, 
+body.cxSSC.cxSSCOMPACT h7 {
+    display: none;}
+
+body.cxSSC.cxSSCOMPACT .sscWRAPPER,
+body.cxSSC.cxSSCOMPACT .sscSELECTED {
+    display: block;}
+body.cxSSC.cxSSCOMPACT .sscWRAPPER > * {
+    display: none;}
+body.cxSSC.cxSSCOMPACT .sscWRAPPER > .sscWRAPPER,
+body.cxSSC.cxSSCOMPACT .sscWRAPPER > .sscSELECTED {
+    display: block;}
+body.cxSSC.cxSSCOMPACT .sscSELECTED p,
+body.cxSSC.cxSSCOMPACT .sscSELECTED div, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED blockquote, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED section, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED aside,
+body.cxSSC.cxSSCOMPACT .sscSELECTED h1, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED h2, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED h3, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED h4, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED h5,
+body.cxSSC.cxSSCOMPACT .sscSELECTED h6, 
+body.cxSSC.cxSSCOMPACT .sscSELECTED h7 {
+    display: block;}
+
+/* Reduced display rules */
+/* Reduced mode shrinks the font size of everything that isn't selected */
+
+body.cxSSC.cxSSCREDUCED * {
+    font-size: 33%;}
+body.cxSSC.cxSSCREDUCED img {
+    width: 25em; height: auto;}
+
+body.cxSSC.cxSSCREDUCED .sscWRAPPER,
+body.cxSSC.cxSSCREDUCED .sscSELECTED {
+    font-size: 100%;}
+body.cxSSC.cxSSCREDUCED .sscWRAPPER > * {
+    font-size: 33%;}
+body.cxSSC.cxSSCREDUCED .sscWRAPPER > .sscWRAPPER,
+body.cxSSC.cxSSCREDUCED .sscWRAPPER > .sscSELECTED {
+    font-size: 100%;}
+body.cxSSC.cxSSCREDUCED .sscSELECTED {
+    font-size: 100%;}
+
+/* Exempt app elements from highlighting rules */
+
+body.cxSSC div.sscinfo, div.sscapp { opacity: 0.9 !important;}
+body.cxSSC div.sscapp * { opacity: 1.0 !important;}
+body.cxSSC.cxSSCREDUCED div.sscinfo, div.sscapp {
+    font-size: 100%;}
+body.cxSSC.cxSSCREDUCED div.sscapp * {
+    font-size: 100%;}
+
+body.cxSSC.cxSSCOMPACT div.sscapp p,
+body.cxSSC.cxSSCOMPACT div.sscapp div, 
+body.cxSSC.cxSSCOMPACT div.sscapp blockquote, 
+body.cxSSC.cxSSCOMPACT div.sscapp section, 
+body.cxSSC.cxSSCOMPACT div.sscapp aside,
+body.cxSSC.cxSSCOMPACT div.sscapp h1, 
+body.cxSSC.cxSSCOMPACT div.sscapp h2, 
+body.cxSSC.cxSSCOMPACT div.sscapp h3, 
+body.cxSSC.cxSSCOMPACT div.sscapp h4, 
+body.cxSSC.cxSSCOMPACT div.sscapp h5,
+body.cxSSC.cxSSCOMPACT div.sscapp h6, 
+body.cxSSC.cxSSCOMPACT div.sscapp h7 {
+    display: block;}
+
+/* SSC info display rules */
+
+div.sscapp {
+    position: fixed;
+    top: 10%; bottom: 40%; left: 10%; right: 10%;
+    background-color: rgba(0,0,0,0.8); color: ivory;
+    padding: 0.5em;
+    font-family: sans,sans-serif;
+    font-size: 200%; border-radius: 1em; 
+    display: none;}
+div#SSCINFO.sscapp { display: block;}
+div#SSCSELECT.sscapp { display: block;}
+div#SSCEDIT.sscapp { display: block;}
+
+div.sscinfo div.sschead {
+    text-align: left;}
+div.sscinfo div.sschead span.count {
+    float: right; font-size: 90%;}
+
+div.sscapp button.close {
+    position: absolute; top: 1ex; right: 1ex;
+    font-weight: bold; color: red; font-size: 20px;
+    border-radius: 1ex;}
+
+div.sscapp span.selector {
+    float: left; font-size: 150%;}
+div.sscapp p.instruction {
+    text-align: center; font-style: italic;
+    margin-top: 1ex;}
+
+div.sscapp div.selector {
+    text-align: center;}
+div.sscapp select.centered {
+    display: block; margin-top: 1ex;
+    margin-left: 10%; margin-right: 10%; width: 80%;}
+div.sscapp select.centered option {
+    font-size: 120%;}
+div.sscapp input[TYPE='TEXT'] {
+    display: block; font-size: 80%;
+    margin-top: 1em;
+    margin-left: 10%; margin-right: 10%;
+    width: 80%; border-radius: 1ex;}
+div.sscapp p.sschelp {
+    font-size: 75%; margin-top: 0.5em;
+    margin-left: 15%; margin-right: 15%;
+    max-width: 40em;}
