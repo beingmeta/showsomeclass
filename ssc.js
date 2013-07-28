@@ -556,7 +556,7 @@ SSC.Message=(function(){
 SSC.getStyleInfo=(function(){
     function getRules(sel,results){
 	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
-	var pat=new RegExp(sel.replace(".","\\."),"gi");
+	var pat=new RegExp(sel.replace(".","\\.")+"\\b","gi");
 	if (!(results)) results=[];
 	while (i<n_sheets) {
 	    var sheet=sheets[i++];
@@ -641,8 +641,8 @@ SSC.UI=(function(){
     function selector_keydown(evt){
  	evt=evt||event;
 	var kc=evt.keyCode;
+	var target=evt.target||evt.srcElement;
 	if (kc===RETURN) {
-	    var target=evt.target||evt.srcElement;
 	    var spec=target.value;
 	    var nodes=document.querySelectorAll(spec);
 	    if (nodes.length===0) {
@@ -657,6 +657,8 @@ SSC.UI=(function(){
     var CKEY=0x43;
     var RKEY=0x52;
     var RETURN=0x0d;
+    var PLUS=187;
+    var MINUS=189;
     var ESCAPE=0x1b;
 
     var usekeys=[TAB,RKEY,CKEY,AKEY,ESCAPE,RETURN];

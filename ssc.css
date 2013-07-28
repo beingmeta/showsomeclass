@@ -1,6 +1,6 @@
-body.cxSSC *, body.cxSSC > * {opacity: 0.25 !important;}
+body.cxSSC *, body.cxSSC > * {opacity: 0.66 !important;}
 body.cxSSC > .sscWRAPPER { opacity: 1.0 !important; }
-body.cxSSC .sscWRAPPER > * { opacity: 0.25 !important;}
+body.cxSSC .sscWRAPPER > * { opacity: 0.66 !important;}
 body.cxSSC .sscWRAPPER > .sscWRAPPER,
 body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
@@ -161,15 +161,17 @@ div.sscapp div.sscrules div.cssrule {
 div.ssctoolbar {}
 div#SSCTOOLBAR {
     position: fixed;
+    transition-property: top; transition-duration: 1s;
     top: -2em; left: 0px; right: 0px; width: 100%;
     background-color: rgba(0,0,0,0.8);
     font-size: 20px; height: 2em;
     border-bottom: solid purple 2px;
-    text-align: center;
-    transition-property: top; transition-duration: 1s;}
+    text-align: center;}
 div#SSCTOOLBAR { opacity: 0.85 !important; }
 
-div#SSCTOOLBAR input[TYPE="TEXT"] {font-size: 100%;}
+div#SSCTOOLBAR input[TYPE="TEXT"] {
+    transition-property: font-size; transition-duration: 1s;
+    width: 50%; font-size: 100%;}
 div#SSCTOOLBAR button { font-size: 120%;}
 div#SSCTOOLBAR button.left { float: left;}
 div#SSCTOOLBAR button.right { float: right;}
