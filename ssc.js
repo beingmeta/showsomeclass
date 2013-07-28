@@ -188,14 +188,14 @@ var SSC=(function(){
 	    alert("There are no matches for "+spec);
 	    return;}
 	while (i<lim) show(nodes[i++]);
-	document.title="("+spec+") "+real_title;
+	document.title="("+nodes.length+"x"+spec+") "+real_title;
 	var input=document.getElementById("SSCINPUT");
 	if (input) {
 	    input.value=spec;
 	    input.title="matches "+nodes.length+" elements";}
-	if ((!(SSC.quiet))&&(SSC.message))
-	    SSC.message("The selector <tt>"+spec+"</tt> matches <strong>"+
-			nodes.length+"</strong> nodes");
+	if ((!(SSC.quiet))&&(SSC.Message))
+	    SSC.Message("The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> nodes",
+			{spec: spec, count: nodes.length});
 	selector=spec;
 	selected=nodes;
     	window.location.hash="#"+spec;}
@@ -242,6 +242,160 @@ var SSC=(function(){
 	isReduced: isReduced, setReduced: setReduced,
 	preferred: ["p","h1","h2","h3","h4","h5"],
 	Text: {},box: false,editnode: false};})();
+
+
+SSC.Message=(function(){
+
+    var msg_delay=false;
+    var msg_delta=0.025;
+    var msg_fader=false;
+    var msg_fade_interval=100;
+    var msg_opacity=1.0;
+
+    function addListener(node,evtype,handler){
+	if (node.addEventListener)
+	    node.addEventListener(evtype,handler,false);
+	else if (node.attachEvent)
+	    node.attachEvent("on"+evtype,handler);
+	else alert("Please switch to a modern browser");}
+
+    function fillin(data,text){
+	if (typeof data === "string") {
+	    var tmp=data; data=text; text=tmp;}
+	if ((!(text))&&(data)&&(data.format)) text=data.format;
+	// Maybe a warning?
+	if (typeof text !== "string") return;
+	if (data) {
+	    for (var prop in data) {
+		if (data.hasOwnProperty(prop)) {
+		    if (prop==="format") continue;
+		    var value=data[prop];
+		    var pat=new RegExp("{{"+prop+"}}","g");
+		    text=text.replace(pat,value.toString());}}
+	    return text;}
+	else return text;}
+
+    function close(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (msg_delay) clearTimeout(msg_delay);
+	if (msg_fader) clearInterval(msg_fader);
+	if (msg) msg.parentNode.removeChild(msg);}
+
+    function keep(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
+	if (msg_fader) {clearInterval(msg_fader); msg_fader=false;}
+	msg_opacity=Message.opts.init_opacity||0.9;
+	msg.style.setProperty('opacity',msg_opacity,'!important');
+	msg.className=msg.className+" keep";}
+
+    function Message(text,data,opts){
+	if (typeof text === "string")  {
+	    if (data) text=fillin(text,data);}
+	if (typeof opts === "number") {
+	    // Assume it's seconds, convert to msecs
+	    if (opts<100) opts=opts*1000;
+	    // Divide the delay between wait and finale
+	    opts={delay: opts/2,finale: opts/2};}
+	else if (!(opts)) opts={};
+	else if ((opts.delay===false)&&(!(opts.finale))) opts.keep=true;
+	else if ((opts.delay)&&(!(opts.hasOwnProperty('finale')))) {
+	    // If we just have a delay, and no finale, divide the delay
+	    var d=opts.delay;
+	    // Assume it's seconds, convert to msecs
+	    if (d<100) d=d*1000;
+	    opts.delay=d/2; opts.finale=d/2;}
+	else {
+	    if ((opts.delay)&&(opts.delay<100)) opts.delay=opts.delay*1000;
+	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
+	var box=document.createElement("div"); {
+	    box.className="sscdialog sscapp";
+	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
+		var close_button=document.createElement("DIV"); {
+		    close_button.className="close button";
+		    close_button.innerHTML="Close";
+		    addListener(close_button,"click",close);
+		    box.appendChild(close_button);}
+		var keep_button=document.createElement("DIV"); {
+		    keep_button.className="keep button";
+		    keep_button.innerHTML="Keep";
+		    addListener(keep_button,"click",keep);
+		    box.appendChild(keep_button);}}}
+	if (opts.title) {
+	    var title_text=opts.title;
+	    var title=document.createElement("DIV"); title.className="title";
+	    title.appendChild(document.createTextNode(
+		((title_text)?(fillin(title_text)):(title_text))));
+	    box.appendChild(title);}
+	if (typeof text === "string") {
+	    var frag=document.createElement("div"); frag.innerHTML=text;
+	    var children=frag.childNodes; var toadd=[];
+	    var k=0, klim=children.length;
+	    while (k<klim) toadd.push(children[k++]);
+	    k=0; while (k<klim) box.appendChild(toadd[k++]);}
+	else box.appendChild(text);
+	if ((opts.choices)&&(opts.choices.length)) {
+	    var choices=opts.choices, buttons=[];
+	    var i=0, lim=choices.length; while (i<lim) {
+		var choice=choices[i++];
+		var button=document.createElement("BUTTON");
+		if (typeof choice === "string") 
+		    choice={label: choice, value: choice};
+		if (choice.classname) button.className=choice.classname;
+		button.appendChild(document.createTextNode(
+		    (((choice.label)&&(choice.data))?(fillin(choice.label,choice.data)):(choice.label))));
+		button.value=choice.value;
+		button.name=choice.name||choice.label;
+		if (button.handler)
+		    addListener(button,"click",button.handler);
+		else addListener(button,"click",choice_button_handler);
+		buttons.push(button);}
+	    var container=document.createElement("DIV"); {
+		var j=0; container.className="choices"; 
+		while (j<lim) {
+		    container.appendChild(buttons[j++]);
+		    container.appendChild(document.createTextNode(" "));}}
+	    box.appendChild(choices);}
+	box.id="SSCMESSAGE";
+	document.body.appendChild(box);
+	msg_opacity=opts.init_opacity||Message.opts.init_opacity||0.9;
+	box.style.setProperty('opacity',msg_opacity,'!important');
+	if (opts.keep) box.className=box.className+" keep";
+	if ((!(opts.modal))&&(!(opts.keep))) {
+	    var delay=opts.delay||Message.opts.delay||3000;
+	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
+			(Message.opts.hasOwnProperty('finale'))?(Message.opts.finale):			
+			3000);
+	    var interval=((opts.fade_interval)||(Message.opts.fade_interval)||100);
+	    var n_steps=Math.ceil((finale)&&(finale/interval));
+	    var delta=((finale)&&(msg_opacity/n_steps));
+	    if (delta) {
+		msg_delta=delta;
+		msg_fade_interval=interval;
+		msg_delay=setTimeout(startfinale,delay);}
+	    else msg_delay=setTimeout(close,delay);}
+	return box;}
+
+    function startfinale(){
+	if (msg_fader) close();
+	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
+	msg_fader=setInterval(fademessage,msg_fade_interval);}
+
+    function fademessage(){
+	var delta=msg_delta;
+	if (!(delta)) {close(); return;}
+	if (!(msg_fader)) {close(); return;}
+	var msg=document.getElementById("SSCMESSAGE");
+	if (!(msg)) close();
+	else if (msg_opacity<=0) close();
+	else {
+	    msg_opacity=msg_opacity-delta;
+	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
+
+    Message.close=close; Message.keep=keep; Message.fillin=fillin;
+    Message.opts={};
+
+    return Message;})();
 
 
 SSC.UI=(function(){
@@ -299,7 +453,7 @@ SSC.UI=(function(){
 	    if (nodes.length===0) {
 		alert("No elements match "+spec);}
 	    else {
-		SSC.select(spec);}}}
+		SSC.select(spec,true);}}}
 
     /* Keyboard interaction */
 
@@ -323,6 +477,7 @@ SSC.UI=(function(){
 	    return;
 	if (key===ESCAPE) {
 	    var changed=false;
+	    if (msg_timer) closeMsg();
 	    if (SSC.box) {
 		if (SSC.box.parentNode)
 		    SSC.box.parentNode.removeChild(SSC.box);
@@ -367,37 +522,6 @@ SSC.UI=(function(){
     // Should we put this inside an onload handler?
     addListener(window,"keydown",ssckeydown);
 
-    var msg_timer=false;
-    var msg_opacity=1.0;
-
-    function slowmessage(message){
-	var msg=document.createElement("div");
-	msg.id="SSCMESSAGE";
-	msg.className="sscmessage sscapp";
-	msg.innerHTML=message;
-	addListener(msg,"click",closeMsg);
-	document.body.appendChild(msg);
-	msg_opacity=1.0;
-	msg_timer=setInterval(fadeMsg,50);}
-    function fadeMsg(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (!(msg_timer)) return;
-	else if (!(msg)) {
-	    clearInterval(msg_timer); msg_timer=false;
-	    return;}
-	else if (msg_opacity<=0) {
-	    if (msg) document.body.removeChild(msg);
-	    clearInterval(msg_timer);
-	    msg_timer=false;}
-	else {
-	    msg_opacity=msg_opacity-0.01;
-	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
-    function closeMsg(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (msg_timer) {clearInterval(msg_timer); msg_timer=false;}
-	if (msg) { document.body.removeChild(msg);}}
-    SSC.message=slowmessage;
-
     function nodeclick(evt){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
@@ -417,7 +541,7 @@ SSC.UI=(function(){
 	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
 	    var classes=norm.split(/\s+/);
 	    if (classes.length) spec=spec+"."+classes.join(".");}
-	SSC.select(spec);}
+	SSC.select(spec,true);}
     
     addListener(window,"click",nodeclick);})();
 
