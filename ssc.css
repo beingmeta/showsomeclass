@@ -1,13 +1,9 @@
-body.cxSSC *, body.cxSSC > * {
-    opacity: 0.25 !important; }
-body.cxSSC > .sscWRAPPER {
-    opacity: 1.0 !important; }
+body.cxSSC *, body.cxSSC > * {opacity: 0.25 !important;}
+body.cxSSC > .sscWRAPPER { opacity: 1.0 !important; }
 body.cxSSC .sscWRAPPER > * { opacity: 0.25 !important;}
 body.cxSSC .sscWRAPPER > .sscWRAPPER,
-body.cxSSC .sscWRAPPER > .sscSELECTED {
-    opacity: 1.0 !important;}
-body.cxSSC .sscSELECTED * {
-    opacity: 1.0 !important;}
+body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
+body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
 
 body.cxSSC .sscSELECTED.sscFOCUS {
   background-color: rgba(255,0,0,0.25) !important;}
@@ -72,14 +68,10 @@ body.cxSSC.cxSSCREDUCED .sscSELECTED {
 
 /* Exempt app elements from highlighting rules */
 
-body.cxSSC div.sscinfo, div.sscapp { opacity: 0.9 !important;}
-body.cxSSC div.sscapp * { opacity: 1.0 !important;}
-body.cxSSC.cxSSCREDUCED div.sscinfo, div.sscapp {
-    font-size: 100%;}
-body.cxSSC.cxSSCREDUCED div.sscapp * {
-    font-size: 100%;}
-
-body.cxSSC div#SSCDISPLAY { opacity: 0.7 !important;}
+body.cxSSC .sscapp { opacity: 0.9 !important;}
+body.cxSSC .sscapp * { opacity: 1.0 !important;}
+body.cxSSC.cxSSCREDUCED .sscapp {font-size: 100%; !important;}
+body.cxSSC.cxSSCREDUCED .sscapp * {font-size: 100%; !important;}
 
 body.cxSSC.cxSSCOMPACT div.sscapp p,
 body.cxSSC.cxSSCOMPACT div.sscapp div, 
@@ -97,8 +89,17 @@ body.cxSSC.cxSSCOMPACT div.sscapp h7 {
 
 #SSCINPUT {
     position: fixed; right: 0px; top: 0px; font-size: 20px;
-    background-color: ivory; color: black;
+    background-color: rgb(0,0,0,0.5); color: black;
     opacity: 0.5;}
-#SSCINPUT:focus { opacity: 0.9;}
+body.cxSSC #SSCINPUT.sscapp { opacity: 0.3 !important;}
+body.cxSSC #SSCINPUT.sscapp:focus { opacity: 0.7 !important;}
 
+body.cxSSC div.sscmessage {
+    border-radius: 1em; -webkit-border-radius: 1em;
+    -moz-border-radius: 1em; -o-border-radius: 1em;
+    position: fixed; top: 10%; left: 20%; right: 20%; width: 60%;
+    transition-property: opacity: transition-duration: 5s;
+    background-color: rgba(0,0,0,0.8); color: white;
+    text-align: center;
+    font-family: sans,sans-serif; font-size: 200%; padding: 1em;}
 

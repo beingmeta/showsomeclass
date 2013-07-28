@@ -190,9 +190,15 @@ var SSC=(function(){
 	while (i<lim) show(nodes[i++]);
 	document.title="("+spec+") "+real_title;
 	var input=document.getElementById("SSCINPUT");
-	input.value=spec;
+	if (input) {
+	    input.value=spec;
+	    input.title="matches "+nodes.length+" elements";}
+	if ((!(SSC.quiet))&&(SSC.message))
+	    SSC.message("The selector <tt>"+spec+"</tt> matches <strong>"+
+			nodes.length+"</strong> nodes");
 	selector=spec;
-	selected=nodes;}
+	selected=nodes;
+    	window.location.hash="#"+spec;}
 
     /* THE FOCUS is used for moving back and forth through the
        selected nodes. */
@@ -237,9 +243,11 @@ var SSC=(function(){
 	preferred: ["p","h1","h2","h3","h4","h5"],
 	Text: {},box: false,editnode: false};})();
 
-	
+
 SSC.UI=(function(){
     var $=SSC.$;
+
+    var hasClass=SSC.hasClass;
 
     function addListener(node,evtype,handler){
 	if (node.addEventListener)
@@ -271,11 +279,14 @@ SSC.UI=(function(){
     function setupSelectorDisplay(){
 	var input=document.createElement("input");
 	input.type="TEXT"; input.name="SELECTOR";
-	input.value=SSC.selector();
+	var selector=SSC.selector();
+	var selected=SSC.selected();
+	if (selector) input.value=selector;
+	if (selected) input.title="matches "+selected.length+" elements";
 	input.className="sscapp";
 	input.id="SSCINPUT";
 	addListener(input,"keydown",selector_keydown);
-	document.body.appendChild(div);}
+	document.body.appendChild(input);}
     addListener(window,"load",setupSelectorDisplay);
 
     function selector_keydown(evt){
@@ -298,7 +309,7 @@ SSC.UI=(function(){
     var RETURN=0x0d;
     var ESCAPE=0x1b;
 
-    var usekeys=[TAB,RKEY,CKEY,SKEY,ESCAPE,RETURN];
+    var usekeys=[TAB,RKEY,CKEY,ESCAPE,RETURN];
 
     function ssckeydown(evt){
 	evt=evt||event;
@@ -356,6 +367,37 @@ SSC.UI=(function(){
     // Should we put this inside an onload handler?
     addListener(window,"keydown",ssckeydown);
 
+    var msg_timer=false;
+    var msg_opacity=1.0;
+
+    function slowmessage(message){
+	var msg=document.createElement("div");
+	msg.id="SSCMESSAGE";
+	msg.className="sscmessage sscapp";
+	msg.innerHTML=message;
+	addListener(msg,"click",closeMsg);
+	document.body.appendChild(msg);
+	msg_opacity=1.0;
+	msg_timer=setInterval(fadeMsg,50);}
+    function fadeMsg(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (!(msg_timer)) return;
+	else if (!(msg)) {
+	    clearInterval(msg_timer); msg_timer=false;
+	    return;}
+	else if (msg_opacity<=0) {
+	    if (msg) document.body.removeChild(msg);
+	    clearInterval(msg_timer);
+	    msg_timer=false;}
+	else {
+	    msg_opacity=msg_opacity-0.01;
+	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
+    function closeMsg(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (msg_timer) {clearInterval(msg_timer); msg_timer=false;}
+	if (msg) { document.body.removeChild(msg);}}
+    SSC.message=slowmessage;
+
     function nodeclick(evt){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
@@ -369,9 +411,10 @@ SSC.UI=(function(){
 	if (!(scan)) return; else scan=target;
 	while (scan.nodeType!==1) scan=scan.parentNode;
 	if (!(scan)) return;
+	if ((evt.shiftKey)&&(scan.parentNode)) scan=scan.parentNode;
 	var spec=scan.tagName;
 	if (scan.className) {
-	    var norm=scan.className.replace(/\bssc\w+\b/g,"");
+	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
 	    var classes=norm.split(/\s+/);
 	    if (classes.length) spec=spec+"."+classes.join(".");}
 	SSC.select(spec);}
