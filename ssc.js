@@ -189,6 +189,7 @@ var SSC=(function(){
 	    return;}
 	while (i<lim) show(nodes[i++]);
 	document.title="("+nodes.length+"x"+spec+") "+real_title;
+	dropClass(document.body,"sscSHOWCLOUD");
 	var input=document.getElementById("SSCINPUT");
 	if (input) {
 	    input.value=spec;
@@ -243,6 +244,71 @@ var SSC=(function(){
 	preferred: ["p","h1","h2","h3","h4","h5"],
 	Text: {},box: false,editnode: false};})();
 
+SSC.scoreSelectors=function scoreSelectors(root){
+    function scandom(node,scores){
+	var tag=node.tagName; var selectors=[tag];
+	var classname=node.className;
+	// Ignore yourself
+	if (classname.search(/\bscapp/)>=0) return;
+	// Generate applicable selectors
+	var classes=((classname)?(classname.split(/\s+/)):[]);
+	classes.sort();
+	var i=0, lim=classes.length;
+	while (i<lim) {
+	    selectors.push("."+classes[i]);
+	    selectors.push(tag+"."+classes[i]);
+	    var j=i+2;
+	    while (j<lim) {
+		var compound=classes.slice(i,j).join(".");
+		selectors.push("."+compound);
+		selectors.push(tag+"."+compound);
+		j++;}
+	    i++;}
+	// Increase the scores for applicable selectors
+	var k=0, klim=selectors.length;
+	while (k<klim) {
+	    var sel=selectors[k++];
+	    if (scores.hasOwnProperty(sel)) scores[sel]++;
+	    else scores[sel]=1;}
+	// Descend the DOM
+	if (node.childNodes) {
+	    var children=node.childNodes;
+	    var c=0, clim=children.length; while (c<clim) {
+		var child=children[c++];
+		if (child.nodeType===1) scandom(child,scores);}}}
+    var scores={};
+    if (!(root)) root=document.body;
+    scandom(root,scores);
+    return scores;};
+
+SSC.classCloud=function classCloud(root){
+    if (!(root)) root=document.body;
+    var scores=SSC.scoreSelectors(root);
+    var all=[]; for (var sel in scores) {
+	if (scores.hasOwnProperty(sel)) all.push(sel);}
+    all.sort(function(sel1,sel2){
+	if (sel1.length===sel2.length) {
+	    if (sel1<sel2) return -1; else return 1;}
+	else return sel1.length-sel2.length;});
+    var cloud=document.createElement("div");
+    var links=document.createElement("div");
+    var cloudmap={};
+    cloud.className="sscapp sscloud"; cloud.id="SSCLOUD";
+    links.className="links";
+    cloud.appendChild(links);
+    SSC.cloud=cloud; SSC.cloudmap=cloudmap;
+    var i=0, lim=all.length;
+    while (i<lim) {
+	var sel=all[i++], score=scores[sel];
+	var link=document.createElement("A");
+	link.href="#"+sel; link.title=score+" matching elements";
+	link.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
+	link.appendChild(document.createTextNode(sel));
+	links.appendChild(link); cloudmap[sel]=link;
+	links.appendChild(document.createTextNode(" "));}
+    cloud.style.visibility='hidden';
+    document.body.appendChild(cloud);
+    return cloud;};
 
 SSC.Message=(function(){
 
@@ -396,7 +462,6 @@ SSC.Message=(function(){
     Message.opts={};
 
     return Message;})();
-
 
 SSC.UI=(function(){
     var $=SSC.$;
