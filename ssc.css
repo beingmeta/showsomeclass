@@ -124,9 +124,16 @@ div.sscdialog div.clicktodismiss {
     font-size: 50%; color: yellow;
     padding-bottom: 0.5ex;}
 
+div.sscdialog p.sschelp {
+    text-align: left; font-size: 70%; margin-top: 1em;
+    margin-left: 10%; text-indent: -5%; margin-right: 5%;
+    width: 85%;}
+div.sscdialog p.sschelp tt, div.sscdialog p.sschelp kbd {
+    font-size: 120%;}
+
 /* The cloud */
 
-div#SSCLOUD {
+div#SSCSELECTORCLOUD {
     border-radius: 1em; -webkit-border-radius: 1em;
     -moz-border-radius: 1em; -o-border-radius: 1em;
     position: fixed;
@@ -136,12 +143,14 @@ div#SSCLOUD {
     font-family: sans,sans-serif; font-size: 200%;
     padding: 1ex; padding-bottom: 2em;
     display: none;}
-body.sscSHOWCLOUD div#SSCLOUD { display: block; }
+body.sscSHOWCLOUD div#SSCSELECTORCLOUD { display: block; }
 
-div.sscloud div.links a {
+div#SSCSELECTORCLOUD div.links a {
     padding-left: 1ex; padding-right: 1ex;
-    white-space: nowrap; text-decoration: none;}
-div.sscloud div.links a:hover {
+    white-space: nowrap; text-decoration: none;
+    color: white;}
+div#SSCSELECTORCLOUD div.links a:visited {color: white;}
+div#SSCSELECTORCLOUD div.links a:hover {
     text-decoration: underline;}
-div.sscloud div.button.close {float: right; color: red;}
+div#SSCSELECTORCLOUD div.button.close {float: right; color: red;}
 

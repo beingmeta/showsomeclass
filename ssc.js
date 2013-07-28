@@ -185,8 +185,15 @@ var SSC=(function(){
 	var nodes=$(spec);
 	var i=0, lim=nodes.length;
 	if (lim===0) {
-	    alert("There are no matches for "+spec);
+	    SSC.Message("There are no matches for <tt>{{spec}}</tt>",{spec: spec});
 	    return;}
+	var first=nodes[0];
+	if (!(first)) {}
+	else if (first.scrollIntoViewIfNeeded)
+	    first.scrollIntoViewIfNeeded();
+	else if (first.scrollIntoView)
+	    first.scrollIntoView();
+	else {}
 	while (i<lim) show(nodes[i++]);
 	document.title="("+nodes.length+"x"+spec+") "+real_title;
 	dropClass(document.body,"sscSHOWCLOUD");
@@ -195,7 +202,8 @@ var SSC=(function(){
 	    input.value=spec;
 	    input.title="matches "+nodes.length+" elements";}
 	if ((!(SSC.quiet))&&(SSC.Message))
-	    SSC.Message("The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> nodes",
+	    SSC.Message("The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> elements"+
+			"<p class='sschelp'><kbd>Tab</kbd> to scan through them, <kbd>Shift-Tab</kbd> to go back.</p>",
 			{spec: spec, count: nodes.length});
 	selector=spec;
 	selected=nodes;
@@ -244,12 +252,19 @@ var SSC=(function(){
 	preferred: ["p","h1","h2","h3","h4","h5"],
 	Text: {},box: false,editnode: false};})();
 
-SSC.scoreSelectors=function scoreSelectors(root){
+SSC.updateCloud=(function(){
+
+    function scoreSelectors(root){
+	var scores={};
+	if (!(root)) root=document.body;
+	scandom(root,scores);
+	return scores;}
+
     function scandom(node,scores){
 	var tag=node.tagName; var selectors=[tag];
 	var classname=node.className;
 	// Ignore yourself
-	if (classname.search(/\bscapp/)>=0) return;
+	if (classname.search(/\bsscapp\b/)>=0) return;
 	// Generate applicable selectors
 	var classes=((classname)?(classname.split(/\s+/)):[]);
 	classes.sort();
@@ -276,39 +291,67 @@ SSC.scoreSelectors=function scoreSelectors(root){
 	    var c=0, clim=children.length; while (c<clim) {
 		var child=children[c++];
 		if (child.nodeType===1) scandom(child,scores);}}}
-    var scores={};
-    if (!(root)) root=document.body;
-    scandom(root,scores);
-    return scores;};
 
-SSC.classCloud=function classCloud(root){
-    if (!(root)) root=document.body;
-    var scores=SSC.scoreSelectors(root);
-    var all=[]; for (var sel in scores) {
-	if (scores.hasOwnProperty(sel)) all.push(sel);}
-    all.sort(function(sel1,sel2){
-	if (sel1.length===sel2.length) {
-	    if (sel1<sel2) return -1; else return 1;}
-	else return sel1.length-sel2.length;});
-    var cloud=document.createElement("div");
-    var links=document.createElement("div");
-    var cloudmap={};
-    cloud.className="sscapp sscloud"; cloud.id="SSCLOUD";
-    links.className="links";
-    cloud.appendChild(links);
-    SSC.cloud=cloud; SSC.cloudmap=cloudmap;
-    var i=0, lim=all.length;
-    while (i<lim) {
-	var sel=all[i++], score=scores[sel];
-	var link=document.createElement("A");
-	link.href="#"+sel; link.title=score+" matching elements";
-	link.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
-	link.appendChild(document.createTextNode(sel));
-	links.appendChild(link); cloudmap[sel]=link;
-	links.appendChild(document.createTextNode(" "));}
-    cloud.style.visibility='hidden';
-    document.body.appendChild(cloud);
-    return cloud;};
+    function initCloud(){
+	var cloud=document.createElement("div");
+	var links=document.createElement("div");
+	cloud.className="sscapp sscloud"; cloud.id="SSCSELECTORCLOUD";
+	links.className="links"; links.id="SSCSELECTORLINKS";
+	var button=document.createElement("div");
+	button.className="button close";
+	button.appendChild(document.createTextNode("Close"));
+	cloud.appendChild(button); cloud.appendChild(links);
+	document.body.appendChild(cloud);
+	SSC.cloud=cloud;}
+
+    function updateCloud(){
+	if (!(SSC.cloud)) initCloud();
+	var cloud=document.getElementById("SSCSELECTORCLOUD");
+	var links=document.getElementById("SSCSELECTORLINKS");
+	var scores=scoreSelectors(document.body);
+	var all=[]; for (var sel in scores) {
+	    if (scores.hasOwnProperty(sel)) all.push(sel);}
+	all.sort(function(sel1,sel2){
+	    if (sel1.length===sel2.length) {
+		if (sel1<sel2) return -1; else return 1;}
+	    else return sel1.length-sel2.length;});
+	var cloudmap={};
+	SSC.cloudmap=cloudmap;
+	links.innerHTML="";
+	var i=0, lim=all.length;
+	while (i<lim) {
+	    var sel=all[i++], score=scores[sel];
+	    var link=document.createElement("A");
+	    link.href="#"+sel; link.title=score+" matching elements";
+	    link.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
+	    link.appendChild(document.createTextNode(sel));
+	    links.appendChild(link); cloudmap[sel]=link;
+	    links.appendChild(document.createTextNode(" "));}
+	SSC.cloudmap=cloudmap;
+	SSC.selectors=all;
+	sizeCloud();}
+
+    function sizeCloud(){
+	if (!(SSC.cloud)) updateCloud();
+	var cloud=document.getElementById("SSCSELECTORCLOUD");
+	var links=document.getElementById("SSCSELECTORLINKS");
+	cloud.style.setProperty('opacity',0.0,'!important');
+	cloud.style.setProperty('display','block','!important');
+	cloud.style.fontSize='100%';
+	var ih=links.offsetHeight, oh=cloud.offsetHeight;
+	var fs=100, delta=5;
+	if (ih>oh) while (ih>oh) {
+	    fs=fs-delta; links.style.fontSize=(fs)+"%";
+	    ih=links.offsetHeight; oh=cloud.offsetHeight;}
+	else {
+	    while (oh>ih) {
+		fs=fs+delta; links.style.fontSize=(fs)+"%";
+		ih=links.offsetHeight; oh=cloud.offsetHeight;}
+	    fs=fs-delta; links.style.fontSize=(fs)+"%";}
+	cloud.style.removeProperty('opacity',0.0,'!important');
+	cloud.style.removeProperty('display','block','!important');}
+    
+    return updateCloud;})();
 
 SSC.Message=(function(){
 
@@ -467,6 +510,8 @@ SSC.UI=(function(){
     var $=SSC.$;
 
     var hasClass=SSC.hasClass;
+    var addClass=SSC.addClass;
+    var dropClass=SSC.dropClass;
 
     function addListener(node,evtype,handler){
 	if (node.addEventListener)
@@ -505,8 +550,18 @@ SSC.UI=(function(){
 	input.className="sscapp";
 	input.id="SSCINPUT";
 	addListener(input,"keydown",selector_keydown);
+	addListener(input,"focus",showCloud);
+	addListener(input,"blur",hideCloudDelayed);
 	document.body.appendChild(input);}
     addListener(window,"load",setupSelectorDisplay);
+
+    function showCloud(){
+	if (!(SSC.cloud)) SSC.updateCloud();
+	addClass(document.body,"sscSHOWCLOUD");}
+    function hideCloud(){
+	dropClass(document.body,"sscSHOWCLOUD");}
+    function hideCloudDelayed(){
+	setTimeout(hideCloud,500);}
 
     function selector_keydown(evt){
  	evt=evt||event;
@@ -516,7 +571,7 @@ SSC.UI=(function(){
 	    var spec=target.value;
 	    var nodes=document.querySelectorAll(spec);
 	    if (nodes.length===0) {
-		alert("No elements match "+spec);}
+		SSC.message("No elements match <tt>{{spec}}</tt>",{spec: spec});}
 	    else {
 		SSC.select(spec,true);}}}
 
@@ -542,12 +597,10 @@ SSC.UI=(function(){
 	    return;
 	if (key===ESCAPE) {
 	    var changed=false;
-	    if (msg_timer) closeMsg();
-	    if (SSC.box) {
-		if (SSC.box.parentNode)
-		    SSC.box.parentNode.removeChild(SSC.box);
-		SSC.box=false;}
-	    else if (!(SSC.isenabled())) SSC.enable();
+	    // Close any windows which are up
+	    SSC.Message.close();
+	    dropClass(document.body,"sscSHOWCLOUD");
+	    if (!(SSC.isenabled())) SSC.enable();
 	    else {
 		if (SSC.isReduced()) {SSC.setReduced(false); changed=true;}
 		if (SSC.isCompact()) {SSC.setCompact(false); changed=true;}
@@ -558,13 +611,13 @@ SSC.UI=(function(){
 	else if (key===TAB) {
 	    var index=SSC.focusIndex();
 	    var max=SSC.selected().length-1;
-	    if (max<0) alert("No matches!");
+	    if (max<0) SSC.Message("No matches for selector!");
 	    else if (typeof index === "number") {
 		if (evt.shiftKey) {
-		    if (index<=0) alert("No more matches");
+		    if (index<=0) SSC.Message("No more matches",false,4);
 		    else SSC.focus(index-1);}
 		else if (index>=max)
-		    alert("No more matches");
+		    SSC.Message("No more matches",false,4);
 		else SSC.focus(index+1);}
 	    else if (evt.shiftKey)
 		SSC.focus(max);
@@ -593,8 +646,7 @@ SSC.UI=(function(){
 	var scan=target;
 	while (scan) {
 	    if (hasClass(scan,"sscapp")) return;
-	    else if ((target.tagName==="A")&&(!(evt.shiftKey)))
-		return;
+	    else if ((target.tagName==="A")&&(target.href)) return;
 	    else if (scan===document.body) break;
 	    else scan=scan.parentNode;}
 	if (!(scan)) return; else scan=target;
