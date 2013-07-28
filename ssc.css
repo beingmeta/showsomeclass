@@ -1,70 +1,12 @@
-body.cxSSC *, body.cxSSC > * {opacity: 0.66 !important;}
+body.cxSSC *, body.cxSSC > * {opacity: 0.50 !important;}
 body.cxSSC > .sscWRAPPER { opacity: 1.0 !important; }
-body.cxSSC .sscWRAPPER > * { opacity: 0.66 !important;}
+body.cxSSC .sscWRAPPER > * { opacity: 0.50 !important;}
 body.cxSSC .sscWRAPPER > .sscWRAPPER,
 body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
 
 body.cxSSC .sscSELECTED.sscFOCUS {
   background-color: rgba(255,0,0,0.25) !important;}
-
-/* Compact display rules */
-/* Compact mode hides everything that isn't selected */
-
-body.cxSSC.cxSSCOMPACT p,
-body.cxSSC.cxSSCOMPACT div, 
-body.cxSSC.cxSSCOMPACT blockquote, 
-body.cxSSC.cxSSCOMPACT section, 
-body.cxSSC.cxSSCOMPACT aside,
-body.cxSSC.cxSSCOMPACT h1, 
-body.cxSSC.cxSSCOMPACT h2, 
-body.cxSSC.cxSSCOMPACT h3, 
-body.cxSSC.cxSSCOMPACT h4, 
-body.cxSSC.cxSSCOMPACT h5,
-body.cxSSC.cxSSCOMPACT h6, 
-body.cxSSC.cxSSCOMPACT h7 {
-    display: none;}
-
-body.cxSSC.cxSSCOMPACT .sscWRAPPER,
-body.cxSSC.cxSSCOMPACT .sscSELECTED {
-    display: block;}
-body.cxSSC.cxSSCOMPACT .sscWRAPPER > * {
-    display: none;}
-body.cxSSC.cxSSCOMPACT .sscWRAPPER > .sscWRAPPER,
-body.cxSSC.cxSSCOMPACT .sscWRAPPER > .sscSELECTED {
-    display: block;}
-body.cxSSC.cxSSCOMPACT .sscSELECTED p,
-body.cxSSC.cxSSCOMPACT .sscSELECTED div, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED blockquote, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED section, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED aside,
-body.cxSSC.cxSSCOMPACT .sscSELECTED h1, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED h2, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED h3, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED h4, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED h5,
-body.cxSSC.cxSSCOMPACT .sscSELECTED h6, 
-body.cxSSC.cxSSCOMPACT .sscSELECTED h7 {
-    display: block;}
-
-/* Reduced display rules */
-/* Reduced mode shrinks the font size of everything that isn't selected */
-
-body.cxSSC.cxSSCREDUCED * {
-    font-size: 33%;}
-body.cxSSC.cxSSCREDUCED img {
-    width: 25em; height: auto;}
-
-body.cxSSC.cxSSCREDUCED .sscWRAPPER,
-body.cxSSC.cxSSCREDUCED .sscSELECTED {
-    font-size: 100%;}
-body.cxSSC.cxSSCREDUCED .sscWRAPPER > * {
-    font-size: 33%;}
-body.cxSSC.cxSSCREDUCED .sscWRAPPER > .sscWRAPPER,
-body.cxSSC.cxSSCREDUCED .sscWRAPPER > .sscSELECTED {
-    font-size: 100%;}
-body.cxSSC.cxSSCREDUCED .sscSELECTED {
-    font-size: 100%;}
 
 /* Exempt app elements from highlighting rules */
 
@@ -140,13 +82,12 @@ div#SSCSELECTORCLOUD {
     display: none;}
 body.sscSHOWCLOUD div#SSCSELECTORCLOUD { display: block; }
 
-div#SSCSELECTORCLOUD div.links a {
+div#SSCSELECTORCLOUD div.selectors span {
     padding-left: 1ex; padding-right: 1ex;
     white-space: nowrap; text-decoration: none;
+    cursor: pointer;
     color: white;}
-div#SSCSELECTORCLOUD div.links a:visited {color: white;}
-div#SSCSELECTORCLOUD div.links a:hover {
-    text-decoration: underline;}
+div#SSCSELECTORCLOUD div.selectors span {color: white;}
 div#SSCSELECTORCLOUD div.button.close {float: right; color: red;}
 
 div.sscapp div.sscrules {
@@ -164,15 +105,18 @@ div#SSCTOOLBAR {
     transition-property: top; transition-duration: 1s;
     top: -2em; left: 0px; right: 0px; width: 100%;
     background-color: rgba(0,0,0,0.8);
-    font-size: 20px; height: 2em;
+    font-size: 20px; 
     border-bottom: solid purple 2px;
-    text-align: center;}
+    text-align: left;}
 div#SSCTOOLBAR { opacity: 0.85 !important; }
 
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     transition-property: font-size; transition-duration: 1s;
-    width: 50%; font-size: 100%;}
-div#SSCTOOLBAR button { font-size: 120%;}
+    text-align: left; width: 33%; font-size: 90%;}
+div#SSCTOOLBAR button {
+    margin: 0px; margin-right: 0.25ex; margin-top: 0.25ex;
+    padding: 0px; font-variant: small-caps; border-radius: 1ex;
+    font-size: 100%;}
 div#SSCTOOLBAR button.left { float: left;}
 div#SSCTOOLBAR button.right { float: right;}
 body.sscTOOLBAR div#SSCTOOLBAR {

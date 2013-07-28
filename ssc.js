@@ -173,26 +173,6 @@ var SSC=(function(){
 	    dropClass(document.body,"cxSSC");
 	else addClass(document.body,"cxSSC");}
     
-    function isCompact() {
-	return hasClass(document.body,"cxSSCOMPACT");}
-    function setCompact(flag) {
-	if (typeof flag === "undefined") {
-	    if (isCompact())
-		dropClass(document.body,"cxSSCOMPACT");
-	    else addClass(document.body,"cxSSCOMPACT");}
-	else if (flag) addClass(document.body,"cxSSCOMPACT");
-	else dropClass(document.body,"cxSSCOMPACT");}
-
-    function isReduced() {
-	return hasClass(document.body,"cxSSCREDUCED");}
-    function setReduced(flag) {
-	if (typeof flag === "undefined") {
-	    if (isReduced())
-		dropClass(document.body,"cxSSCREDUCED");
-	    else addClass(document.body,"cxSSCREDUCED");}
-	else if (flag) addClass(document.body,"cxSSCREDUCED");
-	else dropClass(document.body,"cxSSCREDUCED");}
-
     /* Selective display */
 
     /* Clear all selective display classes */
@@ -231,6 +211,7 @@ var SSC=(function(){
 	if (lim===0) {
 	    SSC.Message("There are no matches for <tt>{{spec}}</tt>",{spec: spec});
 	    return;}
+	enable();
 	var first=nodes[0];
 	if (!(first)) {}
 	else if (first.scrollIntoViewIfNeeded)
@@ -299,8 +280,6 @@ var SSC=(function(){
 	selector: function getselector(){ return selector;},
 	selected: function getselected(){ return selected;},
 	focusIndex: function focusIndex(){ return focus_index;},
-	isCompact: isCompact, setCompact: setCompact,
-	isReduced: isReduced, setReduced: setReduced,
 	preferred: ["p","h1","h2","h3","h4","h5"],
 	Text: {},box: false,editnode: false};})();
 
@@ -358,7 +337,7 @@ SSC.updateCloud=(function(){
 
     function initCloud(){
 	var cloud=make("div","sscapp sscloud","","SSCSELECTORCLOUD");
-	var links=make("div","links","","SSCSELECTORSPANS");
+	var links=make("div","selectors","","SSCSELECTORSPANS");
 	var button=make("div","button close","Close");
 	cloud.appendChild(button); cloud.appendChild(links);
 	addListener(cloud,"click",selector_clicked);
@@ -371,14 +350,14 @@ SSC.updateCloud=(function(){
 	while (target.nodeType!==1) target=target.parentNode;
 	if (target.className==="selector") {
 	    if (evt.shiftKey) {
-		var cur=SSC.getSelector();
-		select(cur+","+target.innerHTML);}
-	    else select(target.innerHTML);}}
+		var cur=SSC.selector();
+		SSC.select(cur+","+target.innerHTML);}
+	    else SSC.select(target.innerHTML);}}
 
     function updateCloud(){
 	if (!(SSC.cloud)) initCloud();
 	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var links=document.getElementById("SSCSELECTORSPANS");
+	var selectors=document.getElementById("SSCSELECTORSPANS");
 	var scores=scoreSelectors(document.body);
 	var all=[]; for (var sel in scores) {
 	    if (scores.hasOwnProperty(sel)) all.push(sel);}
@@ -388,15 +367,15 @@ SSC.updateCloud=(function(){
 	    else return sel1.length-sel2.length;});
 	var cloudmap={};
 	SSC.cloudmap=cloudmap;
-	links.innerHTML="";
+	selectors.innerHTML="";
 	var i=0, lim=all.length;
 	while (i<lim) {
 	    var sel=all[i++], score=scores[sel];
 	    var span=make("span","selector",sel);
 	    span.title=score+" matching elements";
 	    span.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
-	    links.appendChild(span); cloudmap[sel]=span;
-	    links.appendChild(text(" "));}
+	    selectors.appendChild(span); cloudmap[sel]=span;
+	    selectors.appendChild(text(" "));}
 	SSC.cloudmap=cloudmap;
 	SSC.selectors=all;
 	sizeCloud();}
@@ -404,18 +383,18 @@ SSC.updateCloud=(function(){
     function sizeCloud(){
 	if (!(SSC.cloud)) updateCloud();
 	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var spans=document.getElementById("SSCSELECTORSPANS");
+	var selectors=document.getElementById("SSCSELECTORSPANS");
 	cloud.style.setProperty('opacity',0.0,'!important');
 	cloud.style.setProperty('display','block','!important');
 	cloud.style.fontSize='100%';
-	var ih=links.offsetHeight, oh=cloud.offsetHeight;
+	var ih=selectors.offsetHeight, oh=cloud.offsetHeight;
 	var fs=100, delta=5;
 	if (ih>oh) while (ih>oh) {
-	    fs=fs-delta; spans.style.fontSize=(fs)+"%";
-	    ih=spans.offsetHeight; oh=cloud.offsetHeight;}
+	    fs=fs-delta; selectors.style.fontSize=(fs)+"%";
+	    ih=selectors.offsetHeight; oh=cloud.offsetHeight;}
 	else {
 	    while (oh>ih) {
-		fs=fs+delta; links.style.fontSize=(fs)+"%";
+		fs=fs+delta; selectors.style.fontSize=(fs)+"%";
 		ih=spans.offsetHeight; oh=cloud.offsetHeight;}
 	    fs=fs-delta; spans.style.fontSize=(fs)+"%";}
 	cloud.style.removeProperty('opacity',0.0,'!important');
@@ -457,15 +436,15 @@ SSC.Message=(function(){
 	    // Divide the delay between wait and finale
 	    opts={delay: opts/2,finale: opts/2};}
 	else if (!(opts)) opts={};
-	else if ((opts.delay===false)&&(!(opts.finale))) opts.keep=true;
-	else if ((opts.delay)&&(!(opts.hasOwnProperty('finale')))) {
+	else if ((opts.timeout===false)&&(!(opts.finale))) opts.keep=true;
+	else if ((opts.timeout)&&(!(opts.hasOwnProperty('finale')))) {
 	    // If we just have a delay, and no finale, divide the delay
-	    var d=opts.delay;
+	    var d=opts.timeout;
 	    // Assume it's seconds, convert to msecs
 	    if (d<100) d=d*1000;
-	    opts.delay=d/2; opts.finale=d/2;}
+	    opts.timeout=d/2; opts.finale=d/2;}
 	else {
-	    if ((opts.delay)&&(opts.delay<100)) opts.delay=opts.delay*1000;
+	    if ((opts.timeout)&&(opts.timeout<100)) opts.timeout=opts.timeout*1000;
 	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
 	var box=make("div","sscdialog sscapp"); {
 	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
@@ -518,7 +497,9 @@ SSC.Message=(function(){
 	//  !important opacity definitions which get in the way of the
 	//  transitions.
 	if ((!(opts.modal))&&(!(opts.keep))) {
-	    var delay=opts.delay||Message.opts.delay||3000;
+	    var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
+		       (Message.opts.hasOwnProperty('timeout'))?(Message.opts.timeout):
+		       3000);
 	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
 			(Message.opts.hasOwnProperty('finale'))?(Message.opts.finale):			
 			3000);
@@ -610,14 +591,12 @@ SSC.UI=(function(){
     addListener(window,"load",selectHashOnLoad);
     addListener(window,"hashchange",selectHash);
 
-    var toolbar_text=
-	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>A</button>\n"+
-	"<button title='Toggle reduced view' class='left' onclick='SSC.setReduced();'>R</button>\n"+
-	"<button title='Toggle compact view' class='left' onclick='SSC.setCompact();'>C</button>\n";
+    SSC.toolbar_text=
+	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>Cloud</button>\n";
 
     function setupToolbar(){
 	var input=make("input",false,"","SSCINPUT");
-	var toolbar=make("div","sscapp ssctoolbar",toolbar_text,"SSCTOOLBAR");
+	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
 	input.type="TEXT"; input.name="SELECTOR";
 	var selector=SSC.selector();
 	var selected=SSC.selected();
@@ -633,10 +612,17 @@ SSC.UI=(function(){
 	addClass(document.body,"sscSHOWCLOUD");}
     function hideCloud(){
 	dropClass(document.body,"sscSHOWCLOUD");}
+    function toggleCloud(){
+	if (!(SSC.cloud)) SSC.updateCloud();
+	if (hasClass(document.body,"sscSHOWCLOUD"))
+	    dropClass(document.body,"sscSHOWCLOUD");
+	else addClass(document.body,"sscSHOWCLOUD");}
+
     function hideCloudDelayed(){
 	setTimeout(hideCloud,500);}
     SSC.showCloud=showCloud;
     SSC.hideCloud=hideCloud;
+    SSC.toggleCloud=toggleCloud;
 
     function selector_keydown(evt){
  	evt=evt||event;
@@ -653,15 +639,13 @@ SSC.UI=(function(){
     /* Keyboard interaction */
 
     var TAB=0x09;
-    var AKEY=0x41;
     var CKEY=0x43;
-    var RKEY=0x52;
     var RETURN=0x0d;
     var PLUS=187;
     var MINUS=189;
     var ESCAPE=0x1b;
 
-    var usekeys=[TAB,RKEY,CKEY,AKEY,ESCAPE,RETURN];
+    var usekeys=[TAB,CKEY,ESCAPE,RETURN];
 
     function ssckeydown(evt){
 	evt=evt||event;
@@ -681,8 +665,6 @@ SSC.UI=(function(){
 	    dropClass(document.body,"sscTOOLBAR");
 	    if (!(SSC.isenabled())) SSC.enable();
 	    else {
-		if (SSC.isReduced()) {SSC.setReduced(false); changed=true;}
-		if (SSC.isCompact()) {SSC.setCompact(false); changed=true;}
 		if (SSC.focus()) {SSC.focus(false); changed=true;}
 		if (!(changed)) {
 		    SSC.select(false);
@@ -702,19 +684,11 @@ SSC.UI=(function(){
 		SSC.focus(max);
 	    else SSC.focus(0);
 	    cancel(evt);}
-	else if (key===AKEY) {
+	else if (key===CKEY) {
 	    if (evt.shiftKey) showCloud();
 	    else if (hasClass(document.body,"sscSHOWCLOUD"))
 		hideCloud();
 	    else showCloud();}
-	else if (key===CKEY) {
-	    if (evt.shiftKey)
-		SSC.setCompact(true);
-	    else SSC.setCompact();}
-	else if (key===RKEY) {
-	    if (evt.shiftKey)
-		SSC.setReduced(true);
-	    else SSC.setReduced();}
 	else if (key===RETURN) {
 	    addClass(document.body,"sscTOOLBAR");
 	    var input=document.getElementById("SSCINPUT");
