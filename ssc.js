@@ -245,10 +245,17 @@ var SSC=(function(){
 	if (input) {
 	    input.value=spec;
 	    input.title="matches "+nodes.length+" elements";}
-	if ((!(SSC.quiet))&&(SSC.Message))
-	    SSC.Message("The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> elements"+
-			"<p class='sschelp'><kbd>Tab</kbd> to scan through them, <kbd>Shift-Tab</kbd> to go back.</p>",
-			{spec: spec, count: nodes.length});
+	if ((!(SSC.quiet))&&(SSC.Message)) {
+	    var msg=SSC.Message(
+		"The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> elements\n"+
+		    "<p class='sschelp'><kbd>Tab</kbd> to scan through them, <kbd>Shift-Tab</kbd> to go back.</p>\n"+
+		    "<div class='sscrules'></div>",
+		{spec: spec, count: nodes.length});
+	    var rules_div=msg.querySelector(".sscrules");
+	    var rules=SSC.getStyleInfo(spec);
+	    var j=0, n_rules=rules.length; while (j<n_rules) {
+		var rule=make("div","cssrule",rules[j++]);
+		rules_div.appendChild(rule);}}
 	selector=spec;
 	selected=nodes;
     	window.location.hash="#"+spec;}
@@ -308,25 +315,34 @@ SSC.updateCloud=(function(){
 	scandom(root,scores);
 	return scores;}
 
-    function scandom(node,scores){
-	var tag=node.tagName; var selectors=[tag];
-	var classname=node.className;
-	// Ignore yourself
-	if (classname.search(/\bsscapp\b/)>=0) return;
-	// Generate applicable selectors
-	var classes=((classname)?(classname.split(/\s+/)):[]);
+    function possibleSelectors(tag,classes){
+	var selectors=[];
+	if (!(tag)) tag=false;
+	if (tag!==false) selectors.push(tag);
 	classes.sort();
 	var i=0, lim=classes.length;
 	while (i<lim) {
 	    selectors.push("."+classes[i]);
-	    selectors.push(tag+"."+classes[i]);
+	    if (tag!==false) selectors.push(tag+"."+classes[i]);
 	    var j=i+2;
 	    while (j<lim) {
 		var compound=classes.slice(i,j).join(".");
 		selectors.push("."+compound);
-		selectors.push(tag+"."+compound);
+		if (tag!==false)
+		    selectors.push(tag+"."+compound);
 		j++;}
 	    i++;}
+	return selectors;}
+    SSC.possibleSelectors=possibleSelectors;
+
+    function scandom(node,scores){
+	var tag=node.tagName; var classname=node.className;
+	// Ignore yourself
+	if (classname.search(/\bsscapp\b/)>=0) return;
+	// Split up classnames
+	var classes=((classname)?(classname.split(/\s+/)):[]);
+	// Generate applicable selectors
+	var selectors=possibleSelectors(tag,classes);
 	// Increase the scores for applicable selectors
 	var k=0, klim=selectors.length;
 	while (k<klim) {
@@ -536,6 +552,37 @@ SSC.Message=(function(){
     Message.opts={};
 
     return Message;})();
+
+SSC.getStyleInfo=(function(){
+    function getRules(sel,results){
+	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
+	var pat=new RegExp(sel.replace(".","\\."),"gi");
+	if (!(results)) results=[];
+	while (i<n_sheets) {
+	    var sheet=sheets[i++];
+	    if (!(sheet.rules)) continue;
+	    var rules=sheet.rules; var j=0, n_rules=rules.length;
+	    while (j<n_rules) {
+		var rule=rules[j++];
+		if (rule.selectorText.search(pat)>=0)
+		    results.push(rule.cssText);}}
+	return results;}
+
+    function getStyleInfo(selector){
+	if (selector.indexOf('/')>=0)
+	    selector=selector.slice(0,selector.indexOf('/'));
+	var parsed=selector.split(".");
+	var selectors=SSC.possibleSelectors(
+	    ((parsed[0]!=="")&&(parsed[0])),parsed.slice(1));
+	selectors.sort(function(x,y){return x.length-y.length;});
+	var results=[];
+	var i=0, lim=selectors.length;
+	while (i<lim) getRules(selectors[i++],results);
+	return results;}
+
+    getStyleInfo.getRules=getRules;
+
+    return getStyleInfo;})();
 
 SSC.UI=(function(){
     var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
