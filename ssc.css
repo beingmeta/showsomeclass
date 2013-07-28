@@ -87,11 +87,6 @@ body.cxSSC.cxSSCOMPACT div.sscapp h6,
 body.cxSSC.cxSSCOMPACT div.sscapp h7 {
     display: block;}
 
-#SSCINPUT, #SSCREPLACE {
-    position: fixed; top: 0px;
-    text-align: left; font-size: 20px;
-    background-color: rgb(0,0,0,0.5); color: black;
-    opacity: 0.5;}
 #SSCINPUT {left: 0px;}
 #SSCREPLACE {right: 0px;}
 body.cxSSC #SSCINPUT.sscapp { opacity: 0.3 !important;}
@@ -153,4 +148,24 @@ div#SSCSELECTORCLOUD div.links a:visited {color: white;}
 div#SSCSELECTORCLOUD div.links a:hover {
     text-decoration: underline;}
 div#SSCSELECTORCLOUD div.button.close {float: right; color: red;}
+
+/* The toolbar */
+
+div.ssctoolbar {}
+div#SSCTOOLBAR {
+    position: fixed;
+    top: -2em; left: 0px; right: 0px; width: 100%;
+    background-color: rgba(0,0,0,0.8);
+    font-size: 20px; height: 2em;
+    border-bottom: solid purple 2px;
+    text-align: center;
+    transition-property: top; transition-duration: 1s;}
+div#SSCTOOLBAR { opacity: 0.85 !important; }
+
+div#SSCTOOLBAR input[TYPE="TEXT"] {font-size: 100%;}
+div#SSCTOOLBAR button { font-size: 120%;}
+div#SSCTOOLBAR button.left { float: left;}
+div#SSCTOOLBAR button.right { float: right;}
+body.sscTOOLBAR div#SSCTOOLBAR {
+    top: 0px;}
 

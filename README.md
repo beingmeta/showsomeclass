@@ -34,6 +34,8 @@ through keyboard commands:
 * `Escape` gets you out of whatever mode you're in;
 * `C` toggles the *collapsed* view;
 * `R` toggles the *reduced* view;
+* `A` opens up a *cloud view* of all the classes and selectors used in
+  the document.
 * `Enter` opens up the SSC toolbar with an input field for editing or
   entering a new selector.
 

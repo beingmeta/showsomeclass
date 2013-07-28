@@ -1,4 +1,5 @@
 var SSC=(function(){
+
     /* Utilities for manipulating classes */
     var whitespace_pat=/(\s)+/;
     var trimspace_pat=/^(\s)+|(\s)+$/;
@@ -39,6 +40,49 @@ var SSC=(function(){
 	else if (current===classname) return true;
 	else if (current.search(pat)>=0) return true;
 	else return false;}
+
+    /* Making DOM nodes */
+    
+    function make(tag,classname,content,id){
+	var elt=document.createElement(tag);
+	if (classname) elt.className=classname;
+	if (!(content)) {}
+	else if (typeof content === "string")
+	    elt.innerHTML=content;
+	else if (content.nodeType)
+	    elt.appendChild(content);
+	else elt.innerHTML=fillin(content);
+	if (id) elt.id=id;
+	return elt;}
+    function text(input){
+	if (typeof input === "string")
+	    return document.createTextNode(input);
+	else return document.createTextNode(fillin(input));}
+
+    function fillin(data,text){
+	if (typeof data === "string") {
+	    var tmp=data; data=text; text=tmp;}
+	if ((!(text))&&(data)&&(data.template)) text=data.template;
+	// Maybe a warning?
+	if (typeof text !== "string") return;
+	if (data) {
+	    for (var prop in data) {
+		if (data.hasOwnProperty(prop)) {
+		    if (prop==="template") continue;
+		    var value=data[prop];
+		    var pat=new RegExp("{{"+prop+"}}","g");
+		    text=text.replace(pat,value.toString());}}
+	    return text;}
+	else return text;}
+
+    /* Adding listeners */
+
+    function addListener(node,evtype,handler){
+	if (node.addEventListener)
+	    node.addEventListener(evtype,handler,false);
+	else if (node.attachEvent)
+	    node.attachEvent("on"+evtype,handler);
+	else alert("Please switch to a modern browser");}
 
     /* Copying an array (or array-like object, such as a NodeList) into a new array. */
 
@@ -244,6 +288,7 @@ var SSC=(function(){
 	setFocus: setFocus, focus: focusfn, getFocus: function(){return focus;},
 	$: $, addClass: addClass, dropClass: dropClass,
 	hasClass: hasClass, hasText: hasText, simplespec: simplespec, getID: getID,
+	fillin: fillin, text: text, make: make, addListener: addListener,
 	selector: function getselector(){ return selector;},
 	selected: function getselected(){ return selected;},
 	focusIndex: function focusIndex(){ return focus_index;},
@@ -253,6 +298,9 @@ var SSC=(function(){
 	Text: {},box: false,editnode: false};})();
 
 SSC.updateCloud=(function(){
+
+    var make=SSC.make, text=SSC.text, fillin=SSC.fillin;
+    var addListener=SSC.addListener;
 
     function scoreSelectors(root){
 	var scores={};
@@ -293,21 +341,28 @@ SSC.updateCloud=(function(){
 		if (child.nodeType===1) scandom(child,scores);}}}
 
     function initCloud(){
-	var cloud=document.createElement("div");
-	var links=document.createElement("div");
-	cloud.className="sscapp sscloud"; cloud.id="SSCSELECTORCLOUD";
-	links.className="links"; links.id="SSCSELECTORLINKS";
-	var button=document.createElement("div");
-	button.className="button close";
-	button.appendChild(document.createTextNode("Close"));
+	var cloud=make("div","sscapp sscloud","","SSCSELECTORCLOUD");
+	var links=make("div","links","","SSCSELECTORSPANS");
+	var button=make("div","button close","Close");
 	cloud.appendChild(button); cloud.appendChild(links);
+	addListener(cloud,"click",selector_clicked);
 	document.body.appendChild(cloud);
 	SSC.cloud=cloud;}
+
+    function selector_clicked(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	while (target.nodeType!==1) target=target.parentNode;
+	if (target.className==="selector") {
+	    if (evt.shiftKey) {
+		var cur=SSC.getSelector();
+		select(cur+","+target.innerHTML);}
+	    else select(target.innerHTML);}}
 
     function updateCloud(){
 	if (!(SSC.cloud)) initCloud();
 	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var links=document.getElementById("SSCSELECTORLINKS");
+	var links=document.getElementById("SSCSELECTORSPANS");
 	var scores=scoreSelectors(document.body);
 	var all=[]; for (var sel in scores) {
 	    if (scores.hasOwnProperty(sel)) all.push(sel);}
@@ -321,12 +376,11 @@ SSC.updateCloud=(function(){
 	var i=0, lim=all.length;
 	while (i<lim) {
 	    var sel=all[i++], score=scores[sel];
-	    var link=document.createElement("A");
-	    link.href="#"+sel; link.title=score+" matching elements";
-	    link.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
-	    link.appendChild(document.createTextNode(sel));
-	    links.appendChild(link); cloudmap[sel]=link;
-	    links.appendChild(document.createTextNode(" "));}
+	    var span=make("span","selector",sel);
+	    span.title=score+" matching elements";
+	    span.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
+	    links.appendChild(span); cloudmap[sel]=span;
+	    links.appendChild(text(" "));}
 	SSC.cloudmap=cloudmap;
 	SSC.selectors=all;
 	sizeCloud();}
@@ -334,20 +388,20 @@ SSC.updateCloud=(function(){
     function sizeCloud(){
 	if (!(SSC.cloud)) updateCloud();
 	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var links=document.getElementById("SSCSELECTORLINKS");
+	var spans=document.getElementById("SSCSELECTORSPANS");
 	cloud.style.setProperty('opacity',0.0,'!important');
 	cloud.style.setProperty('display','block','!important');
 	cloud.style.fontSize='100%';
 	var ih=links.offsetHeight, oh=cloud.offsetHeight;
 	var fs=100, delta=5;
 	if (ih>oh) while (ih>oh) {
-	    fs=fs-delta; links.style.fontSize=(fs)+"%";
-	    ih=links.offsetHeight; oh=cloud.offsetHeight;}
+	    fs=fs-delta; spans.style.fontSize=(fs)+"%";
+	    ih=spans.offsetHeight; oh=cloud.offsetHeight;}
 	else {
 	    while (oh>ih) {
 		fs=fs+delta; links.style.fontSize=(fs)+"%";
-		ih=links.offsetHeight; oh=cloud.offsetHeight;}
-	    fs=fs-delta; links.style.fontSize=(fs)+"%";}
+		ih=spans.offsetHeight; oh=cloud.offsetHeight;}
+	    fs=fs-delta; spans.style.fontSize=(fs)+"%";}
 	cloud.style.removeProperty('opacity',0.0,'!important');
 	cloud.style.removeProperty('display','block','!important');}
     
@@ -355,34 +409,14 @@ SSC.updateCloud=(function(){
 
 SSC.Message=(function(){
 
+    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
+    var addListener=SSC.addListener;
+
     var msg_delay=false;
     var msg_delta=0.025;
     var msg_fader=false;
     var msg_fade_interval=100;
     var msg_opacity=1.0;
-
-    function addListener(node,evtype,handler){
-	if (node.addEventListener)
-	    node.addEventListener(evtype,handler,false);
-	else if (node.attachEvent)
-	    node.attachEvent("on"+evtype,handler);
-	else alert("Please switch to a modern browser");}
-
-    function fillin(data,text){
-	if (typeof data === "string") {
-	    var tmp=data; data=text; text=tmp;}
-	if ((!(text))&&(data)&&(data.format)) text=data.format;
-	// Maybe a warning?
-	if (typeof text !== "string") return;
-	if (data) {
-	    for (var prop in data) {
-		if (data.hasOwnProperty(prop)) {
-		    if (prop==="format") continue;
-		    var value=data[prop];
-		    var pat=new RegExp("{{"+prop+"}}","g");
-		    text=text.replace(pat,value.toString());}}
-	    return text;}
-	else return text;}
 
     function close(){
 	var msg=document.getElementById("SSCMESSAGE");
@@ -417,24 +451,17 @@ SSC.Message=(function(){
 	else {
 	    if ((opts.delay)&&(opts.delay<100)) opts.delay=opts.delay*1000;
 	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
-	var box=document.createElement("div"); {
-	    box.className="sscdialog sscapp";
+	var box=make("div","sscdialog sscapp"); {
 	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
-		var close_button=document.createElement("DIV"); {
-		    close_button.className="close button";
-		    close_button.innerHTML="Close";
+		var close_button=make("DIV","close button","Close"); {
 		    addListener(close_button,"click",close);
 		    box.appendChild(close_button);}
-		var keep_button=document.createElement("DIV"); {
-		    keep_button.className="keep button";
-		    keep_button.innerHTML="Keep";
+		var keep_button=make("DIV","keep button","Keep"); {
 		    addListener(keep_button,"click",keep);
 		    box.appendChild(keep_button);}}}
 	if (opts.title) {
 	    var title_text=opts.title;
-	    var title=document.createElement("DIV"); title.className="title";
-	    title.appendChild(document.createTextNode(
-		((title_text)?(fillin(title_text)):(title_text))));
+	    var title=make("div","title",title_text);
 	    box.appendChild(title);}
 	if (typeof text === "string") {
 	    var frag=document.createElement("div"); frag.innerHTML=text;
@@ -470,6 +497,10 @@ SSC.Message=(function(){
 	msg_opacity=opts.init_opacity||Message.opts.init_opacity||0.9;
 	box.style.setProperty('opacity',msg_opacity,'!important');
 	if (opts.keep) box.className=box.className+" keep";
+	// We do this "old school" with an interval, rather than using
+	//  CSS transitions, because the selective display CSS uses
+	//  !important opacity definitions which get in the way of the
+	//  transitions.
 	if ((!(opts.modal))&&(!(opts.keep))) {
 	    var delay=opts.delay||Message.opts.delay||3000;
 	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
@@ -501,24 +532,16 @@ SSC.Message=(function(){
 	    msg_opacity=msg_opacity-delta;
 	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
 
-    Message.close=close; Message.keep=keep; Message.fillin=fillin;
+    Message.close=close; Message.keep=keep;
     Message.opts={};
 
     return Message;})();
 
 SSC.UI=(function(){
-    var $=SSC.$;
+    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
+    var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
+    var addListener=SSC.addListener;
 
-    var hasClass=SSC.hasClass;
-    var addClass=SSC.addClass;
-    var dropClass=SSC.dropClass;
-
-    function addListener(node,evtype,handler){
-	if (node.addEventListener)
-	    node.addEventListener(evtype,handler,false);
-	else if (node.attachEvent)
-	    node.attachEvent("on"+evtype,handler);
-	else alert("Please switch to a modern browser");}
     function cancel(evt){
 	if (evt.preventDefault) evt.preventDefault();
 	else evt.returnValue=false;
@@ -540,20 +563,23 @@ SSC.UI=(function(){
     addListener(window,"load",selectHashOnLoad);
     addListener(window,"hashchange",selectHash);
 
-    function setupSelectorDisplay(){
-	var input=document.createElement("input");
+    var toolbar_text=
+	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>A</button>\n"+
+	"<button title='Toggle reduced view' class='left' onclick='SSC.setReduced();'>R</button>\n"+
+	"<button title='Toggle compact view' class='left' onclick='SSC.setCompact();'>C</button>\n";
+
+    function setupToolbar(){
+	var input=make("input",false,"","SSCINPUT");
+	var toolbar=make("div","sscapp ssctoolbar",toolbar_text,"SSCTOOLBAR");
 	input.type="TEXT"; input.name="SELECTOR";
 	var selector=SSC.selector();
 	var selected=SSC.selected();
 	if (selector) input.value=selector;
 	if (selected) input.title="matches "+selected.length+" elements";
-	input.className="sscapp";
-	input.id="SSCINPUT";
+	toolbar.appendChild(input);
 	addListener(input,"keydown",selector_keydown);
-	addListener(input,"focus",showCloud);
-	addListener(input,"blur",hideCloudDelayed);
-	document.body.appendChild(input);}
-    addListener(window,"load",setupSelectorDisplay);
+	document.body.appendChild(toolbar);}
+    addListener(window,"load",setupToolbar);
 
     function showCloud(){
 	if (!(SSC.cloud)) SSC.updateCloud();
@@ -562,6 +588,8 @@ SSC.UI=(function(){
 	dropClass(document.body,"sscSHOWCLOUD");}
     function hideCloudDelayed(){
 	setTimeout(hideCloud,500);}
+    SSC.showCloud=showCloud;
+    SSC.hideCloud=hideCloud;
 
     function selector_keydown(evt){
  	evt=evt||event;
@@ -578,12 +606,13 @@ SSC.UI=(function(){
     /* Keyboard interaction */
 
     var TAB=0x09;
+    var AKEY=0x41;
     var CKEY=0x43;
     var RKEY=0x52;
     var RETURN=0x0d;
     var ESCAPE=0x1b;
 
-    var usekeys=[TAB,RKEY,CKEY,ESCAPE,RETURN];
+    var usekeys=[TAB,RKEY,CKEY,AKEY,ESCAPE,RETURN];
 
     function ssckeydown(evt){
 	evt=evt||event;
@@ -600,6 +629,7 @@ SSC.UI=(function(){
 	    // Close any windows which are up
 	    SSC.Message.close();
 	    dropClass(document.body,"sscSHOWCLOUD");
+	    dropClass(document.body,"sscTOOLBAR");
 	    if (!(SSC.isenabled())) SSC.enable();
 	    else {
 		if (SSC.isReduced()) {SSC.setReduced(false); changed=true;}
@@ -623,6 +653,11 @@ SSC.UI=(function(){
 		SSC.focus(max);
 	    else SSC.focus(0);
 	    cancel(evt);}
+	else if (key===AKEY) {
+	    if (evt.shiftKey) showCloud();
+	    else if (hasClass(document.body,"sscSHOWCLOUD"))
+		hideCloud();
+	    else showCloud();}
 	else if (key===CKEY) {
 	    if (evt.shiftKey)
 		SSC.setCompact(true);
@@ -632,6 +667,7 @@ SSC.UI=(function(){
 		SSC.setReduced(true);
 	    else SSC.setReduced();}
 	else if (key===RETURN) {
+	    addClass(document.body,"sscTOOLBAR");
 	    var input=document.getElementById("SSCINPUT");
 	    input.focus();}
 	else return;
@@ -649,6 +685,11 @@ SSC.UI=(function(){
 	    else if ((target.tagName==="A")&&(target.href)) return;
 	    else if (scan===document.body) break;
 	    else scan=scan.parentNode;}
+	if ((hasClass(document.body,"sscTOOLBAR"))||
+	    (hasClass(document.body,"sscSHOWCLOUD"))) {
+	    dropClass(document.body,"sscTOOLBAR");
+	    dropClass(document.body,"sscSHOWCLOUD");
+	    return;}
 	if (!(scan)) return; else scan=target;
 	while (scan.nodeType!==1) scan=scan.parentNode;
 	if (!(scan)) return;
