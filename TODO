@@ -1,6 +1,7 @@
-* Gather selector map over DOM
-* Selector cloud
+x Gather selector map over DOM
+x Selector cloud
 * Selector cloud with completion
 * Show style information in popup
-* More options for dialogs (delay, duration, keep/close buttons, etc)
+x More options for dialogs (delay, duration, keep/close buttons, etc)
 * Rename selector
+
