@@ -5,9 +5,9 @@ var SSC=(function(){
     var classpats={};
     /* Returns a Regex for matching a delimited class name */
     function classPat(name){
-        var rx=new RegExp("\\b"+name+"\\b","g");
-        classpats[name]=rx;
-        return rx;}
+	var rx=new RegExp("\\b"+name+"\\b","g");
+	classpats[name]=rx;
+	return rx;}
     function addClass(elt,classname){
 	if (Array.isArray(elt)) {
 	    var i=0, lim=elt.length;
@@ -158,6 +158,7 @@ var SSC=(function(){
 	dropClass(wrappers,"sscWRAPPER");
 	dropClass(selected,"sscSELECTED");
 	selector=false;
+	if (SSC.display) SSC.display.innerHTML="";
 	selected=[];
 	if ((!(real_title))&&(document.title))
 	    real_title=document.title||"";
@@ -188,6 +189,8 @@ var SSC=(function(){
 	    return;}
 	while (i<lim) show(nodes[i++]);
 	document.title="("+spec+") "+real_title;
+	var input=document.getElementById("SSCINPUT");
+	input.value=spec;
 	selector=spec;
 	selected=nodes;}
 
@@ -217,35 +220,6 @@ var SSC=(function(){
 	if (!(node)) setFocus(false,false);
 	else setFocus(node,index);
 	return node;}
-    
-    /* Adjusting nodes to match a new selector.
-
-       Note that we don't do attributes yet nor do we have the ability
-       to just add or delete particular classes. */
-
-    function adjustNode(node,spec){
-	var parsed=(spec.trim()).split(/([.+-])/);
-	var tag=parsed[0], classname=parsed.slice(1).join(" ").trim();
-	if ((tag)&&(node.tagName!==tag)) {
-	    var fresh=document.createElement(tag);
-	    if (!(classname)) fresh.className=node.className;
-	    else fresh.className=classname;
-	    if (node.id) fresh.id=node.id;
-	    if (node.title) fresh.title=node.title;
-	    if ((node.style)&&(node.style.cssText))
-		fresh.setAttribute("style",node.style.cssText);
-	    var attribs=node.attributes;
-	    var i=0, n_attribs=attribs.length;
-	    while (i<n_attribs) {
-		var attrib=attribs[i++];
-		if ((['id','class','title','style'].indexOf(attrib.name.toLowerCase()))<0)
-		    fresh.setAttribute(attrib.name,attrib.value);}
-	    var children=copy(node.childNodes);
-	    var j=0, n_children=children.length;
-	    while (j<n_children) fresh.appendChild(children[j++]);
-	    node.parentNode.replaceChild(fresh,node);}
-	if (classname) node.className=classname;
-	else node.className=null;}
 
     /* Finally, return the object */
 
@@ -253,8 +227,8 @@ var SSC=(function(){
 	isenabled: isenabled,enable: enable,disable: disable,toggle: toggle,
 	select: select, clear: clear, refresh: function refresh(){select(selector,true);},
 	setFocus: setFocus, focus: focusfn, getFocus: function(){return focus;},
-	$: $, addClass: addClass, dropClass: dropClass,adjustNode: adjustNode,
-	hasClass: hasClass, hasText: hasText, simplespec: simplespec,
+	$: $, addClass: addClass, dropClass: dropClass,
+	hasClass: hasClass, hasText: hasText, simplespec: simplespec, getID: getID,
 	selector: function getselector(){ return selector;},
 	selected: function getselected(){ return selected;},
 	focusIndex: function focusIndex(){ return focus_index;},
@@ -266,6 +240,7 @@ var SSC=(function(){
 	
 SSC.UI=(function(){
     var $=SSC.$;
+
     function addListener(node,evtype,handler){
 	if (node.addEventListener)
 	    node.addEventListener(evtype,handler,false);
@@ -273,9 +248,9 @@ SSC.UI=(function(){
 	    node.attachEvent("on"+evtype,handler);
 	else alert("Please switch to a modern browser");}
     function cancel(evt){
-        if (evt.preventDefault) evt.preventDefault();
-        else evt.returnValue=false;
-        evt.cancelBubble=true;}
+	if (evt.preventDefault) evt.preventDefault();
+	else evt.returnValue=false;
+	evt.cancelBubble=true;}
 
     /* Using the URL hash as a selector */
 
@@ -293,25 +268,33 @@ SSC.UI=(function(){
     addListener(window,"load",selectHashOnLoad);
     addListener(window,"hashchange",selectHash);
 
-    /* The `box` is the interaction window. */
+    function setupSelectorDisplay(){
+	var input=document.createElement("input");
+	input.type="TEXT"; input.name="SELECTOR";
+	input.value=SSC.selector();
+	input.className="sscapp";
+	input.id="SSCINPUT";
+	addListener(input,"keydown",selector_keydown);
+	document.body.appendChild(div);}
+    addListener(window,"load",setupSelectorDisplay);
 
-    function setBox(box){
-	if (SSC.box) closebox();
-	if (box) document.body.appendChild(box);
-	SSC.box=box;}
-    
-    function closebox(){
-	if (SSC.box) {
-	    if (SSC.box.parentNode)
-		SSC.box.parentNode.removeChild(SSC.box);
-	    SSC.box=false;}}
+    function selector_keydown(evt){
+ 	evt=evt||event;
+	var kc=evt.keyCode;
+	if (kc===RETURN) {
+	    var target=evt.target||evt.srcElement;
+	    var spec=target.value;
+	    var nodes=document.querySelectorAll(spec);
+	    if (nodes.length===0) {
+		alert("No elements match "+spec);}
+	    else {
+		SSC.select(spec);}}}
 
     /* Keyboard interaction */
 
     var TAB=0x09;
     var CKEY=0x43;
     var RKEY=0x52;
-    var SKEY=0x53;
     var RETURN=0x0d;
     var ESCAPE=0x1b;
 
@@ -364,137 +347,34 @@ SSC.UI=(function(){
 	    if (evt.shiftKey)
 		SSC.setReduced(true);
 	    else SSC.setReduced();}
-	else if (key===SKEY) {
-	    var selectbox=document.createElement("DIV");
-	    selectbox.className="sscselect sscapp";
-	    selectbox.innerHTML=SSC.Text.selectbox.replace(/{{spec}}/g,SSC.selector()||"");
-	    selectbox.id="SSCSELECT";
-	    setBox(selectbox);
-	    var input=document.getElementById("SSCSELECTINPUT");
-	    input.focus();}
 	else if (key===RETURN) {
-	    var seltext=SSC.selector();
-	    if (!(seltext)) alert("There is no active selector!");
-	    else {
-		var editbox=document.createElement("DIV");
-		editbox.className="sscsedit sscapp";
-		editbox.innerHTML=(SSC.Text.editbox.replace(/{{spec}}/g,seltext)).
-		    replace(/{{simplespec}}/g,SSC.simplespec(seltext)).
-		    replace(/{{count}}/g,""+(SSC.selected().length));
-		editbox.id="SSCEDIT";
-		if ((SSC.preferred)&&(SSC.preferred.length)) {
-		    var select=document.createElement("SELECT");
-		    var preferred=SSC.preferred;
-		    select.id="SSCEDITSELECT"; select.className="centered";
-		    addListener(select,"change",editselect);
-		    var headopt=document.createElement("OPTION"); headopt.value="";
-		    headopt.appendChild(document.createTextNode("or select:"));
-		    select.appendChild(headopt);
-		    var i=0, lim=preferred.length; while (i<lim) {
-			var option=document.createElement("OPTION");
-			option.value=preferred[i];
-			option.appendChild(document.createTextNode(preferred[i]));
-			select.appendChild(option);
-			i++;}
-		    editbox.appendChild(select);}
-		setBox(editbox);
-		var input=document.getElementById("SSCEDITINPUT");
-		input.focus();}}
+	    var input=document.getElementById("SSCINPUT");
+	    input.focus();}
 	else return;
 	cancel(evt);}
 
     // Should we put this inside an onload handler?
     addListener(window,"keydown",ssckeydown);
-    
-    /* The handler for keypresses in the select dialog */
 
-    function selectpress(evt){
-	evt=evt||event;
-	var ch=evt.charCode;
-	if (ch===RETURN) {
-	    var target=evt.target||evt.srcElement;
-	    if (!(target)) {cancel(evt); return;}
-	    if (target.value) {
-		var spec=target.value;
-		if (spec.search(/\S/)<0) {
-		    /* Empty string, just close */
-		    closebox();}
-		else {
-		    var found=[], error=false;
-		    try {found=$(spec);}
-		    catch (ex) {error=true;}
-		    if (error) {
-			var errmsg=document.getElementById("SSCSELECTMESSAGE");
-			errmsg.className="error";
-			errmsg.innerHTML="There was an error processing your selector";}
-		    else if (found.length===0) {
-			var failmsg=document.getElementById("SSCSELECTMESSAGE");
-			failmsg.className="fail";
-			failmsg.innerHTML="No content matched your selector";}
-		    else {
-			SSC.select(spec);
-			window.location.hash="#"+spec;
-			closebox();}}}}}
-
-    /* The handler for keypresses in the edit dialog */
-
-    function editpress(evt){
-	evt=evt||event;
-	var ch=evt.charCode;
-	if (ch===RETURN) {
-	    var selected=SSC.selected(), i=0, n=selected.length;
-	    var target=evt.target||evt.srcElement;
-	    if (!(target)) {cancel(evt); return;}
-	    if (target.value) {
-		var spec=target.value;
-		if (spec.search(/\S/)<0) {
-		    if (window.confirm("Really delete all "+selected.length+" nodes?")) {
-			while (i<n) {
-			    if (selected[i].parentNode) 
-				selected[i].parentNode.removeChild(selected[i]);
-			    i++;}
-			closebox();
-			alert("Deleted all "+selected.length+" nodes");}
-		    else cancel(evt);}
-		else {
-		    var adjustNode=SSC.adjustNode;
-		    while (i<n) adjustNode(selected[i++],spec);
-		    SSC.select(spec); location.hash="#"+spec;
-		    closebox();
-		    alert("All "+selected.length+" nodes have been updated.");}}}}
-    function editselect(evt){
+    function nodeclick(evt){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
-	var spec=target.value;
-	if (!(spec)) return;
-	var adjustNode=SSC.adjustNode;
-	var selected=SSC.selected(), i=0, n=selected.length;
-	while (i<n) adjustNode(selected[i++],spec);
-	SSC.select(spec); location.hash="#"+spec;
-	closebox();
-	alert("All "+selected.length+" nodes have been updated.");}
+	var scan=target;
+	while (scan) {
+	    if (hasClass(scan,"sscapp")) return;
+	    else if ((target.tagName==="A")&&(!(evt.shiftKey)))
+		return;
+	    else if (scan===document.body) break;
+	    else scan=scan.parentNode;}
+	if (!(scan)) return; else scan=target;
+	while (scan.nodeType!==1) scan=scan.parentNode;
+	if (!(scan)) return;
+	var spec=scan.tagName;
+	if (scan.className) {
+	    var norm=scan.className.replace(/\bssc\w+\b/g,"");
+	    var classes=norm.split(/\s+/);
+	    if (classes.length) spec=spec+"."+classes.join(".");}
+	SSC.select(spec);}
+    
+    addListener(window,"click",nodeclick);})();
 
-    return {
-	selectpress: selectpress,editpress: editpress,editselect: editselect,
-	setBox: setBox,closebox: closebox};})();
-
-SSC.Text.selectbox=
-    "<button class='close' onclick='SSC.UI.closebox();'>close</button>\n"+
-    "<input type='TEXT' NAME='SPEC' VALUE='{{spec}}' id='SSCSELECTINPUT' onkeypress='SSC.UI.selectpress(event);'/>\n"+
-    "<p id='SSCSELECTMESSAGE'></p>"+
-    "<p class='sschelp'>Enter a new CSS selector, e.g. <tt>P.class1</tt> to see matching elements.</p>\n"+
-    "<p class='sschelp'>Include a regular expression in slashes to match node content.</p>\n";
-
-SSC.Text.editbox=
-    "<button class='close' onclick='SSC.UI.closebox();'>close</button>\n"+
-    "<div class='selector'>{{spec}}</div>\n"+
-    "<p class='instruction'>Change all {{count}} occurrences to</p>"+
-    "<input type='TEXT' NAME='SPEC' VALUE='{{simplespec}}' id='SSCEDITINPUT' onkeypress='SSC.UI.editpress(event);'/>\n"+
-    "<p id='SSCEDITMESSAGE'></p>\n";
-
-SSC.Text.infobox=
-    "<div class='sschead'><span class='count'>{{count}}</span>{{spec}}</div>\n"+
-    "<div class='sscedit'>\n<span class='label'>Edit</span>\n"+
-    "<button class='sscdoit' onclick='SSC.doedit();'>OK</button>\n"+
-    "<input TYPE='TEXT' NAME='NEWSPEC' VALUE='{{spec}}'/>\n"+
-    "</div>\n";

@@ -95,10 +95,72 @@ body.cxSSC.cxSSCOMPACT div.sscapp h6,
 body.cxSSC.cxSSCOMPACT div.sscapp h7 {
     display: block;}
 
-#SSCINPUT {
+/* SSC info display rules */
+
+div.sscapp {
+    position: fixed;
+    top: 10%; bottom: 40%; left: 10%; right: 10%;
+    background-color: rgba(0,0,0,0.8); color: ivory;
+    padding: 0.5em;
+    font-family: sans,sans-serif;
+    font-size: 200%; border-radius: 1em; 
+    display: none;}
+div#SSCINFO.sscapp { display: block;}
+div#SSCSELECT.sscapp { display: block;}
+div#SSCEDIT.sscapp { display: block;}
+div#SSCEDITNODE.sscapp { display: block;}
+
+div.sscinfo div.sschead {
+    text-align: left;}
+div.sscinfo div.sschead span.count {
+    float: right; font-size: 90%;}
+
+div.sscapp button.close {
+    position: absolute; top: 1ex; right: 1ex;
+    font-weight: bold; color: red; font-size: 20px;
+    border-radius: 1ex;}
+
+div.sscapp span.selector {
+    float: left; font-size: 150%;}
+div.sscapp p.instruction {
+    text-align: center; font-style: italic;
+    margin-top: 1ex;}
+
+ div.selectors {
+    text-align: left; margin-left: 10%; margin-right: 10%; width: 80%:
+    font-size: 80%;}
+div.sscapp div.selectors span.label { font-weight: bold; color: white; }
+div.sscapp div.selectors a, div.sscapp div.selectors a:visited {
+    color: lightblue; padding-left: 1em; padding-right: 0.5ex;}
+div.sscapp div.selectors .selectorlinks { font-size: 60%;}
+
+div.sscapp div.selector {
+    text-align: center;}
+div.sscapp select.centered {
+    display: block; margin-top: 1ex;
+    margin-left: 10%; margin-right: 10%; width: 80%;}
+div.sscapp select.centered option {
+    font-size: 120%;}
+div.sscapp input[TYPE='TEXT'], div.sscapp textarea {
+    display: block; font-size: 80%;
+    margin-top: 1em;
+    margin-left: 10%; margin-right: 10%;
+    width: 80%; border-radius: 1ex;}
+div.sscapp div.buttons {
+    text-align: right;
+    margin-top: 1em;
+    margin-left: 10%; margin-right: 10%;
+    width: 80%;}
+div.sscapp div.buttons button { font-size: 100%; border-radius: 1ex;}
+div.sscapp textarea { min-height: 6em; height: auto; font-size: 50%;}
+div.sscapp p.sschelp {
+    font-size: 75%; margin-top: 0.5em;
+    margin-left: 15%; margin-right: 15%;
+    max-width: 40em;}
+div.sscapp p.sschelp tt {
+    font-weight: bold; font-size: 120%;}
+
+div#SSCDISPLAY {
     position: fixed; right: 0px; top: 0px; font-size: 20px;
     background-color: ivory; color: black;
     opacity: 0.5;}
-#SSCINPUT:focus { opacity: 0.9;}
-
-
