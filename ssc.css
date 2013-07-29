@@ -6,7 +6,7 @@ body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
 
 body.cxSSC .sscSELECTED.sscFOCUS {
-  background-color: rgba(255,0,0,0.25) !important;}
+  background-color: rgba(255,255,0,0.25) !important;}
 
 /* Exempt app elements from highlighting rules */
 
@@ -96,15 +96,28 @@ div.sscapp div.sscrules {
 div.sscapp div.sscrules div.cssrule {
     margin-left: 3em; text-indent: -3em; margin-right: 2em;}
 
+/* Edit styling */
+
+div.sscdialog div.buttons { text-align: center; }
+div.sscdialog div.buttons button {}
+div.sscdialog div.buttons button[VALUE='CANCEL'] {}
+div.sscdialog div.buttons button[VALUE='OK'] {}
+div.sscdialog div.buttons button[VALUE='UNWRAP'] {}
+div.sscdialog div.buttons button[VALUE='REMOVE'] {}
+div.sscdialog div.buttons button[VALUE='WRAP'] {}
+div.sscdialog div.buttons button[VALUE='CONTENT'] {}
+div.sscdialog div.buttons button[VALUE='DONE'] {}
+div.sscdialog div.buttons button[VALUE='CHANGE'] {}
 
 /* The toolbar */
 
 div.ssctoolbar {}
 div#SSCTOOLBAR {
     position: fixed;
+    font-family: sans,sans-serif;
     transition-property: top; transition-duration: 1s;
     top: -2em; left: 0px; right: 0px; width: 100%;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.8); color: ivory;
     font-size: 20px; 
     border-bottom: solid purple 2px;
     text-align: left;}
