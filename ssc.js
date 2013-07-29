@@ -144,7 +144,7 @@ var SSC=(function(){
 	else return copy(document.querySelectorAll(spec));}
 
     /* Stripping out the regex part of a hybrid pattern */
-    function simplespec(spec){return spec.replace(/\/[^\/]+\//,"");}
+    function stripregex(spec){return spec.replace(/\/[^\/]+\//,"");}
     
     /* Generating temporary IDs if needed.  We don't currently use
      * this, but we might. */
@@ -307,34 +307,25 @@ var SSC=(function(){
 	getFocus: function(){return focus;},
 	// Utility functions
 	$: $, addClass: addClass, dropClass: dropClass, getSignature: getSignature,
-	hasClass: hasClass, hasText: hasText, simplespec: simplespec, getID: getID,
+	hasClass: hasClass, hasText: hasText, stripregex: stripregex, getID: getID,
 	fillin: fillin, make: make, make_text: make_text, text: make_text,
 	addListener: addListener};})();
 
 SSC.Dialog=(function(){
 
     var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
-    var addListener=SSC.addListener;
+    var addListener=SSC.addListener, hasClass=SSC.hasClass;
 
-    var msg_delay=false;
-    var msg_delta=0.025;
-    var msg_fader=false;
-    var msg_fade_interval=100;
-    var msg_opacity=1.0;
+    function getDialog(elt){
+	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
+	    elt=((elt.target)||(elt.srcElement));
+	while (elt) {
+	    if (hasClass(elt,"sscdialog")) return elt;
+	    else elt=elt.parentNode;}
+	return false;}
+    SSC.getDialog=getDialog;
 
-    function close(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (msg_delay) clearTimeout(msg_delay);
-	if (msg_fader) clearInterval(msg_fader);
-	if (msg) msg.parentNode.removeChild(msg);}
-
-    function keep(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
-	if (msg_fader) {clearInterval(msg_fader); msg_fader=false;}
-	msg_opacity=Dialog.opts.init_opacity||0.9;
-	msg.style.setProperty('opacity',msg_opacity,'!important');
-	msg.className=msg.className+" keep";}
+    /* Creating a dialog */
 
     function Dialog(text,data,opts){
 	if (typeof text === "string")  {
@@ -373,7 +364,7 @@ SSC.Dialog=(function(){
 	    var title_text=opts.title;
 	    var title=make("div","title",title_text);
 	    box.appendChild(title);}
-	box.appendChild("div","sscmessages","","SSCMESSAGEBOX");
+	box.appendChild(make("div","sscmessages","","SSCMESSAGEBOX"));
 	if (typeof text === "string") {
 	    var frag=document.createElement("div"); frag.innerHTML=text;
 	    var children=frag.childNodes; var toadd=[];
@@ -408,29 +399,105 @@ SSC.Dialog=(function(){
 	    box.appendChild(choices);}
 	box.id="SSCMESSAGE";
 	document.body.appendChild(box);
-	msg_opacity=opts.init_opacity||Dialog.opts.init_opacity||0.9;
-	box.style.setProperty('opacity',msg_opacity,'!important');
 	if (opts.keep) box.className=box.className+" keep";
 	// We do this "old school" with an interval, rather than using
 	//  CSS transitions, because the selective display CSS uses
 	//  !important opacity definitions which get in the way of the
 	//  transitions.
-	if ((!(opts.modal))&&(!(opts.keep))) {
-	    var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
-		       (Dialog.opts.hasOwnProperty('timeout'))?(Dialog.opts.timeout):
-		       3000);
-	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
-			(Dialog.opts.hasOwnProperty('finale'))?(Dialog.opts.finale):			
-			3000);
-	    var interval=((opts.fade_interval)||(Dialog.opts.fade_interval)||100);
-	    var n_steps=Math.ceil((finale)&&(finale/interval));
-	    var delta=((finale)&&(msg_opacity/n_steps));
-	    if (delta) {
-		msg_delta=delta;
-		msg_fade_interval=interval;
-		msg_delay=setTimeout(startfinale,delay);}
-	    else msg_delay=setTimeout(close,delay);}
+	if ((!(opts.modal))&&(!(opts.keep))) startClosing(box,opts);
 	return box;}
+
+    /* Gradual closing */
+
+    var closing=false;
+    var closing_delay=false;
+    var closing_delta=0.025;
+    var closing_fader=false;
+    var closing_fade_interval=100;
+    var closing_opacity=1.0;
+
+    function startClosing(dialog,opts){
+	if (dialog===closing) return;
+	else if (closing) close(closing);
+	closing=dialog;
+	closing_opacity=opts.init_opacity||Dialog.opts.init_opacity||0.9;
+	dialog.style.setProperty('opacity',closing_opacity,'!important');
+	var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
+		   (Dialog.opts.hasOwnProperty('timeout'))?(Dialog.opts.timeout):
+		   3000);
+	var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
+		    (Dialog.opts.hasOwnProperty('finale'))?(Dialog.opts.finale):3000);
+	var interval=((opts.fade_interval)||(Dialog.opts.fade_interval)||100);
+	var n_steps=Math.ceil((finale)&&(finale/interval));
+	var delta=((finale)&&(closing_opacity/n_steps));
+	if (delta) {
+	    closing_delta=delta;
+	    closing_fade_interval=interval;
+	    closing_delay=setTimeout(startfinale,delay);}
+	else closing_delay=setTimeout(close,delay);}
+
+    function startfinale(){
+	if (closing_fader) close();
+	if (closing_delay) {clearTimeout(closing_delay); closing_delay=false;}
+	closing_fader=setInterval(fademessage,closing_fade_interval);}
+
+    function fademessage(){
+	var delta=closing_delta;
+	if (!(delta)) {close(closing); return;}
+	if (!(closing_fader)) {close(closing); return;}
+	if ((!(closing))||(!(closing.parentNode))) close();
+	else if (closing_opacity<=0) {
+	    closing.style.removeProperty('opacity');
+	    close();}
+	else {
+	    closing_opacity=closing_opacity-delta;
+	    closing.style.setProperty('opacity',closing_opacity,'!important');}}
+
+    function close(arg){
+	if (!(arg)) arg=closing;
+	else if (typeof arg === "STRING")
+	    arg=document.getElementById(string)
+	else if ((arg.target)||(arg.srcElement))
+	    arg=((arg.target)||(arg.srcElement));
+	else {}
+	if (arg.nodeType) {
+	    var scan=arg;
+	    while (scan) {
+		if (scan.nodeType!==1) scan=scan.parentNode;
+		else if (hasClass(scan,"sscdialog")) break;
+		else scan=scan.parentNode;}
+	    if (!(scan)) return;
+	    else arg=scan;}
+	else return;
+	if ((closing)&&(closing===arg)) {
+	    if (closing_delay) clearTimeout(closing_delay);
+	    if (closing_fader) clearInterval(closing_fader);
+	    closing=closing_delay=closing_fader=false;}
+	if (arg.onclose) {
+	    var closefn=arg.onclose;
+	    var close_data=arg.onclose_data;
+	    arg.onclose=false;
+	    if (close_data) arg.onclose_data=false;
+	    if (close_data) closefn(arg,close_data); else closefn(arg);}
+	if (arg.parentNode) arg.parentNode.removeChild(arg);}
+
+    function keep(arg){
+	if (!(arg)) arg=closing;
+	else if (typeof arg === "STRING")
+	    arg=document.getElementById(string)
+	else if ((arg.target)||(arg.srcElement))
+	    arg=((arg.target)||(arg.srcElement));
+	else {}
+	if (arg.nodeType) arg=getDialog(arg);
+	else return;
+	if (!(arg)) return;
+	else if (arg===closing) {
+	    if (closing_delay) {clearTimeout(closing_delay); closing_delay=false;}
+	    if (closing_fader) {clearInterval(closing_fader); closing_fader=false;}
+	    closing_opacity=Dialog.opts.init_opacity||0.9;
+	    arg.style.setProperty('opacity',closing_opacity,'!important');
+	    arg.className=msg.className+" keep";}
+	else {}}
 
     SSC.Message=function(text_arg,data,opts){
 	var text=text_arg;
@@ -445,22 +512,6 @@ SSC.Dialog=(function(){
 		livebox.appendChild(make_text(text));
 	    else livebox.appendChild(make_text(""+text));}
 	else SSC.Dialog.apply(null,arguments);};
-
-    function startfinale(){
-	if (msg_fader) close();
-	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
-	msg_fader=setInterval(fademessage,msg_fade_interval);}
-
-    function fademessage(){
-	var delta=msg_delta;
-	if (!(delta)) {close(); return;}
-	if (!(msg_fader)) {close(); return;}
-	var msg=document.getElementById("SSCMESSAGE");
-	if (!(msg)) close();
-	else if (msg_opacity<=0) close();
-	else {
-	    msg_opacity=msg_opacity-delta;
-	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
 
     Dialog.close=close; Dialog.keep=keep;
     Dialog.opts={};
@@ -649,7 +700,7 @@ SSC.UI=(function(){
 
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
-	var input=toolbar.getChildByTagName('input');
+	var input=toolbar.querySelector('input');
 	var selector=SSC.selector(), selected=SSC.selected();
 	if (selector) input.value=selector;
 	if (selected) input.title="matches "+selected.length+" elements";
@@ -657,7 +708,7 @@ SSC.UI=(function(){
 	document.body.appendChild(toolbar);
 	var count=document.getElementById("SSCMATCHCOUNT");
 	if ((selected)&&(count)) count.innerHTML=""+(selected.length);}
-	
+    
     addListener(window,"load",setupToolbar);
 
     function showCloud(){
@@ -700,7 +751,7 @@ SSC.UI=(function(){
 
     var usekeys=[TAB,CKEY,ESCAPE,RETURN];
 
-    function ssckeydown(evt){
+    function window_keydown(evt){
 	evt=evt||event;
 	var key=evt.keyCode;
 	var target=evt.target||evt.srcElement;
@@ -748,11 +799,9 @@ SSC.UI=(function(){
 	    input.focus();}
 	else return;
 	cancel(evt);}
+    SSC.window_keydown=window_keydown;
 
-    // Should we put this inside an onload handler?
-    addListener(window,"keydown",ssckeydown);
-
-    function nodeclick(evt){
+    function window_click(evt){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
 	var scan=target;
@@ -776,7 +825,14 @@ SSC.UI=(function(){
 	    var classes=norm.split(/\s+/);
 	    if (classes.length) spec=spec+"."+classes.join(".");}
 	SSC.select(spec,true);}
+    SSC.window_click=window_click;
     
     // Referencing SSC.nodeclick let's it be overriden by apps using SSC
-    addListener(window,"click",SSC.nodelick||nodeclick);})();
+    addListener(window,"load",function(){
+	if (SSC.hasOwnProperty("onclick"))
+	    addListener(window,"click",SSC.onclick);
+	else addListener(window,"click",window_click);
+    	if (SSC.hasOwnProperty("onkey"))
+	    addListener(window,"keydown",SSC.onkey);
+	else addListener(window,"keydown",window_keydown);});})();
 
