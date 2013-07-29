@@ -98,7 +98,13 @@ div.sscapp div.sscrules div.cssrule {
 
 /* Edit styling */
 
-div.sscdialog div.buttons { text-align: center; }
+div.sscdialog input[TYPE="TEXT"], div.sscdialog select {
+    width: 100%; display: block; margin-top: 0.25ex;}
+div.sscdialog table { width: 100%; color: ivory;}
+div.sscdialog table th { text-align: right;}
+div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
+div.sscdialog table td { text-align: left;}
+div.sscdialog div.buttons { width: 100%; text-align: center; }
 div.sscdialog div.buttons button {}
 div.sscdialog div.buttons button[VALUE='CANCEL'] {}
 div.sscdialog div.buttons button[VALUE='OK'] {}
@@ -108,6 +114,15 @@ div.sscdialog div.buttons button[VALUE='WRAP'] {}
 div.sscdialog div.buttons button[VALUE='CONTENT'] {}
 div.sscdialog div.buttons button[VALUE='DONE'] {}
 div.sscdialog div.buttons button[VALUE='CHANGE'] {}
+
+div.sscdialog.ssceditelement {
+    max-width: 15em; right: 20%; left: auto;}
+
+div.sscdialog.ssceditelement div.button.close {
+    width: 10%;}
+div.sscdialog.ssceditelement input.sscspecinput {width: 85%;}
+
+div.sscdialog table.sscattribs th { width: 8em;}
 
 /* The toolbar */
 
