@@ -54,10 +54,11 @@ var SSC=(function(){
 	else elt.innerHTML=fillin(content);
 	if (id) elt.id=id;
 	return elt;}
-    function text(input){
+    function make_text(input){
 	if (typeof input === "string")
 	    return document.createTextNode(input);
 	else return document.createTextNode(fillin(input));}
+    var text=make_text;
 
     function fillin(data,text){
 	if (typeof data === "string") {
@@ -83,6 +84,23 @@ var SSC=(function(){
 	else if (node.attachEvent)
 	    node.attachEvent("on"+evtype,handler);
 	else alert("Please switch to a modern browser");}
+
+    /* Getting node signatures */
+
+    function getSignature(node,attribs){
+	var classname=node.className.trim(), id=node.id, tag=node.tagName;
+	var sig=tag+
+	    ((classname)?("."):(""))+
+	    ((classname)?((classname.split(/\s+/)).join(".")):(""))+
+	    (((attribs)&&(id))?("#"+id):(""));
+	if (attribs) {
+	    if (node.name) sig=sig+"[NAME='"+node.name+"']";
+	    if (typeof attribs === "string") {
+		var val=node.getAttribute(attribs);
+		if (val) sig=sig+"["+attrib+"'"+val.replace("'","\\'")+"']";}}
+	// We could interpret other attribs args (arrays, regexes, etc)
+	else {}
+	return sig;}
 
     /* Copying an array (or array-like object, such as a NodeList) into a new array. */
 
@@ -201,7 +219,7 @@ var SSC=(function(){
 
     /* Selectively display all the nodes matching a spec
        and update the state variables for the app.  */
-    function select(spec,force){
+    function select(spec,force,nomsg){
 	if (!(spec)) clear();
 	else if ((spec===selector)&&(!(force))) return;
 	else clear();
@@ -209,7 +227,14 @@ var SSC=(function(){
 	var nodes=$(spec);
 	var i=0, lim=nodes.length;
 	if (lim===0) {
-	    SSC.Message("There are no matches for <tt>{{spec}}</tt>",{spec: spec});
+	    if (!(nomsg)) {
+		if (SSC.Message)
+		    SSC.Message("There are no matches for <tt>{{spec}}</tt>",
+				{spec: spec});
+		else if (SSC.Dialog)
+		    SSC.Dialog("There are no matches for <tt>{{spec}}</tt>",
+			       {spec: spec});
+		else alert("There are no matches for "+spec);}
 	    return;}
 	enable();
 	var first=nodes[0];
@@ -223,11 +248,13 @@ var SSC=(function(){
 	document.title="("+nodes.length+"x"+spec+") "+real_title;
 	dropClass(document.body,"sscSHOWCLOUD");
 	var input=document.getElementById("SSCINPUT");
+	var count=document.getElementById("SSCMATCHCOUNT");
 	if (input) {
 	    input.value=spec;
 	    input.title="matches "+nodes.length+" elements";}
-	if ((!(SSC.quiet))&&(SSC.Message)) {
-	    var msg=SSC.Message(
+	if (count) count.innerHTML=""+nodes.length;
+	if ((!(SSC.quiet))&&(!(nomsg))&&(SSC.Dialog)) {
+	    var msg=SSC.Dialog(
 		"The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> elements\n"+
 		    "<p class='sschelp'><kbd>Tab</kbd> to scan through them, <kbd>Shift-Tab</kbd> to go back.</p>\n"+
 		    "<div class='sscrules'></div>",
@@ -272,16 +299,173 @@ var SSC=(function(){
 
     return {
 	isenabled: isenabled,enable: enable,disable: disable,toggle: toggle,
-	select: select, clear: clear, refresh: function refresh(){select(selector,true);},
-	setFocus: setFocus, focus: focusfn, getFocus: function(){return focus;},
-	$: $, addClass: addClass, dropClass: dropClass,
-	hasClass: hasClass, hasText: hasText, simplespec: simplespec, getID: getID,
-	fillin: fillin, text: text, make: make, addListener: addListener,
+	select: select, clear: clear, setFocus: setFocus, focus: focusfn, 
 	selector: function getselector(){ return selector;},
 	selected: function getselected(){ return selected;},
+	refresh: function refresh(){select(selector,true);},
 	focusIndex: function focusIndex(){ return focus_index;},
-	preferred: ["p","h1","h2","h3","h4","h5"],
-	Text: {},box: false,editnode: false};})();
+	getFocus: function(){return focus;},
+	// Utility functions
+	$: $, addClass: addClass, dropClass: dropClass, getSignature: getSignature,
+	hasClass: hasClass, hasText: hasText, simplespec: simplespec, getID: getID,
+	fillin: fillin, make: make, make_text: make_text, text: make_text,
+	addListener: addListener};})();
+
+SSC.Dialog=(function(){
+
+    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
+    var addListener=SSC.addListener;
+
+    var msg_delay=false;
+    var msg_delta=0.025;
+    var msg_fader=false;
+    var msg_fade_interval=100;
+    var msg_opacity=1.0;
+
+    function close(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (msg_delay) clearTimeout(msg_delay);
+	if (msg_fader) clearInterval(msg_fader);
+	if (msg) msg.parentNode.removeChild(msg);}
+
+    function keep(){
+	var msg=document.getElementById("SSCMESSAGE");
+	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
+	if (msg_fader) {clearInterval(msg_fader); msg_fader=false;}
+	msg_opacity=Dialog.opts.init_opacity||0.9;
+	msg.style.setProperty('opacity',msg_opacity,'!important');
+	msg.className=msg.className+" keep";}
+
+    function Dialog(text,data,opts){
+	if (typeof text === "string")  {
+	    if (data) text=fillin(text,data);}
+	if (typeof opts === "number") {
+	    // Assume it's seconds, convert to msecs
+	    if (opts<100) opts=opts*1000;
+	    // Divide the delay between wait and finale
+	    opts={delay: opts/2,finale: opts/2};}
+	else if (!(opts)) opts={};
+	else if ((opts.timeout===false)&&(!(opts.finale))) opts.keep=true;
+	else if ((opts.timeout)&&(!(opts.hasOwnProperty('finale')))) {
+	    // If we just have a delay, and no finale, divide the delay
+	    var d=opts.timeout;
+	    // Assume it's seconds, convert to msecs
+	    if (d<100) d=d*1000;
+	    opts.timeout=d/2; opts.finale=d/2;}
+	else {
+	    if ((opts.timeout)&&(opts.timeout<100)) opts.timeout=opts.timeout*1000;
+	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
+	var classname="sscdialog sscapp";
+	if (opts.classname) {
+	    var custom=opts.classname.trim();
+	    if (custom.search(/\bsscdialog\b/)<0) custom=custom+" sscdialog";
+	    if (custom.search(/\bsscapp\b/)<0) custom=custom+" sscapp";
+	    classname=custom.replace(/\s+/g," ");}
+	var box=make("div",classname,false,opts.id); {
+	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
+		var close_button=make("DIV","close button","Close"); {
+		    addListener(close_button,"click",close);
+		    box.appendChild(close_button);}
+		var keep_button=make("DIV","keep button","Keep"); {
+		    addListener(keep_button,"click",keep);
+		    box.appendChild(keep_button);}}}
+	if (opts.title) {
+	    var title_text=opts.title;
+	    var title=make("div","title",title_text);
+	    box.appendChild(title);}
+	box.appendChild("div","sscmessages","","SSCMESSAGEBOX");
+	if (typeof text === "string") {
+	    var frag=document.createElement("div"); frag.innerHTML=text;
+	    var children=frag.childNodes; var toadd=[];
+	    var k=0, klim=children.length;
+	    while (k<klim) toadd.push(children[k++]);
+	    k=0; while (k<klim) box.appendChild(toadd[k++]);}
+	else if (text.nodeType) box.appendChild(text);
+	else if (text.template)
+	    box.appendChild(make_text(fillin(text)));
+	else {}
+	if ((opts.choices)&&(opts.choices.length)) {
+	    var choices=opts.choices, buttons=[];
+	    var i=0, lim=choices.length; while (i<lim) {
+		var choice=choices[i++];
+		var button=document.createElement("BUTTON");
+		if (typeof choice === "string") 
+		    choice={label: choice, value: choice};
+		if (choice.classname) button.className=choice.classname;
+		button.appendChild(document.createTextNode(
+		    (((choice.label)&&(choice.data))?(fillin(choice.label,choice.data)):(choice.label))));
+		button.value=choice.value;
+		button.name=choice.name||choice.label;
+		if (button.handler)
+		    addListener(button,"click",button.handler);
+		else addListener(button,"click",choice_button_handler);
+		buttons.push(button);}
+	    var container=document.createElement("DIV"); {
+		var j=0; container.className="choices"; 
+		while (j<lim) {
+		    container.appendChild(buttons[j++]);
+		    container.appendChild(document.createTextNode(" "));}}
+	    box.appendChild(choices);}
+	box.id="SSCMESSAGE";
+	document.body.appendChild(box);
+	msg_opacity=opts.init_opacity||Dialog.opts.init_opacity||0.9;
+	box.style.setProperty('opacity',msg_opacity,'!important');
+	if (opts.keep) box.className=box.className+" keep";
+	// We do this "old school" with an interval, rather than using
+	//  CSS transitions, because the selective display CSS uses
+	//  !important opacity definitions which get in the way of the
+	//  transitions.
+	if ((!(opts.modal))&&(!(opts.keep))) {
+	    var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
+		       (Dialog.opts.hasOwnProperty('timeout'))?(Dialog.opts.timeout):
+		       3000);
+	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
+			(Dialog.opts.hasOwnProperty('finale'))?(Dialog.opts.finale):			
+			3000);
+	    var interval=((opts.fade_interval)||(Dialog.opts.fade_interval)||100);
+	    var n_steps=Math.ceil((finale)&&(finale/interval));
+	    var delta=((finale)&&(msg_opacity/n_steps));
+	    if (delta) {
+		msg_delta=delta;
+		msg_fade_interval=interval;
+		msg_delay=setTimeout(startfinale,delay);}
+	    else msg_delay=setTimeout(close,delay);}
+	return box;}
+
+    SSC.Message=function(text_arg,data,opts){
+	var text=text_arg;
+	if (typeof text === "string")  {
+	    if (data) text=fillin(text,data);}
+	else if (text.template) text=fillin(text);
+	else {}
+	var livebox=document.getElementById("SSCMESSAGEBOX");
+	if (livebox) {
+	    if (text.nodeType) livebox.appendChild(text);
+	    else if (typeof text === "string")
+		livebox.appendChild(make_text(text));
+	    else livebox.appendChild(make_text(""+text));}
+	else SSC.Dialog.apply(null,arguments);};
+
+    function startfinale(){
+	if (msg_fader) close();
+	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
+	msg_fader=setInterval(fademessage,msg_fade_interval);}
+
+    function fademessage(){
+	var delta=msg_delta;
+	if (!(delta)) {close(); return;}
+	if (!(msg_fader)) {close(); return;}
+	var msg=document.getElementById("SSCMESSAGE");
+	if (!(msg)) close();
+	else if (msg_opacity<=0) close();
+	else {
+	    msg_opacity=msg_opacity-delta;
+	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
+
+    Dialog.close=close; Dialog.keep=keep;
+    Dialog.opts={};
+
+    return Dialog;})();
 
 SSC.updateCloud=(function(){
 
@@ -402,138 +586,6 @@ SSC.updateCloud=(function(){
     
     return updateCloud;})();
 
-SSC.Message=(function(){
-
-    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
-    var addListener=SSC.addListener;
-
-    var msg_delay=false;
-    var msg_delta=0.025;
-    var msg_fader=false;
-    var msg_fade_interval=100;
-    var msg_opacity=1.0;
-
-    function close(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (msg_delay) clearTimeout(msg_delay);
-	if (msg_fader) clearInterval(msg_fader);
-	if (msg) msg.parentNode.removeChild(msg);}
-
-    function keep(){
-	var msg=document.getElementById("SSCMESSAGE");
-	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
-	if (msg_fader) {clearInterval(msg_fader); msg_fader=false;}
-	msg_opacity=Message.opts.init_opacity||0.9;
-	msg.style.setProperty('opacity',msg_opacity,'!important');
-	msg.className=msg.className+" keep";}
-
-    function Message(text,data,opts){
-	if (typeof text === "string")  {
-	    if (data) text=fillin(text,data);}
-	if (typeof opts === "number") {
-	    // Assume it's seconds, convert to msecs
-	    if (opts<100) opts=opts*1000;
-	    // Divide the delay between wait and finale
-	    opts={delay: opts/2,finale: opts/2};}
-	else if (!(opts)) opts={};
-	else if ((opts.timeout===false)&&(!(opts.finale))) opts.keep=true;
-	else if ((opts.timeout)&&(!(opts.hasOwnProperty('finale')))) {
-	    // If we just have a delay, and no finale, divide the delay
-	    var d=opts.timeout;
-	    // Assume it's seconds, convert to msecs
-	    if (d<100) d=d*1000;
-	    opts.timeout=d/2; opts.finale=d/2;}
-	else {
-	    if ((opts.timeout)&&(opts.timeout<100)) opts.timeout=opts.timeout*1000;
-	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
-	var box=make("div","sscdialog sscapp"); {
-	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
-		var close_button=make("DIV","close button","Close"); {
-		    addListener(close_button,"click",close);
-		    box.appendChild(close_button);}
-		var keep_button=make("DIV","keep button","Keep"); {
-		    addListener(keep_button,"click",keep);
-		    box.appendChild(keep_button);}}}
-	if (opts.title) {
-	    var title_text=opts.title;
-	    var title=make("div","title",title_text);
-	    box.appendChild(title);}
-	if (typeof text === "string") {
-	    var frag=document.createElement("div"); frag.innerHTML=text;
-	    var children=frag.childNodes; var toadd=[];
-	    var k=0, klim=children.length;
-	    while (k<klim) toadd.push(children[k++]);
-	    k=0; while (k<klim) box.appendChild(toadd[k++]);}
-	else box.appendChild(text);
-	if ((opts.choices)&&(opts.choices.length)) {
-	    var choices=opts.choices, buttons=[];
-	    var i=0, lim=choices.length; while (i<lim) {
-		var choice=choices[i++];
-		var button=document.createElement("BUTTON");
-		if (typeof choice === "string") 
-		    choice={label: choice, value: choice};
-		if (choice.classname) button.className=choice.classname;
-		button.appendChild(document.createTextNode(
-		    (((choice.label)&&(choice.data))?(fillin(choice.label,choice.data)):(choice.label))));
-		button.value=choice.value;
-		button.name=choice.name||choice.label;
-		if (button.handler)
-		    addListener(button,"click",button.handler);
-		else addListener(button,"click",choice_button_handler);
-		buttons.push(button);}
-	    var container=document.createElement("DIV"); {
-		var j=0; container.className="choices"; 
-		while (j<lim) {
-		    container.appendChild(buttons[j++]);
-		    container.appendChild(document.createTextNode(" "));}}
-	    box.appendChild(choices);}
-	box.id="SSCMESSAGE";
-	document.body.appendChild(box);
-	msg_opacity=opts.init_opacity||Message.opts.init_opacity||0.9;
-	box.style.setProperty('opacity',msg_opacity,'!important');
-	if (opts.keep) box.className=box.className+" keep";
-	// We do this "old school" with an interval, rather than using
-	//  CSS transitions, because the selective display CSS uses
-	//  !important opacity definitions which get in the way of the
-	//  transitions.
-	if ((!(opts.modal))&&(!(opts.keep))) {
-	    var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
-		       (Message.opts.hasOwnProperty('timeout'))?(Message.opts.timeout):
-		       3000);
-	    var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
-			(Message.opts.hasOwnProperty('finale'))?(Message.opts.finale):			
-			3000);
-	    var interval=((opts.fade_interval)||(Message.opts.fade_interval)||100);
-	    var n_steps=Math.ceil((finale)&&(finale/interval));
-	    var delta=((finale)&&(msg_opacity/n_steps));
-	    if (delta) {
-		msg_delta=delta;
-		msg_fade_interval=interval;
-		msg_delay=setTimeout(startfinale,delay);}
-	    else msg_delay=setTimeout(close,delay);}
-	return box;}
-
-    function startfinale(){
-	if (msg_fader) close();
-	if (msg_delay) {clearTimeout(msg_delay); msg_delay=false;}
-	msg_fader=setInterval(fademessage,msg_fade_interval);}
-
-    function fademessage(){
-	var delta=msg_delta;
-	if (!(delta)) {close(); return;}
-	if (!(msg_fader)) {close(); return;}
-	var msg=document.getElementById("SSCMESSAGE");
-	if (!(msg)) close();
-	else if (msg_opacity<=0) close();
-	else {
-	    msg_opacity=msg_opacity-delta;
-	    msg.style.setProperty('opacity',msg_opacity,'!important');}}
-
-    Message.close=close; Message.keep=keep;
-    Message.opts={};
-
-    return Message;})();
-
 SSC.getStyleInfo=(function(){
     function getRules(sel,results){
 	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
@@ -592,19 +644,20 @@ SSC.UI=(function(){
     addListener(window,"hashchange",selectHash);
 
     SSC.toolbar_text=
-	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>Cloud</button>\n";
+	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>Cloud</button>\n"+
+	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR'/> matches <span id='SSCMATCHCOUNT'>##</span> element(s)";
 
     function setupToolbar(){
-	var input=make("input",false,"","SSCINPUT");
 	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
-	input.type="TEXT"; input.name="SELECTOR";
-	var selector=SSC.selector();
-	var selected=SSC.selected();
+	var input=toolbar.getChildByTagName('input');
+	var selector=SSC.selector(), selected=SSC.selected();
 	if (selector) input.value=selector;
 	if (selected) input.title="matches "+selected.length+" elements";
-	toolbar.appendChild(input);
 	addListener(input,"keydown",selector_keydown);
-	document.body.appendChild(toolbar);}
+	document.body.appendChild(toolbar);
+	var count=document.getElementById("SSCMATCHCOUNT");
+	if ((selected)&&(count)) count.innerHTML=""+(selected.length);}
+	
     addListener(window,"load",setupToolbar);
 
     function showCloud(){
@@ -660,7 +713,7 @@ SSC.UI=(function(){
 	if (key===ESCAPE) {
 	    var changed=false;
 	    // Close any windows which are up
-	    SSC.Message.close();
+	    SSC.Dialog.close();
 	    dropClass(document.body,"sscSHOWCLOUD");
 	    dropClass(document.body,"sscTOOLBAR");
 	    if (!(SSC.isenabled())) SSC.enable();
@@ -672,13 +725,13 @@ SSC.UI=(function(){
 	else if (key===TAB) {
 	    var index=SSC.focusIndex();
 	    var max=SSC.selected().length-1;
-	    if (max<0) SSC.Message("No matches for selector!");
+	    if (max<0) SSC.Dialog("No matches for selector!");
 	    else if (typeof index === "number") {
 		if (evt.shiftKey) {
-		    if (index<=0) SSC.Message("No more matches",false,4);
+		    if (index<=0) SSC.Dialog("No more matches",false,4);
 		    else SSC.focus(index-1);}
 		else if (index>=max)
-		    SSC.Message("No more matches",false,4);
+		    SSC.Dialog("No more matches",false,4);
 		else SSC.focus(index+1);}
 	    else if (evt.shiftKey)
 		SSC.focus(max);
@@ -724,5 +777,6 @@ SSC.UI=(function(){
 	    if (classes.length) spec=spec+"."+classes.join(".");}
 	SSC.select(spec,true);}
     
-    addListener(window,"click",nodeclick);})();
+    // Referencing SSC.nodeclick let's it be overriden by apps using SSC
+    addListener(window,"click",SSC.nodelick||nodeclick);})();
 
