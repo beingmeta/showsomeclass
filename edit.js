@@ -1,19 +1,29 @@
 SSC.Editor=(function(){
 
+    var make=SSC.make, make_text=SSC.make_text, text=SSC.text;
+    var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
+    var addListener=SSC.addListener, cancel=SSC.cancel;
+    var getID=SSC.getID, getSignature=SSC.getSignature;
+
+    var TAB=0x09;
+    var RETURN=0x0d;
+    var ESCAPE=0x1b;
+
     var edit_element_template=
-	"<div class='title'>Edit Element</div>"+
+	"<div class='button close'>Close</div>\n"+
 	"<input class='sscspecinput' TYPE='TEXT' NAME='SPEC''/>\n"+
 	"<input class='sscstyleinput' TYPE='TEXT' NAME='STYLE'/>\n"+
-	"<select class='sscparents'>\n</select>\n"+
+	"<select class='sscparents'>\n<option value='' selected='SELECTED'>Parents:</option>\n</select>\n"+
 	// "<select class='sscselectors'>\n</select>\n"+
 	// "<select class='sscreclass'>\n</select>\n"+
-	"<table class='sscattributes'>\n</table>\n"+
+	"<dl class='sccstylerules'></dl>\n"+
+	"<table class='sscattribs'>\n</table>\n"+
 	"<div class='buttons'>\n"+
 	"\t<button value='UNWRAP'>Unwrap</button>\n"+
 	"\t<button value='DELETE'>Delete</button>\n"+
 	"\t<button value='CONTENT'>Content</button>\n"+
 	"</div>\n"+
-	"<select class='sscchildren'>\n</select>\n";
+	"<select class='sscchildren'>\n<option value='' selected='SELECTED'>Parents:</option>\n</select>\n";
 
     var edit_selection_template=
 	"<textarea name='SSCSELECTION'>{{content}}</textarea>\n"+
@@ -51,6 +61,23 @@ SSC.Editor=(function(){
 	while (i<lim) {output[i]=input[i]; i++;}
 	return output;}
 
+    function getParents(node){
+	var parents=[]; var scan=node.parentNode, body=document.body;
+	while (scan) {
+	    if (scan===body) break;
+	    else if (scan.nodeType===1) parents.push(scan);
+	    scan=scan.parentNode;}
+	return parents;}
+    function getChildren(node){
+	var children=node.childNodes;
+	if ((children)&&(children.length)) {
+	    var result=[]; var i=0, n=children.length;
+	    while (i<n) {
+		var child=children[i++];
+		if (child.nodeType===1) results.push(child);}
+	    return result;}
+	else return [];}
+
     /* Adjusting nodes to match a new selector. */
 
     // Note that we don't do attributes yet 
@@ -58,10 +85,10 @@ SSC.Editor=(function(){
 	var parsed=(spec.trim()).split(/([.])/), tag=parsed[0];
 	var absolute=[], adds=[], drops=[];
 	var k=1, len=parsed.length; while (k<len) {
-	    var class=parsed[k++];
-	    if (class[0]==='-') drops.push(class.slice(1));
-	    else if (class[0]==='+') adds.push(class.slice(1));
-	    else absolute.push(class);}
+	    var c=parsed[k++];
+	    if (c[0]==='-') drops.push(c.slice(1));
+	    else if (c[0]==='+') adds.push(c.slice(1));
+	    else absolute.push(c);}
 	if (((adds.length)||(drops.length))&&(absolute.length)) {
 	    // You can't set the signature and then edit it in the same spec
 	    SSC.Message("It doesn't make sense to set the signature and edit "+
@@ -119,9 +146,9 @@ SSC.Editor=(function(){
     function makeEditElementDialog(node){
 	var dialog=SSC.Dialog(
 	    SSC.edit_element_template||edit_element_template,false,
-	    {classname: "ssceditelement"});
+	    {classname: "ssceditelement", noclose: true});
 	var specinput=dialog.querySelector(".sscspecinput");
-	specinput.value=getSignature(node,false);
+	specinput.value=getSignature(node,true);
 	addListener(specinput,"keydown",ee_specinput);
 
 	var styletext=(node.style.cssText).trim();
@@ -132,27 +159,26 @@ SSC.Editor=(function(){
 	else dialog.removeChild(styleinput);
 
 	var up=dialog.querySelector('.sscparents');
-	var scan=node; while (scan) {
-	    var sig=getSignature(scan), id=getID(scan);
-	    var popt=make("OPTION",false,sig); popt.value=sig;
-	    up.appendChild(popt);
-	    scan=scan.parentNode;}
-	addListener(up,"onchange",ee_selected);
+	var parents=getParents(node);
+	if (parents.length) {
+	    var p=0, n_parents=parents.length; while (p<n_parents) {
+		var parent=parents[p++];
+		var popt=make("OPTION",false,getSignature(parent,true));
+		popt.value=getID(parent);
+		up.appendChild(popt);}
+	    addListener(up,"onchange",ee_selected);}
+	else dialog.removeChild(up);
 	
 	var down=dialog.querySelector('.sscchildren'), n_opts=0;
-	if (node.childNodes) {
-	    var children=node.childNodes;
-	    var k=0; var n_children=children.length;
-	    while (k<n_children) {
-		var child=children[k++];
-		if (child.nodeType!==1) continue;
-		var id=, sig=;
+	var children=getChildren(node);
+	if (children.length) {
+	    var c=0, n_children=children.length; while (c<n_children) {
+		var child=children[c++];
 		var copt=make("OPTION",false,getSignature(child,true));
 		copt.value=getID(child);
-		down.appendChild(copt);
-		n_opts++;}}
-	if (n_opts===0) dialog.removeChild(down);
-	else addListener(down,"onchange",ee_selected);
+		down.appendChild(copt);}
+	    addListener(down,"onchange",ee_selected);}
+	else dialog.removeChild(down);
 	
 	/*
 	var selectors=dialog.querySelector(".sscselectors");
@@ -173,7 +199,7 @@ SSC.Editor=(function(){
 	// var reclasser=dialog.querySelector(".sscreclass");
 	// addListener(reclasser,"change",reclasser_changed);
 
-	var buttons=dialog.querySelector(".sscbuttons");
+	var buttons=dialog.querySelector(".buttons");
 	addListener(buttons,"click",ee_buttonclick);
 
 	var attribtable=dialog.querySelector(".sscattribs"); {
@@ -182,7 +208,7 @@ SSC.Editor=(function(){
 		i=0; var n_attribs=attributes.length;
 		while (i<n_attribs) {
 		    var attrib=attributes[i++]; var name=attrib.name;
-		    if ((name==='ID')||(name==='CLASS')||(name==='STYLE')) continue;
+		    if ((name==='id')||(name==='class')||(name==='style')) continue;
 		    var tr=make("TR"), th=make("TH",false,name);
 		    var input=make("INPUT"); input.type="TEXT"; {
 			input.value=attrib.value; input.sscattribname=name;
@@ -198,10 +224,10 @@ SSC.Editor=(function(){
 		new_value.type="TEXT";
 		new_name.name="NEWVALUE";
 		new_value.value=""; new_value.placeholder="value";
-		addListener(new,"keydown",ee_attrib);}
+		addListener(new_value,"keydown",ee_attrib);}
 	    var row=make("TR",false,make("TH",false,new_name));
 	    row.appendChild(make("TD",false,new_value));
-	    attributes.appendChild(row);}
+	    attribtable.appendChild(row);}
 	return dialog;}
 
     function makeEditSelectionDialog(node,selection){
@@ -311,6 +337,13 @@ SSC.Editor=(function(){
 		if ((row)&&(row.parentNode))
 		    row.parentNode.removeChild(row);}
 	    cancel(evt);}}
+    function ee_selected(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var targetid=target.value;
+	var goto=document.getElementById(targetid);
+	if (goto) {
+	    cancel(evt); return Editor(goto);}}
 
     function ec_buttonclick(evt){
 	evt=evt||event;
@@ -380,7 +413,7 @@ SSC.Editor=(function(){
 	    SSC.Editor.dialog=false;
 	    SSC.Editor.closefn=false;
 	    SSC.Editor.node=false;
-	    closefn(current);
+	    if (closefn) closefn(current);
 	    SSC.Dialog.close(current);}
 	if (SSC.Editor.node) SSC.Editor.node=false;
 	if (node) SSC.Editor.node=node;
@@ -398,15 +431,31 @@ SSC.Editor=(function(){
 
     function editor_click(evt){
 	evt=evt||event;
-	if (evt.shiftKey) {
-	    var node=evt.target||evt.srcElement;
-	    while (node) {
-		if (node.nodeType===1) {
-		    cancel(evt);
-		    return Editor(node);}
-		else node=node.parentNode;}
-	    return false;}
-	else return SSC.window_click(evt);}
+	var target=evt.target||evt.srcElement;
+	var scan=target;
+	while (scan) {
+	    if (hasClass(scan,"sscapp")) return;
+	    else if (((target.tagName==="A")&&(target.href))||
+		     (target.onclick)|| (target.tagName==='INPUT'))
+		return;
+	    else if (scan===document.body) break;
+	    else scan=scan.parentNode;}
+	if ((hasClass(document.body,"sscTOOLBAR"))||
+	    (hasClass(document.body,"sscSHOWCLOUD"))) {
+	    dropClass(document.body,"sscTOOLBAR");
+	    dropClass(document.body,"sscSHOWCLOUD");
+	    return;}
+	if (!(scan)) return; else scan=target;
+	while (scan.nodeType!==1) scan=scan.parentNode;
+	if (!(scan)) return;
+	var spec=scan.tagName;
+	if (scan.className) {
+	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
+	    var classes=norm.split(/\s+/);
+	    if (classes.length) spec=spec+"."+classes.join(".");}
+	Editor(scan);
+	SSC.select(spec,false,true);
+	addClass(document.body,"sscTOOLBAR");}
     SSC.onclick=editor_click;
 
     return Editor;})();
