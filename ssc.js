@@ -80,6 +80,7 @@ var SSC=(function(){
 
     function addListener(node,evtype,handler){
 	if (typeof node==="string") node=document.getELementById(node);
+	else if (node.nodeType) {}
 	else if (node.length) {
 	    var copy=[]; var i=0, lim=node.length;
 	    while (i<lim) copy.push(node[i++]);
@@ -101,6 +102,7 @@ var SSC=(function(){
     function getSignature(node,attribs){
 	var classname=node.className.replace(/\bssc\w+/,"").trim();
 	var id=node.id, tag=node.tagName;
+	if (id.search("sscTMP")===0) id=false;
 	var sig=tag+
 	    ((classname)?("."):(""))+
 	    ((classname)?((classname.split(/\s+/)).join(".")):(""))+
