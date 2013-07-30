@@ -38,7 +38,7 @@ body.cxSSC #SSCINPUT.sscapp { opacity: 0.3 !important;}
 body.cxSSC #SSCINPUT.sscapp:focus {width: 40%;}
 body.cxSSC #SSCINPUT.sscapp:focus { opacity: 0.8 !important;}
 
-div.sscapp div.button {
+div.sscapp div.button, div.sscapp button {
     font-size: 50%; font-weight: bold;
     padding: 2px; padding-right: 1ex; padding-left: 1ex;
     background-color: silver;
@@ -57,6 +57,10 @@ div.sscdialog {
 div.sscdialog div.button.keep {float: left; color: green;}
 div.sscdialog div.button.close {float: right; color: red;}
 div.sscdialog.keep div.button.keep {visibility: hidden;}
+
+div.sscdialog div.button.close, div.sscdialog button.close,
+div.sscdialog button[VALUE='CLOSE'] {
+    color: red;}
 
 div.sscdialog div.clicktodismiss {
     position: absolute; bottom: 0px;
@@ -101,13 +105,14 @@ div.sscapp div.sscrules div.cssrule {
 
 /* Edit styling */
 
-div.sscdialog input[TYPE="TEXT"], div.sscdialog select {
+div.sscdialog input[TYPE="TEXT"],  div.sscdialog select,
+div.sscdialog textarea, div.sscdialog div.buttons {
     width: 100%; display: block; margin-top: 0.25ex;}
 div.sscdialog table { width: 100%; color: ivory;}
 div.sscdialog table th { text-align: right;}
 div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
 div.sscdialog table td { text-align: left;}
-div.sscdialog div.buttons { width: 100%; text-align: center; }
+div.sscdialog div.buttons { text-align: center; }
 div.sscdialog div.buttons button {}
 div.sscdialog div.buttons button[VALUE='CANCEL'] {}
 div.sscdialog div.buttons button[VALUE='OK'] {}
@@ -118,14 +123,27 @@ div.sscdialog div.buttons button[VALUE='CONTENT'] {}
 div.sscdialog div.buttons button[VALUE='DONE'] {}
 div.sscdialog div.buttons button[VALUE='CHANGE'] {}
 
-div.sscdialog.ssceditelement {
-    max-width: 15em; right: 20%; left: auto;}
+div.sscdialog.ssceditelement, div.sscdialog.ssceditcontent {
+    right: 10%; bottom: 10%; left: auto; top: auto;
+    padding-bottom: 1em;}
+div.sscdialog.ssceditelement { max-width: 15em; }
+div.sscdialog.ssceditcontent { max-width: 80%;}
 
 div.sscdialog.ssceditelement div.button.close {
     width: 10%;}
 div.sscdialog.ssceditelement input.sscspecinput {width: 85%;}
 
 div.sscdialog table.sscattribs th { width: 8em;}
+
+div.sscdialog.ssceditcontent textarea { height: 7em; }
+div.sscdialog.ssceditcontent div.title { text-align: left;}
+div.sscdialog.ssceditcontent div.buttons { text-align: right;}
+
+div.sscdialog.sscreclass div.title {
+    text-align: left; margin-bottom: 1ex;}
+div.sscdialog.sscreclass div.buttons { text-align: right;}
+div.sscdialog.sscreclass table th {
+    padding-right: 1ex; width: 7em;}
 
 /* The toolbar */
 
@@ -146,7 +164,7 @@ div#SSCTAPZONE {
     opacity: 0.0;}
 
 div.ssctoolbar div.combobox {
-    width: 15em; height: 1em; overflow: visible; display: inline-block;
+    width: 10em; height: 1em; overflow: visible; display: inline-block;
     text-align: left; margin-left: 0.25em;}
 div.ssctoolbar div.combobox input[TYPE="TEXT"],
 div.ssctoolbar div.combobox select {
@@ -157,6 +175,7 @@ div.ssctoolbar div.combobox select {
 div.ssctoolbar.focused div.combobox select { display: block;}
 div.ssctoolbar div.combobox select:focus { display: block;}
 
+div#SSCTOOLBAR #SSCTOOLBARBUTTONS { float: right; }
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     padding-left: 0.5ex; text-align: left; font-size: 90%;}
 div#SSCTOOLBAR button {
@@ -178,9 +197,10 @@ body.sscTOOLBAR div#SSCTOOLBAR { top: 0px;}
 body.sscTOOLBAR div#SSCTAPZONE { display: none; }
 
 div#SSCTOOLBAR div#sscstyleinfo {
-    position: absolute; top: 1.7em; left: 15em;
+    position: absolute; top: 1.7em; 
     background-color: inherit; padding: 1em;
-    max-width: 50%;
+    /* left: 10em; max-width: 50%; */
+    left: 10%; max-width: 80%;
     display: none;}
 div#SSCTOOLBAR.showstyle div#sscstyleinfo { display: block;}
 
@@ -188,8 +208,11 @@ div#SSCTOOLBAR .styleinfo p {
     margin-left: 1em; text-indent: -1em;}
 div#SSCTOOLBAR .styleinfo p span.prop { white-space: nowrap; }
 
-div#SSCTOOLBAR span.message { display: none;}
-div#SSCTOOLBAR span#SCCINSTRUCTION.message { display: inline;}
-div#SSCTOOLBAR.nomatches span#SCCINSTRUCTION.message { display: none;}
-div#SSCTOOLBAR.firstmatch span#SSCFIRSTMATCH.message { display: inline;}
-div#SSCTOOLBAR.lastmatch span#SSCFIRSTMATCH.message { display: inline;}
+div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
+
+/* Make spans more visible */
+
+body.cxSSC span:hover {
+    text-decoration: overline;}
+body.cxSSC .sscapp span:hover {
+    text-decoration: inherit;}
