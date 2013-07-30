@@ -464,15 +464,16 @@ SSC.getStyleInfo=(function(){
     addListener(window,"hashchange",selectHash);
 
     SSC.toolbar_text=
-	"<button title='Hide the toolbar' class='right hide'>Hide</button>\n"+
+	"<span id='SSCTOOLBARBUTTONS'>"+
+	"<button class='showrules'>Rules</button>"+
+	"<button title='Hide the toolbar' class='right hide'>Hide</button></span>\n"+
 	"<div class='combobox'>"+
 	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
 	"<select id='SSCDROPBOX' class='dropbox'></select>"+
 	"</div>"+
-	"<span class='text' id='SSCMATCHPHRASE'>matches <span id='SSCMATCHCOUNT'>some</span> element(s)</span>"+
-	"<button class='showrules'>Rules</button>"+
-	"<div class='styleinfo' id='SSCSTYLEINFO'></div>"+
-	"<span class='text'>Tab/Shift-Tab to move among the matches (at match #<span id='SSCMATCHINDEX'>#</span>)</span>";
+	"<span class='text' id='SSCMATCHPHRASE'>"+
+	"<span id='SSCMATCHCOUNT'>some</span> matches, at #<span id='SSCMATCHINDEX'>#</span></span>"+
+	"<div class='styleinfo' id='SSCSTYLEINFO'></div>";
 
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
@@ -515,7 +516,7 @@ SSC.getStyleInfo=(function(){
 	    target.blur();}
 	else {
 	    setTimeout(sscinput_complete,50);}}
-     var selector_complete_string=false;
+    var selector_complete_string=false;
     var selector_completions=false;
     function sscinput_complete(){
 	var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
@@ -660,5 +661,8 @@ SSC.getStyleInfo=(function(){
 	if (SSC.selected().length)
 	    setTimeout(function(){
 		SSC.focus((SSC.selected())[0]);},
-		      200);});})();
+		       200);
+	if (SSC.onload) {
+	    var loadfn=SSC.onload; SSC.onload=false;
+	    setTimeout(loadfn,50);};});})();
 
