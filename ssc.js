@@ -326,7 +326,8 @@ var SSC=(function(){
 	$: $, addClass: addClass, dropClass: dropClass, getSignature: getSignature,
 	hasClass: hasClass, hasText: hasText, stripregex: stripregex, getID: getID,
 	fillin: fillin, make: make, make_text: make_text, text: make_text,
-	addListener: addListener, cancel: cancel, byID: byID};})();
+	addListener: addListener, cancel: cancel, byID: byID,
+	templates: {}};})();
 
 SSC.updateSelectors=(function(){
 
@@ -449,6 +450,18 @@ SSC.getStyleInfo=(function(){
 
     return getStyleInfo;})();
 
+SSC.Templates.toolbar=
+    "<span id='SSCTOOLBARBUTTONS'>"+
+    "<button class='showrules'>Rules</button>"+
+    "<button title='Hide the toolbar' class='right hide'>Hide</button></span>\n"+
+    "<div class='combobox'>"+
+    "<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
+    "<select id='SSCDROPBOX' class='dropbox'></select>"+
+    "</div>"+
+    "<span class='text' id='SSCMATCHPHRASE'>"+
+    "<span id='SSCMATCHCOUNT'>some</span> matches, at #<span id='SSCMATCHINDEX'>#</span></span>"+
+    "<div class='styleinfo' id='SSCSTYLEINFO'></div>";
+
 (function(){
     var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
     var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
@@ -463,20 +476,8 @@ SSC.getStyleInfo=(function(){
 
     addListener(window,"hashchange",selectHash);
 
-    SSC.toolbar_text=
-	"<span id='SSCTOOLBARBUTTONS'>"+
-	"<button class='showrules'>Rules</button>"+
-	"<button title='Hide the toolbar' class='right hide'>Hide</button></span>\n"+
-	"<div class='combobox'>"+
-	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
-	"<select id='SSCDROPBOX' class='dropbox'></select>"+
-	"</div>"+
-	"<span class='text' id='SSCMATCHPHRASE'>"+
-	"<span id='SSCMATCHCOUNT'>some</span> matches, at #<span id='SSCMATCHINDEX'>#</span></span>"+
-	"<div class='styleinfo' id='SSCSTYLEINFO'></div>";
-
     function setupToolbar(){
-	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
+	var toolbar=make("div","sscapp ssctoolbar",SSC.Templates.toolbar,"SSCTOOLBAR");
 	var input=toolbar.querySelector('input'); {
 	    addListener(input,"keydown",sscinput_keydown);
 	    addListener(input,"focus",sscinput_focus);

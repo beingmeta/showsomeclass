@@ -227,45 +227,6 @@ SSC.Editor=(function(){
     var RETURN=0x0d;
     var ESCAPE=0x1b;
 
-    var edit_element_template=
-	"<div class='button close'>Close</div>\n"+
-	"<input class='sscspecinput' TYPE='TEXT' NAME='SPEC''/>\n"+
-	"<input class='sscstyleinput' TYPE='TEXT' NAME='STYLE'/>\n"+
-	"<select class='sscparents'>\n<option value='' selected='SELECTED'>Parents ({{nparents}}):</option>\n</select>\n"+
-	"<table class='sscattribs'>\n</table>\n"+
-	"<div class='buttons'>\n"+
-	"\t<button value='UNWRAP' 'Remove this element by replacing it with its contents'>Unwrap Content</button>\n"+
-	"\t<button value='DELETE' title='Delete this element'>Delete Element</button>\n"+
-	"\t<button value='CONTENT' title='Edit the HTML content of this element'>Edit Content</button>\n"+
-	"</div>\n"+
-	"<select class='sscchildren'>\n<option value='' selected='SELECTED'>Children ({{nchildren}}):</option>\n</select>\n";
-
-    var edit_selection_template=
-	"<textarea name='SSCSELECTION'>{{content}}</textarea>\n"+
-	"<div class='buttons'>\n"+
-	"\t<button value='CANCEL'>Cancel</button>\n"+
-	"\t<button value='OK'>OK</button>\n"+
-	"\t<button value='WRAP'>Wrap</button>\n"+
-	"</div>\n";
-
-    var edit_content_template=
-	"<div class='title'>{{signature}} (content)</div>"+
-	"<textarea></textarea>\n"+
-	"<div class='buttons'>\n"+
-	"\t<button class='done' value='DONE'>Done</button>\n"+
-	"</div>\n";
-
-    var reclass_elements_template=
-	"<div class='title'>Change {{count}} elements</div>\n"+
-	"<table class='sscreclass'>\n"+
-	"\t<tr><th>matching</th><td>{{spec}}</td></tr>\n"+
-	"\t<tr><th>to match</th>"+
-	"<td><input class='sscnewspec' TYPE='TEXT' NAME='NEWSPEC' VALUE='{{simplespec}}'/></td></tr>\n"+
-	"</table>\n"+
-	"<div class='buttons'>\n"+
-	"\t<button class='close' value='CHANGE'>Change</button>\n"+
-	"</div>\n";
-
     /* Copying an array (or array-like object, such as a NodeList) into a new array. */
 
     function copy(input){
@@ -349,10 +310,9 @@ SSC.Editor=(function(){
     /* Making edit dialogs */
     
     function makeEditContentDialog(node){
-	var dialog=SSC.Dialog(
-	    SSC.edit_content_template||edit_content_template,
-	    {signature: getSignature(node,true)},
-	    {classname: "ssceditcontent"});
+	var dialog=SSC.Dialog(SSC.Templates.editcontent,
+			      {signature: getSignature(node,true)},
+			      {classname: "ssceditcontent"});
 	var textarea=dialog.querySelector("TEXTAREA");
 	textarea.value=node.innerHTML;
 	var done_button=dialog.querySelector("BUTTON.done");
@@ -367,12 +327,11 @@ SSC.Editor=(function(){
 	     (SSC.possibleSelectors(node.tagName,node.className.split(/\s+/))):
 	     [node.tagName]);
 
-	var dialog=SSC.Dialog(
-	    SSC.edit_element_template||edit_element_template,
-	    {nparents: parents.length, nchildren: children.length},
-	    {classname: "ssceditelement", noclose: true,
-	     nparents: parents.length, nchildren: children.length,
-	     nselectors: selectors.length});
+	var dialog=SSC.Dialog(SSC.Templates.editelement,
+			      {nparents: parents.length, nchildren: children.length},
+			      {classname: "ssceditelement", noclose: true,
+			       nparents: parents.length, nchildren: children.length,
+			       nselectors: selectors.length});
 	var specinput=dialog.querySelector(".sscspecinput");
 	specinput.value=getSignature(node,true);
 	addListener(specinput,"keydown",ee_specinput);
@@ -439,9 +398,8 @@ SSC.Editor=(function(){
 	return dialog;}
 
     function makeEditSelectionDialog(node,selection){
-	var dialog=SSC.Dialog(
-	    SSC.edit_selection_template||edit_selection_template,
-	    {selection: "ssceditselection"});
+	var dialog=SSC.Dialog(SSC.Templates.editselection,
+			      {selection: "ssceditselection"});
 	var choices=dialog.querySelector(".choices");
 	addListener(choices,"click",es_buttonclick);
 	return dialog;}
@@ -452,11 +410,10 @@ SSC.Editor=(function(){
 	    selector=SSC.selector();
 	    selected=SSC.selected();}
 	else selected=SSC.$(selector);
-	var dialog=SSC.Dialog(
-	    SSC.reclass_elements_template||reclass_elements_template,
-	    {simplespec: SSC.stripregex(selector),
-	     count: selected.length,spec: selector},
-	    {classname: "sscreclass"});
+	var dialog=SSC.Dialog(SSC.Templates.reclass,
+			      {simplespec: SSC.stripregex(selector),
+			       count: selected.length,spec: selector},
+			      {classname: "sscreclass"});
 	var newspec=dialog.querySelector(".sscnewspec");
 	addListener(newspec,"keydown",rc_keydown);
 	var button=dialog.querySelector("button[value='CHANGE']");
