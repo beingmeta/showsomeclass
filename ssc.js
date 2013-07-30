@@ -576,6 +576,7 @@ SSC.updateCloud=(function(){
 	var tag=node.tagName; var classname=node.className;
 	// Ignore yourself
 	if (classname.search(/\bsscapp\b/)>=0) return;
+	classname=classname.replace(/\bssc\w+/g,"");
 	// Split up classnames
 	var classes=((classname)?(classname.split(/\s+/)):[]);
 	// Generate applicable selectors
@@ -653,8 +654,8 @@ SSC.updateCloud=(function(){
 	else {
 	    while (oh>ih) {
 		fs=fs+delta; selectors.style.fontSize=(fs)+"%";
-		ih=spans.offsetHeight; oh=cloud.offsetHeight;}
-	    fs=fs-delta; spans.style.fontSize=(fs)+"%";}
+		ih=selectors.offsetHeight; oh=cloud.offsetHeight;}
+	    fs=fs-delta; selectors.style.fontSize=(fs)+"%";}
 	cloud.style.removeProperty('opacity',0.0,'!important');
 	cloud.style.removeProperty('display','block','!important');}
     
@@ -706,8 +707,8 @@ SSC.getStyleInfo=(function(){
     addListener(window,"hashchange",selectHash);
 
     SSC.toolbar_text=
-	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>Cloud</button>\n"+
-	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR'/> <span id='SSCMATCHPHRASE'>matches <span id='SSCMATCHCOUNT'>##</span> element(s)</span>";
+	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>All Selectors</button>\n"+
+	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/> <span id='SSCMATCHPHRASE'>matches <span id='SSCMATCHCOUNT'>some</span> element(s)</span>";
 
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");

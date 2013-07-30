@@ -133,18 +133,21 @@ div#SSCTOOLBAR {
     transition-property: top; transition-duration: 1s;
     top: -2em; left: 0px; right: 0px; width: 100%;
     background-color: rgba(0,0,0,0.8); color: ivory;
-    font-size: 20px; 
+    font-size: 20px; padding-left: 0.5ex;
     border-bottom: solid purple 2px;
     text-align: left;}
 div#SSCTOOLBAR { opacity: 0.85 !important; }
 
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     transition-property: font-size; transition-duration: 1s;
-    text-align: left; width: 33%; font-size: 90%;}
+    padding-left: 0.5ex; text-align: left; width: 33%; font-size: 90%;}
 div#SSCTOOLBAR button {
     margin: 0px; margin-right: 0.25ex; margin-top: 0.25ex;
     padding: 0px; font-variant: small-caps; border-radius: 1ex;
-    font-size: 100%;}
+    font-size: 100%; height: 100%;}
+div#SSCTOOLBAR button img {
+    background-color: transparent;
+    height: 100%; width: auto;}
 div#SSCTOOLBAR button.left { float: left;}
 div#SSCTOOLBAR button.right { float: right;}
 body.sscTOOLBAR div#SSCTOOLBAR {
