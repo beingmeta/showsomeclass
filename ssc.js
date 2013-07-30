@@ -1,48 +1,9 @@
 var SSC=(function(){
 
-    /* Utilities for manipulating classes */
-    var whitespace_pat=/(\s)+/;
-    var trimspace_pat=/^(\s)+|(\s)+$/;
-    var classpats={};
-    /* Returns a Regex for matching a delimited class name */
-    function classPat(name){
-	var rx=new RegExp("\\b"+name+"\\b","g");
-	classpats[name]=rx;
-	return rx;}
-    function addClass(elt,classname){
-	if (Array.isArray(elt)) {
-	    var i=0, lim=elt.length;
-	    while (i<lim) addClass(elt[i++],classname);}
-	else {
-	    var current=elt.className, pat=classPat(classname);
-	    if (!(current)) elt.className=classname;
-	    else if (current===classname) {}
-	    else if (current.search(pat)>=0) {}
-	    else elt.className=((current+" "+classname).
-				replace(whitespace_pat," ").
-				replace(trimspace_pat,""));}}
-    function dropClass(elt,classname){
-	if (Array.isArray(elt)) {
-	    var i=0, lim=elt.length;
-	    while (i<lim) dropClass(elt[i++],classname);}
-	else {
-	    var current=elt.className, pat=classPat(classname);
-	    if (!(current)) elt.className=classname;
-	    else if (current===classname) elt.className=null;
-	    else if (current.search(pat)>=0)
-		elt.className=((current.replace(pat,"")).
-			       replace(whitespace_pat," ").
-			       replace(trimspace_pat,""));
-	    else {}}}
-    function hasClass(elt,classname){
-	var current=elt.className, pat=classPat(classname);
-	if (!(current)) return false;
-	else if (current===classname) return true;
-	else if (current.search(pat)>=0) return true;
-	else return false;}
+    /* DOM utilities */
 
-    /* Making DOM nodes */
-    
+    function byID(id){return document.getElementById(id);}
+
     function make(tag,classname,content,id){
 	var elt=document.createElement(tag);
 	if (classname) elt.className=classname;
@@ -60,7 +21,7 @@ var SSC=(function(){
 	else return document.createTextNode(fillin(input));}
     var text=make_text;
 
-    function fillin(data,text){
+    function fillin(data,text){ /* Filling in templates */
 	if (typeof data === "string") {
 	    var tmp=data; data=text; text=tmp;}
 	if ((!(text))&&(data)&&(data.template)) text=data.template;
@@ -75,6 +36,54 @@ var SSC=(function(){
 		    text=text.replace(pat,value.toString());}}
 	    return text;}
 	else return text;}
+
+    /* Manipulating node classes */
+
+    var whitespace_pat=/(\s)+/;
+    var trimspace_pat=/^(\s)+|(\s)+$/;
+    var classpats={};
+    /* Returns a Regex for matching a delimited class name */
+    function classPat(name){
+	var rx=new RegExp("\\b"+name+"\\b","g");
+	classpats[name]=rx;
+	return rx;}
+    function addClass(elt,classname){
+	if (typeof elt === "string") elt=byID(elt);
+	if (!(elt)) return;
+	if (Array.isArray(elt)) {
+	    var i=0, lim=elt.length;
+	    while (i<lim) addClass(elt[i++],classname);}
+	else {
+	    var current=elt.className, pat=classPat(classname);
+	    if (!(current)) elt.className=classname;
+	    else if (current===classname) {}
+	    else if (current.search(pat)>=0) {}
+	    else elt.className=((current+" "+classname).
+				replace(whitespace_pat," ").
+				replace(trimspace_pat,""));}}
+    function dropClass(elt,classname){
+	if (typeof elt === "string") elt=byID(elt);
+	if (!(elt)) return;
+	if (Array.isArray(elt)) {
+	    var i=0, lim=elt.length;
+	    while (i<lim) dropClass(elt[i++],classname);}
+	else {
+	    var current=elt.className, pat=classPat(classname);
+	    if (!(current)) elt.className=classname;
+	    else if (current===classname) elt.className=null;
+	    else if (current.search(pat)>=0)
+		elt.className=((current.replace(pat,"")).
+			       replace(whitespace_pat," ").
+			       replace(trimspace_pat,""));
+	    else {}}}
+    function hasClass(elt,classname){
+	if (typeof elt === "string") elt=byID(elt);
+	if (!(elt)) return;
+	var current=elt.className, pat=classPat(classname);
+	if (!(current)) return false;
+	else if (current===classname) return true;
+	else if (current.search(pat)>=0) return true;
+	else return false;}
 
     /* Adding listeners */
 
@@ -175,8 +184,7 @@ var SSC=(function(){
 	if (node.id) return node.id;
 	var newid="sscTMP"+(tmpid_count++);
 	// This is very unlikely, but let's be obsessive
-	while (document.getElementById(newid))
-	    newid="sscTMP"+(tmpid_count++);
+	while (byID(newid)) newid="sscTMP"+(tmpid_count++);
 	node.id=newid;
 	tmpid_elts.push(node);
 	return node.id;}
@@ -240,51 +248,34 @@ var SSC=(function(){
 	if (!(spec)) return;
 	var nodes=$(spec);
 	var i=0, lim=nodes.length;
-	if (lim===0) {
-	    if (!(nomsg)) {
-		if (SSC.Message)
-		    SSC.Message("There are no matches for <tt>{{spec}}</tt>",
-				{spec: spec,timeout: 4000});
-		else if (SSC.Dialog)
-		    SSC.Dialog("There are no matches for <tt>{{spec}}</tt>",
-			       {spec: spec,timeout: 4000});
-		else alert("There are no matches for "+spec);}
-	    return;}
-	enable();
-	var first=nodes[0];
-	if (!(first)) {}
-	else if (first.scrollIntoViewIfNeeded)
-	    first.scrollIntoViewIfNeeded();
-	else if (first.scrollIntoView)
-	    first.scrollIntoView();
-	else {}
+	enable(); addClass(document.body,"sscTOOLBAR");
 	while (i<lim) show(nodes[i++]);
 	document.title="("+nodes.length+"x"+spec+") "+real_title;
-	dropClass(document.body,"sscSHOWCLOUD");
-	var input=document.getElementById("SSCINPUT");
-	var count=document.getElementById("SSCMATCHCOUNT");
-	var phrase=document.getElementById("SSCMATCHPHRASE");
+	var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
+	var styleinfo=byID("SSCSTYLEINFO");
 	if (input) {
 	    input.value=spec;
 	    input.title="matches "+nodes.length+" elements";}
 	if (count) count.innerHTML=""+nodes.length;
-	var rules=SSC.getStyleInfo(spec);
-	if (phrase) {
-	    var r=0, n_rules=rules.length, rule_list="";
-	    while (r<n_rules) rule_list=rule_list+rules[r++]+"\n";
-	    phrase.title=rule_list;}
-	if ((!(SSC.quiet))&&(!(nomsg))&&(SSC.Dialog)) {
-	    var msg=SSC.Dialog(
-		"The selector<br/><tt>{{spec}}</tt><br/>matches <strong>{{count}}</strong> elements\n"+
-		    "<p class='sschelp'><kbd>Tab</kbd> to scan through them, <kbd>Shift-Tab</kbd> to go back.</p>\n"+
-		    "<div class='sscrules'></div>",
-		{spec: spec, count: nodes.length, timeout: 6000});
-	    var rules_div=msg.querySelector(".sscrules");
-	    var j=0, n_rules=rules.length; while (j<n_rules) {
-		var rule=make("div","cssrule",rules[j++]);
-		rules_div.appendChild(rule);}}
+	if (styleinfo) {
+	    var rules=SSC.getStyleInfo(spec);
+	    styleinfo.innerHTML="";
+	    var r=0, n_rules=rules.length;
+	    while (r<n_rules) {
+		var rule=rules[r++]; var p=make("p"); var body=rule.indexOf('{');
+		p.appendChild(make("strong",false,rule.slice(0,body).trim()));
+		p.appendChild(text(" { "));
+		var clauses=rule.slice(body+1), semi=clauses.indexOf(';');
+		while (semi>0) {
+		    p.appendChild(make("span","prop",(clauses.slice(0,semi)).trim()+";"));
+		    p.appendChild(text(" "));
+		    clauses=clauses.slice(semi+1);
+		    semi=clauses.indexOf(';');}
+		p.appendChild(text(clauses));
+		styleinfo.appendChild(p);}}
 	selector=spec;
 	selected=nodes;
+	if (lim) SSC.focus(nodes[0]);
     	window.location.hash="#"+spec;}
 
     /* THE FOCUS is used for moving back and forth through the
@@ -292,14 +283,16 @@ var SSC=(function(){
     function setFocus(node,index){
 	if ((node)&&(typeof index!=="number"))
 	    index=selected.indexOf(node);
+	if (byID("SSCMATCHINDEX")) byID("SSCMATCHINDEX").innerHTML=""+(index+1);
 	if (focus) dropClass(focus,"sscFOCUS");
 	if (node) addClass(node,"sscFOCUS");
 	focus=node; focus_index=index;
 	if (!(focus)) {}
-	else if (focus.scrollIntoViewIfNeeded)
-	    focus.scrollIntoViewIfNeeded();
-	else if (focus.scrollIntoView)
+	else if (focus.scrollIntoView) {
+	    var offset=((window.innerHeight>400)?(-200):
+			(window.innerHeight>200)?(-100):(-50));
 	    focus.scrollIntoView();
+	    if (window.scrollBy) window.scrollBy(0,offset);}
 	else {}}
     function focusfn(node){
 	var index=false;
@@ -328,231 +321,40 @@ var SSC=(function(){
 	$: $, addClass: addClass, dropClass: dropClass, getSignature: getSignature,
 	hasClass: hasClass, hasText: hasText, stripregex: stripregex, getID: getID,
 	fillin: fillin, make: make, make_text: make_text, text: make_text,
-	addListener: addListener, cancel: cancel};})();
+	addListener: addListener, cancel: cancel, byID: byID};})();
 
-SSC.Dialog=(function(){
-
-    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
-    var addListener=SSC.addListener, hasClass=SSC.hasClass;
-
-    function getDialog(elt){
-	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
-	    elt=((elt.target)||(elt.srcElement));
-	while (elt) {
-	    if (hasClass(elt,"sscdialog")) return elt;
-	    else elt=elt.parentNode;}
-	return false;}
-    SSC.getDialog=getDialog;
-
-    /* Creating a dialog */
-
-    function Dialog(text,data,opts){
-	if (typeof text === "string")  {
-	    if (data) text=fillin(text,data);}
-	if (typeof opts === "number") {
-	    // Assume it's seconds, convert to msecs
-	    if (opts<100) opts=opts*1000;
-	    // Divide the delay between wait and finale
-	    opts={delay: opts/2,finale: opts/2};}
-	else if ((!(opts))&&(data)) opts=data;
-	else {}
-	if ((opts.timeout===false)&&(!(opts.finale))) opts.keep=true;
-	else if ((opts.timeout)&&(!(opts.hasOwnProperty('finale')))) {
-	    // If we just have a delay, and no finale, divide the delay
-	    var d=opts.timeout;
-	    // Assume it's seconds, convert to msecs
-	    if (d<100) d=d*1000;
-	    opts.timeout=d/2; opts.finale=d/2;}
-	else {
-	    if ((opts.timeout)&&(opts.timeout<100)) opts.timeout=opts.timeout*1000;
-	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
-	var classname="sscdialog sscapp";
-	if (opts.classname) {
-	    var custom=opts.classname.trim();
-	    if (custom.search(/\bsscdialog\b/)<0) custom=custom+" sscdialog";
-	    if (custom.search(/\bsscapp\b/)<0) custom=custom+" sscapp";
-	    classname=custom.replace(/\s+/g," ");}
-	var box=make("div",classname,false,opts.id); {
-	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
-		if (!(opts.noclose)) {
-		    var close_button=make("DIV","close button","Close"); {
-			box.appendChild(close_button);}}
-		if ((opts.timeout)&&(!(opts.keep))) {
-		    var keep_button=make("DIV","keep button","Keep"); {
-			box.appendChild(keep_button);}}}}
-	if (opts.title) {
-	    var title_text=opts.title;
-	    var title=make("div","title",title_text);
-	    box.appendChild(title);}
-	box.appendChild(make("div","sscmessages","","SSCMESSAGEBOX"));
-	if (typeof text === "string") {
-	    var frag=document.createElement("div"); frag.innerHTML=text;
-	    var children=frag.childNodes; var toadd=[];
-	    var k=0, klim=children.length;
-	    while (k<klim) toadd.push(children[k++]);
-	    k=0; while (k<klim) box.appendChild(toadd[k++]);}
-	else if (text.nodeType) box.appendChild(text);
-	else if (text.template)
-	    box.appendChild(make_text(fillin(text)));
-	else {}
-	if ((opts.choices)&&(opts.choices.length)) {
-	    var choices=opts.choices, buttons=[];
-	    var i=0, lim=choices.length; while (i<lim) {
-		var choice=choices[i++];
-		var button=document.createElement("BUTTON");
-		if (typeof choice === "string") 
-		    choice={label: choice, value: choice};
-		if (choice.classname) button.className=choice.classname;
-		button.appendChild(document.createTextNode(
-		    (((choice.label)&&(choice.data))?(fillin(choice.label,choice.data)):(choice.label))));
-		button.value=choice.value;
-		button.name=choice.name||choice.label;
-		if (button.handler)
-		    addListener(button,"click",button.handler);
-		else addListener(button,"click",choice_button_handler);
-		buttons.push(button);}
-	    var container=document.createElement("DIV"); {
-		var j=0; container.className="choices"; 
-		while (j<lim) {
-		    container.appendChild(buttons[j++]);
-		    container.appendChild(document.createTextNode(" "));}}
-	    box.appendChild(choices);}
-	addListener(box.querySelectorAll("div.button.close"),"click",close);
-	addListener(box.querySelectorAll("div.button.keep"),"click",keep);
-	box.id="SSCMESSAGE";
-	document.body.appendChild(box);
-	if (opts.keep) box.className=box.className+" keep";
-	// We do this "old school" with an interval, rather than using
-	//  CSS transitions, because the selective display CSS uses
-	//  !important opacity definitions which get in the way of the
-	//  transitions.
-	if ((opts.timeout)&&
-	    (!(opts.modal))&&
-	    (!(opts.keep)))
-	    startClosing(box,opts);
-	return box;}
-
-    /* Gradual closing */
-
-    var closing=false;
-    var closing_delay=false;
-    var closing_delta=0.025;
-    var closing_fader=false;
-    var closing_fade_interval=100;
-    var closing_opacity=1.0;
-
-    function startClosing(dialog,opts){
-	if (dialog===closing) return;
-	else if (closing) close(closing);
-	closing=dialog;
-	closing_opacity=opts.init_opacity||Dialog.opts.init_opacity||0.9;
-	dialog.style.setProperty('opacity',closing_opacity,'!important');
-	var delay=((opts.hasOwnProperty('timeout'))?(opts.timeout):
-		   (Dialog.opts.hasOwnProperty('timeout'))?(Dialog.opts.timeout):
-		   3000);
-	var finale=((opts.hasOwnProperty('finale'))?(opts.finale):
-		    (Dialog.opts.hasOwnProperty('finale'))?(Dialog.opts.finale):3000);
-	var interval=((opts.fade_interval)||(Dialog.opts.fade_interval)||100);
-	var n_steps=Math.ceil((finale)&&(finale/interval));
-	var delta=((finale)&&(closing_opacity/n_steps));
-	if (delta) {
-	    closing_delta=delta;
-	    closing_fade_interval=interval;
-	    closing_delay=setTimeout(startfinale,delay);}
-	else closing_delay=setTimeout(close,delay);}
-
-    function startfinale(){
-	if (closing_fader) close();
-	if (closing_delay) {clearTimeout(closing_delay); closing_delay=false;}
-	closing_fader=setInterval(fademessage,closing_fade_interval);}
-
-    function fademessage(){
-	var delta=closing_delta;
-	if (!(delta)) {close(closing); return;}
-	if (!(closing_fader)) {close(closing); return;}
-	if ((!(closing))||(!(closing.parentNode))) close();
-	else if (closing_opacity<=0) {
-	    closing.style.removeProperty('opacity');
-	    close();}
-	else {
-	    closing_opacity=closing_opacity-delta;
-	    closing.style.setProperty('opacity',closing_opacity,'!important');}}
-
-    function close(arg){
-	if (!(arg)) arg=closing;
-	else if (typeof arg === "STRING")
-	    arg=document.getElementById(string)
-	else if ((arg.target)||(arg.srcElement))
-	    arg=((arg.target)||(arg.srcElement));
-	else {}
-	if (arg.nodeType) {
-	    var scan=arg;
-	    while (scan) {
-		if (scan.nodeType!==1) scan=scan.parentNode;
-		else if (hasClass(scan,"sscdialog")) break;
-		else scan=scan.parentNode;}
-	    if (!(scan)) return;
-	    else arg=scan;}
-	else return;
-	if ((closing)&&(closing===arg)) {
-	    if (closing_delay) clearTimeout(closing_delay);
-	    if (closing_fader) clearInterval(closing_fader);
-	    closing=closing_delay=closing_fader=false;}
-	if (arg.onclose) {
-	    var closefn=arg.onclose;
-	    var close_data=arg.onclose_data;
-	    arg.onclose=false;
-	    if (close_data) arg.onclose_data=false;
-	    if (close_data) closefn(arg,close_data); else closefn(arg);}
-	if (arg.parentNode) arg.parentNode.removeChild(arg);}
-
-    function keep(arg){
-	if (!(arg)) arg=closing;
-	else if (typeof arg === "STRING")
-	    arg=document.getElementById(string)
-	else if ((arg.target)||(arg.srcElement))
-	    arg=((arg.target)||(arg.srcElement));
-	else {}
-	if (arg.nodeType) arg=getDialog(arg);
-	else return;
-	if (!(arg)) return;
-	else if (arg===closing) {
-	    if (closing_delay) {clearTimeout(closing_delay); closing_delay=false;}
-	    if (closing_fader) {clearInterval(closing_fader); closing_fader=false;}
-	    closing_opacity=Dialog.opts.init_opacity||0.9;
-	    arg.style.setProperty('opacity',closing_opacity,'!important');
-	    arg.className=msg.className+" keep";}
-	else {}}
-
-    SSC.Message=function(text_arg,data,opts){
-	var text=text_arg;
-	if (typeof text === "string")  {
-	    if (data) text=fillin(text,data);}
-	else if (text.template) text=fillin(text);
-	else {}
-	var livebox=document.getElementById("SSCMESSAGEBOX");
-	if (livebox) {
-	    if (text.nodeType) livebox.appendChild(text);
-	    else if (typeof text === "string")
-		livebox.appendChild(make_text(text));
-	    else livebox.appendChild(make_text(""+text));}
-	else SSC.Dialog(text,false,opts||6000);};
-
-    Dialog.close=close; Dialog.keep=keep;
-    Dialog.opts={};
-
-    return Dialog;})();
-
-SSC.updateCloud=(function(){
+SSC.updateSelectors=(function(){
 
     var make=SSC.make, text=SSC.text, fillin=SSC.fillin;
-    var addListener=SSC.addListener;
-
-    function scoreSelectors(root){
-	var scores={};
+    var addListener=SSC.addListener, byID=SSC.byID;
+    
+    function countSelectors(root){
+	var counts={}, all=[];
 	if (!(root)) root=document.body;
-	scandom(root,scores);
-	return scores;}
+	// Gather all selectors, with frequency counts
+	scandom(root,counts,all);
+	// Sort by frequency, then length
+	all.sort(function(x,y){
+	    var cx=counts[x], cy=counts[y];
+	    if (cx===cy) {
+		if (x.search(y)>=0) return 1;
+		else if (y.search(x)>=0) return -1;
+		else return y.length-x.length;}
+	    else return cy-cx;});
+	if (all.length>1) {
+	    // Remove some redundant entries
+	    var i=1, lim=all.length;
+	    var cur=all[0], reduced=[cur];
+	    var curcount=counts[cur];
+	    while (i<lim) {
+		var sel=all[i++], count=counts[sel];
+		if ((count!==curcount)||
+		    (cur.search(new RegExp(sel.replace(".","\\.")+"\\b"))<0))
+		    reduced.push(sel); cur=sel; curcount=count;}
+	    counts._all=reduced;}
+	else counts._all=all;
+	return counts;}
+    SSC.countSelectors=countSelectors;
 
     function possibleSelectors(tag,classes){
 	var selectors=[];
@@ -574,7 +376,7 @@ SSC.updateCloud=(function(){
 	return selectors;}
     SSC.possibleSelectors=possibleSelectors;
 
-    function scandom(node,scores){
+    function scandom(node,counts,all){
 	var tag=node.tagName; var classname=node.className;
 	// Ignore yourself
 	if (classname.search(/\bsscapp\b/)>=0) return;
@@ -583,85 +385,33 @@ SSC.updateCloud=(function(){
 	var classes=((classname)?(classname.split(/\s+/)):[]);
 	// Generate applicable selectors
 	var selectors=possibleSelectors(tag,classes);
-	// Increase the scores for applicable selectors
+	// Increase the counts for applicable selectors
 	var k=0, klim=selectors.length;
 	while (k<klim) {
 	    var sel=selectors[k++];
-	    if (scores.hasOwnProperty(sel)) scores[sel]++;
-	    else scores[sel]=1;}
+	    if (counts.hasOwnProperty(sel)) counts[sel]++;
+	    else {counts[sel]=1; all.push(sel);}}
 	// Descend the DOM
 	if (node.childNodes) {
 	    var children=node.childNodes;
 	    var c=0, clim=children.length; while (c<clim) {
 		var child=children[c++];
-		if (child.nodeType===1) scandom(child,scores);}}}
+		if (child.nodeType===1) scandom(child,counts,all);}}}
 
-    function initCloud(){
-	var cloud=make("div","sscapp sscloud","","SSCSELECTORCLOUD");
-	var links=make("div","selectors","","SSCSELECTORSPANS");
-	var button=make("div","button close","Close");
-	cloud.appendChild(button); cloud.appendChild(links);
-	addListener(cloud,"click",selector_clicked);
-	document.body.appendChild(cloud);
-	SSC.cloud=cloud;}
+    function updateSelectors(counts,dropbox){
+	if (!(counts)) counts=SSC.countSelectors(document.body);
+	var all=counts._all; var options=[];
+	if (dropbox) dropbox.innerHTML="";
+	var i=0, lim=all.length; while (i<lim) {
+	    var sel=all[i++]; var count=counts[sel];
+	    var label=((count===1)?(" (one element)"):(" ("+count+" elements)"));
+	    var option=make("OPTION",false,sel+label);
+	    option.value=sel; options.push(option);
+	    if (dropbox) dropbox.appendChild(option);}
+	counts._options=options;
+	return counts;}
 
-    function selector_clicked(evt){
-	evt=evt||event;
-	var target=evt.target||evt.srcElement;
-	while (target.nodeType!==1) target=target.parentNode;
-	if (target.className==="selector") {
-	    if (evt.shiftKey) {
-		var cur=SSC.selector();
-		SSC.select(cur+","+target.innerHTML);}
-	    else SSC.select(target.innerHTML);}}
-
-    function updateCloud(){
-	if (!(SSC.cloud)) initCloud();
-	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var selectors=document.getElementById("SSCSELECTORSPANS");
-	var scores=scoreSelectors(document.body);
-	var all=[]; for (var sel in scores) {
-	    if (scores.hasOwnProperty(sel)) all.push(sel);}
-	all.sort(function(sel1,sel2){
-	    if (sel1.length===sel2.length) {
-		if (sel1<sel2) return -1; else return 1;}
-	    else return sel1.length-sel2.length;});
-	var cloudmap={};
-	SSC.cloudmap=cloudmap;
-	selectors.innerHTML="";
-	var i=0, lim=all.length;
-	while (i<lim) {
-	    var sel=all[i++], score=scores[sel];
-	    var span=make("span","selector",sel);
-	    span.title=score+" matching elements";
-	    span.style.fontSize=(100+(5*(Math.ceil(Math.log(score)))))+"%";
-	    selectors.appendChild(span); cloudmap[sel]=span;
-	    selectors.appendChild(text(" "));}
-	SSC.cloudmap=cloudmap;
-	SSC.selectors=all;
-	sizeCloud();}
-
-    function sizeCloud(){
-	if (!(SSC.cloud)) updateCloud();
-	var cloud=document.getElementById("SSCSELECTORCLOUD");
-	var selectors=document.getElementById("SSCSELECTORSPANS");
-	cloud.style.setProperty('opacity',0.0,'!important');
-	cloud.style.setProperty('display','block','!important');
-	cloud.style.fontSize='100%';
-	var ih=selectors.offsetHeight, oh=cloud.offsetHeight;
-	var fs=100, delta=5;
-	if (ih>oh) while (ih>oh) {
-	    fs=fs-delta; selectors.style.fontSize=(fs)+"%";
-	    ih=selectors.offsetHeight; oh=cloud.offsetHeight;}
-	else {
-	    while (oh>ih) {
-		fs=fs+delta; selectors.style.fontSize=(fs)+"%";
-		ih=selectors.offsetHeight; oh=cloud.offsetHeight;}
-	    fs=fs-delta; selectors.style.fontSize=(fs)+"%";}
-	cloud.style.removeProperty('opacity',0.0,'!important');
-	cloud.style.removeProperty('display','block','!important');}
-    
-    return updateCloud;})();
+    return updateSelectors;})();
 
 SSC.getStyleInfo=(function(){
     function getRules(sel,results){
@@ -697,7 +447,7 @@ SSC.getStyleInfo=(function(){
 (function(){
     var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
     var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
-    var addListener=SSC.addListener, cancel=SSC.cancel;
+    var addListener=SSC.addListener, cancel=SSC.cancel, byID=SSC.byID;
 
     /* Using the URL hash as a selector */
 
@@ -709,33 +459,48 @@ SSC.getStyleInfo=(function(){
     addListener(window,"hashchange",selectHash);
 
     SSC.toolbar_text=
-	"<button title='See all selectors' class='right' onclick='SSC.toggleCloud();'>All Selectors</button>\n"+
-	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/> <span id='SSCMATCHPHRASE'>matches <span id='SSCMATCHCOUNT'>some</span> element(s)</span>";
+	"<button title='Hide the toolbar' class='right hide'>Hide</button>\n"+
+	"<div class='combobox'>"+
+	"<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
+	"<select id='SSCDROPBOX' class='dropbox'></select>"+
+	"</div>"+
+	"<span class='text' id='SSCMATCHPHRASE'>matches <span id='SSCMATCHCOUNT'>some</span> element(s)</span>"+
+	"<button class='showrules'>Rules</button>"+
+	"<div class='styleinfo' id='SSCSTYLEINFO'></div>"+
+	"<span class='text'>Tab/Shift-Tab to move among the matches (at match #<span id='SSCMATCHINDEX'>#</span>)</span>";
 
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",SSC.toolbar_text,"SSCTOOLBAR");
-	var input=toolbar.querySelector('input');
-	addListener(input,"keydown",selector_keydown);
+	var input=toolbar.querySelector('input'); {
+	    addListener(input,"keydown",sscinput_keydown);
+	    addListener(input,"focus",sscinput_focus);
+	    addListener(input,"blur",sscinput_blur);}
+	var dropbox=toolbar.querySelector("SELECT"); {
+	    addListener(dropbox,"change",selector_selected);
+	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
+	var hide_button=toolbar.querySelector("button.hide"); {
+	    addListener(hide_button,"click",hideToolbar);}
+	var tapzone=make("div",false,false,"SSCTAPZONE"); {
+	    addListener(tapzone,"click",showToolbar);}
+	var showrules=toolbar.querySelector("button.showrules"); {
+	    addListener(showrules,"click",toggleStyleInfo);}
 	document.body.appendChild(toolbar);}
-    
-    function showCloud(){
-	if (!(SSC.cloud)) SSC.updateCloud();
-	addClass(document.body,"sscSHOWCLOUD");}
-    function hideCloud(){
-	dropClass(document.body,"sscSHOWCLOUD");}
-    function toggleCloud(){
-	if (!(SSC.cloud)) SSC.updateCloud();
-	if (hasClass(document.body,"sscSHOWCLOUD"))
-	    dropClass(document.body,"sscSHOWCLOUD");
-	else addClass(document.body,"sscSHOWCLOUD");}
 
-    function hideCloudDelayed(){
-	setTimeout(hideCloud,500);}
-    SSC.showCloud=showCloud;
-    SSC.hideCloud=hideCloud;
-    SSC.toggleCloud=toggleCloud;
+    function showToolbar(){addClass(document.body,"sscTOOLBAR");}
+    function hideToolbar(){dropClass(document.body,"sscTOOLBAR");}
+    SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
-    function selector_keydown(evt){
+    function toggleStyleInfo(){
+	if (hasClass("SSCTOOLBAR","showstyle"))
+	    dropClass("SSCTOOLBAR","showstyle");
+	else addClass("SSCTOOLBAR","showstyle");}
+
+    function sscinput_focus(){
+	sscinput_complete();
+	addClass("SSCTOOLBAR","focused"); }
+    function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
+
+    function sscinput_keydown(evt){
  	evt=evt||event;
 	var kc=evt.keyCode;
 	var target=evt.target||evt.srcElement;
@@ -745,13 +510,56 @@ SSC.getStyleInfo=(function(){
 	    if (nodes.length===0) {
 		SSC.message("No elements match <tt>{{spec}}</tt>",{spec: spec});}
 	    else {
-		SSC.select(spec,true);}}}
+		SSC.select(spec,true);}}
+	else {
+	    setTimeout(sscinput_complete,50);}}
+     var selector_complete_string=false;
+    var selector_completions=false;
+    function sscinput_complete(){
+	var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
+	var prefix=selector_prefix(input.value);
+	if (prefix===selector_complete_string) return;
+	else selector_complete_string=prefix;
+	var selectors=SSC.selectors||
+	    (SSC.selectors=SSC.updateSelectors());
+	var all=selectors._all, options=selectors._options;
+	var frag=document.createDocumentFragment();
+	var i=0, lim=options.length, matches=0;
+	if (prefix.length===0) while (i<lim) {
+	    frag.appendChild(options[i++]);}
+	else while (i<lim) {
+	    var sel=all[i];
+	    if ((prefix[0]==='.')?
+		(sel.search(prefix)>=0):
+		(sel.search(prefix)===0)) {
+		frag.appendChild(options[i]); matches++;}
+	    i++;}
+	dropbox.innerHTML="";
+	if (matches>7) dropbox.size=7; else dropbox.size=matches+1;
+	dropbox.appendChild(frag);}
+
+    function selector_selected(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var input=byID("SSCINPUT");
+	if (target.value) {
+	    var text=input.value.trim();
+	    var comma=text.lastIndexOf(',');
+	    if (comma<0) SSC.select(target.value);
+	    else SSC.select(text.slice(0,comma)+','+target.value);
+	    input.blur();}}
+    function selector_prefix(string){
+	string=string.trim();
+	var comma=string.lastIndexOf(',');
+	if (comma<0) return string;
+	else return string.slice(comma+1);}
 
     /* Keyboard interaction */
 
     var CKEY=0x43;
     var TAB=0x09;
     var RETURN=0x0d;
+    var SPACE=0x0a;
     var ESCAPE=0x1b;
     var PLUS=187;
     var MINUS=189;
@@ -771,8 +579,7 @@ SSC.getStyleInfo=(function(){
 	if (key===ESCAPE) {
 	    var changed=false;
 	    // Close any windows which are up
-	    SSC.Dialog.close();
-	    dropClass(document.body,"sscSHOWCLOUD");
+	    dropClass("SSCTOOLBAR","showstyle");
 	    dropClass(document.body,"sscTOOLBAR");
 	    if (!(SSC.isenabled())) SSC.enable();
 	    else {
@@ -783,13 +590,11 @@ SSC.getStyleInfo=(function(){
 	else if (key===TAB) {
 	    var index=SSC.focusIndex();
 	    var max=SSC.selected().length-1;
-	    if (max<0) SSC.Dialog("No matches for selector!");
+	    if (max<0) {}
 	    else if (typeof index === "number") {
 		if (evt.shiftKey) {
-		    if (index<=0) SSC.Dialog("No more matches",false,4);
-		    else SSC.focus(index-1);}
-		else if (index>=max)
-		    SSC.Dialog("No more matches",false,4);
+		    if (index<=0) {} else SSC.focus(index-1);}
+		else if (index>=max) {}
 		else SSC.focus(index+1);}
 	    else if (evt.shiftKey)
 		SSC.focus(max);
@@ -802,8 +607,9 @@ SSC.getStyleInfo=(function(){
 	    else showCloud();}
 	else if (key===RETURN) {
 	    addClass(document.body,"sscTOOLBAR");
-	    var input=document.getElementById("SSCINPUT");
-	    input.focus();}
+	    if (evt.shiftKey) {
+		var input=byID("SSCINPUT");
+		if (input) input.focus();}}
 	else return;
 	cancel(evt);}
     SSC.window_keydown=window_keydown;
@@ -817,15 +623,13 @@ SSC.getStyleInfo=(function(){
 	    else if ((target.tagName==="A")&&(target.href)) return;
 	    else if (scan===document.body) break;
 	    else scan=scan.parentNode;}
-	if ((hasClass(document.body,"sscTOOLBAR"))||
-	    (hasClass(document.body,"sscSHOWCLOUD"))) {
-	    dropClass(document.body,"sscTOOLBAR");
-	    dropClass(document.body,"sscSHOWCLOUD");
-	    return;}
 	if (!(scan)) return; else scan=target;
 	while (scan.nodeType!==1) scan=scan.parentNode;
 	if (!(scan)) return;
 	if ((evt.shiftKey)&&(scan.parentNode)) scan=scan.parentNode;
+	if (hasClass(scan,"sscSELECTED")) {
+	    SSC.focus(scan);
+	    return;}
 	var spec=scan.tagName;
 	if (scan.className) {
 	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
@@ -839,12 +643,15 @@ SSC.getStyleInfo=(function(){
 	setupToolbar();
 	var hash=(location)&&(location.hash);
 	if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
-	if ((hash)&&($(hash).length)) {
-	    SSC.enable(); SSC.select(hash);}
 	if (SSC.hasOwnProperty("onclick"))
 	    addListener(window,"click",SSC.onclick);
 	else addListener(window,"click",window_click);
     	if (SSC.hasOwnProperty("onkey"))
 	    addListener(window,"keydown",SSC.onkey);
-	else addListener(window,"keydown",window_keydown);});})();
+	else addListener(window,"keydown",window_keydown);
+	if ((hash)&&($(hash).length)) {SSC.enable(); SSC.select(hash);}
+	if (SSC.selected().length)
+	    setTimeout(function(){
+		SSC.focus((SSC.selected())[0]);},
+		      200);});})();
 

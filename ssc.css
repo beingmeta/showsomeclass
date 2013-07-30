@@ -8,6 +8,9 @@ body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED.sscFOCUS {
   background-color: rgba(255,255,0,0.25) !important;}
 
+body.cxSSC .sscapp {
+    font-family: sans,sans-serif;}
+
 /* Exempt app elements from highlighting rules */
 
 body.cxSSC .sscapp { opacity: 0.9 !important;}
@@ -131,25 +134,62 @@ div#SSCTOOLBAR {
     position: fixed;
     font-family: sans,sans-serif;
     transition-property: top; transition-duration: 1s;
-    top: -2em; left: 0px; right: 0px; width: 100%;
+    top: -40px; left: 0px; right: 0px; width: 100%; height: 1.5em;
     background-color: rgba(0,0,0,0.8); color: ivory;
     font-size: 20px; padding-left: 0.5ex;
-    border-bottom: solid purple 2px;
+    border-bottom: solid purple 0.2em;
     text-align: left;}
 div#SSCTOOLBAR { opacity: 0.85 !important; }
 
+div#SSCTAPZONE {
+    position: fixed; top: 0px; left: 0px; right: 0px; height: 2em;
+    opacity: 0.0;}
+
+div.ssctoolbar div.combobox {
+    width: 15em; height: 1em; overflow: visible; display: inline-block;
+    text-align: left; margin-left: 0.25em;}
+div.ssctoolbar div.combobox input[TYPE="TEXT"],
+div.ssctoolbar div.combobox select {
+    width: 96%; clear: left;}
+div.ssctoolbar div.combobox select {
+    overflow: auto;
+    display: none;}
+div.ssctoolbar.focused div.combobox select { display: block;}
+div.ssctoolbar div.combobox select:focus { display: block;}
+
 div#SSCTOOLBAR input[TYPE="TEXT"] {
-    transition-property: font-size; transition-duration: 1s;
-    padding-left: 0.5ex; text-align: left; width: 33%; font-size: 90%;}
+    padding-left: 0.5ex; text-align: left; font-size: 90%;}
 div#SSCTOOLBAR button {
-    margin: 0px; margin-right: 0.25ex; margin-top: 0.25ex;
-    padding: 0px; font-variant: small-caps; border-radius: 1ex;
-    font-size: 100%; height: 100%;}
+    margin: 0px; margin-right: 1ex; margin-top: 0.25ex;
+    padding: 0px;padding-left: 0.5ex; padding-right: 0.5ex;
+    font-variant: small-caps; font-size: 100%; 
+    border-radius: 0.5ex;}
 div#SSCTOOLBAR button img {
     background-color: transparent;
     height: 100%; width: auto;}
 div#SSCTOOLBAR button.left { float: left;}
 div#SSCTOOLBAR button.right { float: right;}
-body.sscTOOLBAR div#SSCTOOLBAR {
-    top: 0px;}
+div#SSCTOOLBAR button.hide {
+    font-weight: bold; color: red;}
+div#SSCTOOLBAR button.showrules {
+    margin-left: 1ex; margin-right: 1em;}
 
+body.sscTOOLBAR div#SSCTOOLBAR { top: 0px;}
+body.sscTOOLBAR div#SSCTAPZONE { display: none; }
+
+div#SSCTOOLBAR div#sscstyleinfo {
+    position: absolute; top: 1.7em; left: 15em;
+    background-color: inherit; padding: 1em;
+    max-width: 50%;
+    display: none;}
+div#SSCTOOLBAR.showstyle div#sscstyleinfo { display: block;}
+
+div#SSCTOOLBAR .styleinfo p {
+    margin-left: 1em; text-indent: -1em;}
+div#SSCTOOLBAR .styleinfo p span.prop { white-space: nowrap; }
+
+div#SSCTOOLBAR span.message { display: none;}
+div#SSCTOOLBAR span#SCCINSTRUCTION.message { display: inline;}
+div#SSCTOOLBAR.nomatches span#SCCINSTRUCTION.message { display: none;}
+div#SSCTOOLBAR.firstmatch span#SSCFIRSTMATCH.message { display: inline;}
+div#SSCTOOLBAR.lastmatch span#SSCFIRSTMATCH.message { display: inline;}
