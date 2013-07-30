@@ -288,6 +288,11 @@ var SSC=(function(){
 	if (node) addClass(node,"sscFOCUS");
 	focus=node; focus_index=index;
 	if (!(focus)) {}
+	else if (focus.scrollIntoViewIfNeeded) {
+	    var offset=((window.innerHeight>400)?(-200):
+			(window.innerHeight>200)?(-100):(-50));
+	    var current=window.scrollY;
+	    focus.scrollIntoViewIfNeeded();}
 	else if (focus.scrollIntoView) {
 	    var offset=((window.innerHeight>400)?(-200):
 			(window.innerHeight>200)?(-100):(-50));
@@ -506,11 +511,8 @@ SSC.getStyleInfo=(function(){
 	var target=evt.target||evt.srcElement;
 	if (kc===RETURN) {
 	    var spec=target.value;
-	    var nodes=document.querySelectorAll(spec);
-	    if (nodes.length===0) {
-		SSC.message("No elements match <tt>{{spec}}</tt>",{spec: spec});}
-	    else {
-		SSC.select(spec,true);}}
+	    SSC.select(spec,true);
+	    target.blur();}
 	else {
 	    setTimeout(sscinput_complete,50);}}
      var selector_complete_string=false;
@@ -616,6 +618,11 @@ SSC.getStyleInfo=(function(){
 
     function window_click(evt){
 	evt=evt||event;
+	var selection=window.getSelection();
+	if ((selection)&&
+	    ((selection.anchorNode!==selection.focusNode)||
+	     (selection.anchorOffset!==selection.focusOffset)))
+	    return;
 	var target=evt.target||evt.srcElement;
 	var scan=target;
 	while (scan) {
