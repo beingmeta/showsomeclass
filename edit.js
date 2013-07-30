@@ -13,8 +13,9 @@ SSC.Editor=(function(){
 	"<div class='button close'>Close</div>\n"+
 	"<input class='sscspecinput' TYPE='TEXT' NAME='SPEC''/>\n"+
 	"<input class='sscstyleinput' TYPE='TEXT' NAME='STYLE'/>\n"+
-	"<select class='sscparents'>\n<option value='' selected='SELECTED'>Parents:</option>\n</select>\n"+
-	// "<select class='sscselectors'>\n</select>\n"+
+	"<select class='sscparents'>\n<option value='' selected='SELECTED'>Parents ({{nparents}}):</option>\n</select>\n"+
+	"<div class='button showstyle'>{&nbsp;}</div>"+
+	"<select class='sscselectors'>\n<option value='' selected='SELECTED'>Selectors ({{nselectors}}):</option>\n</select>\n"+
 	// "<select class='sscreclass'>\n</select>\n"+
 	"<dl class='sccstylerules'></dl>\n"+
 	"<table class='sscattribs'>\n</table>\n"+
@@ -23,7 +24,7 @@ SSC.Editor=(function(){
 	"\t<button value='DELETE'>Delete</button>\n"+
 	"\t<button value='CONTENT'>Content</button>\n"+
 	"</div>\n"+
-	"<select class='sscchildren'>\n<option value='' selected='SELECTED'>Parents:</option>\n</select>\n";
+	"<select class='sscchildren'>\n<option value='' selected='SELECTED'>Children ({{nchildren}}):</option>\n</select>\n";
 
     var edit_selection_template=
 	"<textarea name='SSCSELECTION'>{{content}}</textarea>\n"+
@@ -71,11 +72,11 @@ SSC.Editor=(function(){
     function getChildren(node){
 	var children=node.childNodes;
 	if ((children)&&(children.length)) {
-	    var result=[]; var i=0, n=children.length;
+	    var results=[]; var i=0, n=children.length;
 	    while (i<n) {
 		var child=children[i++];
 		if (child.nodeType===1) results.push(child);}
-	    return result;}
+	    return results;}
 	else return [];}
 
     /* Adjusting nodes to match a new selector. */
@@ -144,9 +145,18 @@ SSC.Editor=(function(){
 	return dialog;}
 
     function makeEditElementDialog(node){
+	var parents=getParents(node);
+	var children=getChildren(node);
+	var selectors=
+	    ((node.className)?
+	     (SSC.possibleSelectors(node.tagName,node.className.split(/\s+/))):
+	     [node.tagName]);
+
 	var dialog=SSC.Dialog(
 	    SSC.edit_element_template||edit_element_template,false,
-	    {classname: "ssceditelement", noclose: true});
+	    {classname: "ssceditelement", noclose: true,
+	     nparents: parents.length, nchildren: children.length,
+	     nselectors: selectors.length});
 	var specinput=dialog.querySelector(".sscspecinput");
 	specinput.value=getSignature(node,true);
 	addListener(specinput,"keydown",ee_specinput);
@@ -159,42 +169,36 @@ SSC.Editor=(function(){
 	else dialog.removeChild(styleinput);
 
 	var up=dialog.querySelector('.sscparents');
-	var parents=getParents(node);
 	if (parents.length) {
 	    var p=0, n_parents=parents.length; while (p<n_parents) {
 		var parent=parents[p++];
 		var popt=make("OPTION",false,getSignature(parent,true));
 		popt.value=getID(parent);
 		up.appendChild(popt);}
-	    addListener(up,"onchange",ee_selected);}
+	    addListener(up,"change",ee_selected);}
 	else dialog.removeChild(up);
 	
 	var down=dialog.querySelector('.sscchildren'), n_opts=0;
-	var children=getChildren(node);
 	if (children.length) {
 	    var c=0, n_children=children.length; while (c<n_children) {
 		var child=children[c++];
 		var copt=make("OPTION",false,getSignature(child,true));
 		copt.value=getID(child);
 		down.appendChild(copt);}
-	    addListener(down,"onchange",ee_selected);}
+	    addListener(down,"change",ee_selected);}
 	else dialog.removeChild(down);
 	
-	/*
-	var selectors=dialog.querySelector(".sscselectors");
-	addListener(selectors,"change",selectors_changed);
-	var selectbox=dialog.querySelector('.sscselectors');
-	var selectors=
-	    ((node.className)?
-	     (SSC.possibleSelectors(node.tagName,node.className.split(/\s+/))):
-	     [node.tagName]);
+	var select_selectors=dialog.querySelector(".sscselectors");
 	selectors.sort(function(s1,s2){return s1.length-s2.length;});
 	var i=0, n_selectors=selectors.length;
 	while (i<n_selectors) {
 	    var selector=selectors[i++];
 	    var option=make("OPTION",false,selector); option.value=selector;
 	    selectbox.appendChild(option);}
-	*/
+	addListener(select_selectors,"change",select_selector);
+	
+	var styledefs=dialog.querySelector(".sscstyledefs");
+	
 
 	// var reclasser=dialog.querySelector(".sscreclass");
 	// addListener(reclasser,"change",reclasser_changed);
