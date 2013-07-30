@@ -43,7 +43,15 @@ SSC.Dialog=(function(){
 	var box=make("div",classname,false,opts.id); {
 	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
 		if (!(opts.noclose)) {
-		    var close_button=make("DIV","close button","Close"); {
+		    var svg_image=make("img","svg"); {
+			svg_image.src=SSC.default_root+"/redx.svgz";
+			svg_image.alt="X";}
+		    var png_image=make("img","notsvg"); {
+			png_image.src=SSC.default_root+"/redx100x100.png";
+			png_image.alt="X";}
+		    var close_button=make("div","close button"); {
+			close_button.appendChild(svg_image);
+			close_button.appendChild(png_image);
 			box.appendChild(close_button);}}
 		if ((opts.timeout)&&(!(opts.keep))) {
 		    var keep_button=make("DIV","keep button","Keep"); {
@@ -217,8 +225,10 @@ SSC.Dialog=(function(){
 
 SSC.Editor=(function(){
 
-    var make=SSC.make, make_text=SSC.make_text, text=SSC.text;
-    var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
+    var make=SSC.make, make_text=SSC.make_text;
+    var text=SSC.text, fillin=SSC.fillin;
+    var hasClass=SSC.hasClass, addClass=SSC.addClass;
+    var dropClass=SSC.dropClass;
     var addListener=SSC.addListener, cancel=SSC.cancel;
     var getID=SSC.getID, getSignature=SSC.getSignature, byID=SSC.byID;
     var Dialog=SSC.Dialog, getDialog=SSC.getDialog;
@@ -311,7 +321,8 @@ SSC.Editor=(function(){
     
     function makeEditContentDialog(node){
 	var dialog=SSC.Dialog(SSC.Templates.editcontent,
-			      {signature: getSignature(node,true)},
+			      {signature: getSignature(node,true),
+			       imgroot: SSC.default_root},
 			      {classname: "ssceditcontent"});
 	var textarea=dialog.querySelector("TEXTAREA");
 	textarea.value=node.innerHTML;
@@ -324,11 +335,14 @@ SSC.Editor=(function(){
 	var children=getChildren(node);
 	var selectors=
 	    ((node.className)?
-	     (SSC.possibleSelectors(node.tagName,node.className.split(/\s+/))):
+	     (SSC.possibleSelectors(
+		 node.tagName,node.className.split(/\s+/))):
 	     [node.tagName]);
 
 	var dialog=SSC.Dialog(SSC.Templates.editelement,
-			      {nparents: parents.length, nchildren: children.length},
+			      {nparents: parents.length,
+			       nchildren: children.length,
+			       imgroot: SSC.default_root},
 			      {classname: "ssceditelement", noclose: true,
 			       nparents: parents.length, nchildren: children.length,
 			       nselectors: selectors.length});
@@ -375,30 +389,42 @@ SSC.Editor=(function(){
 		i=0; var n_attribs=attributes.length;
 		while (i<n_attribs) {
 		    var attrib=attributes[i++]; var name=attrib.name;
-		    if ((name==='id')||(name==='class')||(name==='style')) continue;
-		    var tr=make("TR"), th=make("TH",false,name);
-		    var input=make("INPUT"); input.type="TEXT"; {
-			input.value=attrib.value; input.sscattribname=name;
-			addListener(input,"keydown",ee_attrib);}
-		    tr.appendChild(th); tr.appendChild(make("TD",false,input));
+		    if ((name==='id')||(name==='class')||
+			(name==='style'))
+			continue;
+		    var tr=make_attrib_row(name,attrib.value);
 		    attribtable.appendChild(tr);}}
-	    var new_name=make("INPUT"); {
-		new_name.type="TEXT";
-		new_name.name="NEWATTRIB";
-		new_name.value="";
-		new_name.placeholder="add attribute";}
-	    var new_value=make("INPUT"); {
-		new_value.type="TEXT";
-		new_name.name="NEWVALUE";
-		new_value.value=""; new_value.placeholder="with value";
-		addListener(new_value,"keydown",ee_attrib);}
-	    var row=make("TR",false,make("TH",false,new_name));
-	    row.appendChild(make("TD",false,new_value));
-	    attribtable.appendChild(row);}
+	    attribtable.appendChild(make_attrib_row(false,false));}
 	return dialog;}
+
+    function make_attrib_row(name,value){
+	var tr=make("TR"), th;
+	if (name) {
+	    tr.setAttribute('NAME',name);
+	    th=make("TH",false,name);}
+	else {
+	    var ainput=make("INPUT"); {
+		ainput.type="TEXT"; ainput.name="NEW__ATTRIB";
+		ainput.placeholder="attribute";
+		ainput.value="";}
+	    tr.setAttribute('NAME',"NEW__NEW");
+	    th=make("TH",false,ainput);}
+	var input=make("INPUT"); {
+	    input.type="TEXT";
+	    if (name) {
+		input.name=name;
+		input.value=value||"";}
+	    else {
+		input.placeholder="value";
+		input.name="NEW__VALUE";
+		input.value="";}
+	    addListener(input,"keydown",ee_attrib);}
+	tr.appendChild(th); tr.appendChild(make("TD",false,input));
+	return tr;}
 
     function makeEditSelectionDialog(node,selection){
 	var dialog=SSC.Dialog(SSC.Templates.editselection,
+			      {imgroot: SSC.default_root},
 			      {selection: "ssceditselection"});
 	var choices=dialog.querySelector(".choices");
 	addListener(choices,"click",es_buttonclick);
@@ -412,7 +438,8 @@ SSC.Editor=(function(){
 	else selected=SSC.$(selector);
 	var dialog=SSC.Dialog(SSC.Templates.reclass,
 			      {simplespec: SSC.stripregex(selector),
-			       count: selected.length,spec: selector},
+			       count: selected.length,spec: selector,
+			       imgroot: SSC.default_root},
 			      {classname: "sscreclass"});
 	var newspec=dialog.querySelector(".sscnewspec");
 	addListener(newspec,"keydown",rc_keydown);
@@ -449,7 +476,7 @@ SSC.Editor=(function(){
 	    var newstyle=target.value.trim();
 	    if ((!(newstyle))||(newstyle.length===0)) {
 		SSC.Editor.node.style='';
-		target.style.display='none';}
+		target.style.display='none__none';}
 	    else SSC.Editor.node.style=newstyle;
 	    cancel(evt);
 	    return;}}
@@ -489,28 +516,33 @@ SSC.Editor=(function(){
 	if (kc===RETURN) {
 	    var target=evt.target||evt.srcElement;
 	    var node=SSC.Editor.node;
-	    var name=target.sscattribname;
+	    var name=target.name;
 	    var value=target.value.trim();
-	    if (!(name)) { /* New attribute */
-		var dialog=getDialog(target);
-		var attrib_input=
-		    dialog.querySelector("INPUT[NAME='NEWATTRIB']");
-		if ((attrib_input)&&(attrib_input.value))
-		    name=attrib_input.value;
+	    var dialog=getDialog(target);
+	    var table=dialog.querySelector("table");
+	    var todrop=false;
+	    if (name==="NEW__VALUE") { /* New attribute */
+		var name_input=
+		    dialog.querySelector("INPUT[NAME='NEW__ATTRIB']");
+		if ((name_input)&&(name_input.value))
+		    name=name_input.value;
 		else {
 		    SSC.Message("You need to name the attribute");
 		    cancel(evt);
 		    return;}}
-	    if (value)
+	    if (value) {
 		node.setAttribute(name,value);
+		table.appendChild(make_attrib_row(name,value));
+		if (target.name==="NEW__VALUE") {
+		    todrop=dialog.querySelector("tr[NAME='NEW__NEW']");
+		    if ((todrop)&&(todrop.parentNode))
+			todrop.parentNode.removeChild(todrop);
+		    table.appendChild(make_attrib_row(false,false));}}
 	    else {
-		node.removeAttribute(name,value);
-		var row=target;
-		while (row) {
-		    if (row.tagName==='TR') break;
-		    else row=row.parentNode;}
-		if ((row)&&(row.parentNode))
-		    row.parentNode.removeChild(row);}
+		node.removeAttribute(name);
+		todrop=dialog.querySelector("tr[NAME='"+name+"']");
+		if ((todrop)&&(todrop.parentNode))
+		    todrop.parentNode.removeChild(todrop);}
 	    cancel(evt);}}
     function ee_selected(evt){
 	evt=evt||event;
@@ -589,14 +621,15 @@ SSC.Editor=(function(){
 	    else if (selector)
 		SSC.Editor.dialog=dialog=makeReclassDialog(selector);
 	    else {}}
-	else SSC.Editor.dialog=dialog;}
+	else SSC.Editor.dialog=dialog;
+	if (node) SSC.select(getSignature(node));}
 
     Editor.node=false; Editor.dialog=false;
 
     function editor_click(evt){
 	evt=evt||event;
 	var selection=window.getSelection();
-	if ((selection)&&
+	if ((selection)&&(!(evt.shiftKey))&&
 	    ((selection.anchorNode!==selection.focusNode)||
 	     (selection.anchorOffset!==selection.focusOffset)))
 	    return;
@@ -613,6 +646,7 @@ SSC.Editor=(function(){
 	if (!(scan)) return; else scan=target;
 	while (scan.nodeType!==1) scan=scan.parentNode;
 	if (!(scan)) return;
+	if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
 	var spec=scan.tagName;
 	if (scan.className) {
 	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
@@ -624,9 +658,19 @@ SSC.Editor=(function(){
     SSC.onclick=editor_click;
 
     function setupEditor(){
-	var button=make("button","reclass","=&gt;");
+	var svg_image=make("img","button svg"); {
+	    svg_image.src=fillin("{{imgroot}}/changemarkup.svgz",
+				 {imgroot:SSC.default_root});
+	    svg_image.alt="=&gt;";}
+	var png_image=make("img","button notsvg"); {
+	    png_image.src=fillin("{{imgroot}}/changemarkup100x100.png",
+				 {imgroot:SSC.default_root});
+	    png_image.alt="=&gt;";}
+	var button=make("span","reclass");
+	button.appendChild(svg_image); button.appendChild(png_image);
 	addListener(button,"click",reclass_selector);
-	byID("SSCTOOLBARBUTTONS").appendChild(button);}
+	var buttons=byID("SSCTOOLBARBUTTONS");
+	buttons.insertBefore(button,buttons.firstChild);}
     SSC.onload=setupEditor;
 
     return Editor;})();
