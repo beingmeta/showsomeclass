@@ -1,5 +1,7 @@
 var SSC=(function(){
 
+    var default_root='https://static.sbooks.net/showsomeclass';
+
     /* DOM utilities */
 
     function byID(id){return document.getElementById(id);}
@@ -109,7 +111,7 @@ var SSC=(function(){
     /* Getting node signatures */
 
     function getSignature(node,attribs){
-	var classname=node.className.replace(/\bssc\w+/,"").trim();
+	var classname=node.className.replace(/\bssc\w+/g,"").trim();
 	var id=node.id, tag=node.tagName;
 	if (id.search("sscTMP")===0) id=false;
 	var sig=tag+
@@ -327,7 +329,7 @@ var SSC=(function(){
 	hasClass: hasClass, hasText: hasText, stripregex: stripregex, getID: getID,
 	fillin: fillin, make: make, make_text: make_text, text: make_text,
 	addListener: addListener, cancel: cancel, byID: byID,
-	templates: {}};})();
+	default_root: default_root, Templates: {}};})();
 
 SSC.updateSelectors=(function(){
 
@@ -452,8 +454,8 @@ SSC.getStyleInfo=(function(){
 
 SSC.Templates.toolbar=
     "<span id='SSCTOOLBARBUTTONS'>"+
-    "<button class='showrules'>Rules</button>"+
-    "<button title='Hide the toolbar' class='right hide'>Hide</button></span>\n"+
+    "<button class='button showrules'>Rules</button>"+
+    "<button title='Hide the toolbar' class='button hide'>Hide</button></span>\n"+
     "<div class='combobox'>"+
     "<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
     "<select id='SSCDROPBOX' class='dropbox'></select>"+
@@ -477,7 +479,10 @@ SSC.Templates.toolbar=
     addListener(window,"hashchange",selectHash);
 
     function setupToolbar(){
-	var toolbar=make("div","sscapp ssctoolbar",SSC.Templates.toolbar,"SSCTOOLBAR");
+	var toolbar=make("div","sscapp ssctoolbar",
+			 fillin(SSC.Templates.toolbar,
+				{imgroot: SSC.default_root}),
+			 "SSCTOOLBAR");
 	var input=toolbar.querySelector('input'); {
 	    addListener(input,"keydown",sscinput_keydown);
 	    addListener(input,"focus",sscinput_focus);
@@ -485,11 +490,11 @@ SSC.Templates.toolbar=
 	var dropbox=toolbar.querySelector("SELECT"); {
 	    addListener(dropbox,"change",selector_selected);
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
-	var hide_button=toolbar.querySelector("button.hide"); {
+	var hide_button=toolbar.querySelector(".hide"); {
 	    addListener(hide_button,"click",hideToolbar);}
 	var tapzone=make("div",false,false,"SSCTAPZONE"); {
 	    addListener(tapzone,"click",showToolbar);}
-	var showrules=toolbar.querySelector("button.showrules"); {
+	var showrules=toolbar.querySelector(".showrules"); {
 	    addListener(showrules,"click",toggleStyleInfo);}
 	document.body.appendChild(toolbar);}
 
