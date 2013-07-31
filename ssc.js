@@ -90,7 +90,9 @@ var SSC=(function(){
     /* Adding listeners */
 
     function addListener(node,evtype,handler){
-	if (typeof node==="string") node=document.getELementById(node);
+	if (!(node)) return;
+	else if (typeof node==="string")
+	    node=document.getELementById(node);
 	else if (node.nodeType) {}
 	else if (node.length) {
 	    var copy=[]; var i=0, lim=node.length;
