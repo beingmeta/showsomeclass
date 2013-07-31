@@ -1,18 +1,10 @@
-<div class="sscrow">
-  <div class="ssctextinput">
-    <input TYPE='TEXT' NAME='SELECTION' VALUE='{{selection}}'
-	   class='sscselection'/>
-  </div>
+<span class='button wrap'>&lt;&gt;</span>
+<img src='{{imgroot}}/redx.svgz' alt='cancel'
+     class='button cancel'/>
+<img src='{{imgroot}}/redx.svgz' alt='OK'
+     class='button ok'/>
+<div class='sscinputbox'>
+  <input TYPE='TEXT' NAME='SELECTION' VALUE='{{selection}}'
+	 class='sscselection'/>
 </div>
-<div class="sscrow">
-  <div class='button close image'>
-    <img src='{{imgroot}}/redx.svgz' class='svg'/>
-    <img src='{{imgroot}}/redx100x100.png' class='notsvg'/>
-  </div>
-  <div class="ssctextinput">
-    <input TYPE='TEXT' NAME='WRAP' VALUE=''
-	   placeholder=
-	   "Signature (e.g. span.class) of element to wrap arround text"
-	   class='sscwrapper'/>
-  </div>
-</div>
+<input TYPE='TEXT' NAME='WRAP' class='sscwrapinput' value=''/>
