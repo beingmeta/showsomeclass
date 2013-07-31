@@ -3,7 +3,7 @@
 
 default: app.js app.css TAGS
 
-JAVASCRIPT_SOURCES=ssc.js edit.js
+JAVASCRIPT_SOURCES=ssc.js dialog.js edit.js
 CSS_SOURCES=ssc.css dialog.css edit.css
 HTML_SOURCES=editcontent.html editselection.html simpleselection.html \
 	editelement.html reclass.html toolbar.html
