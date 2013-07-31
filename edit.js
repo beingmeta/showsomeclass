@@ -1,8 +1,8 @@
 SSC.Dialog=(function(){
 
-    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
-    var addListener=SSC.addListener, hasClass=SSC.hasClass, byID=SSC.byID;
-    var make_text=SSC.make_text;
+    var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin, $=SSC.$;
+    var addListener=SSC.Utils.addListener, hasClass=SSC.Utils.hasClass, byID=SSC.Utils.byID;
+    var make_text=SSC.Utils.make_text;
 
     function getDialog(elt){
 	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
@@ -45,10 +45,10 @@ SSC.Dialog=(function(){
 	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
 		if (!(opts.noclose)) {
 		    var svg_image=make("img","svg"); {
-			svg_image.src=SSC.default_root+"/redx.svgz";
+			svg_image.src=SSC.imgroot+"/redx.svgz";
 			svg_image.alt="X";}
 		    var png_image=make("img","notsvg"); {
-			png_image.src=SSC.default_root+"/redx100x100.png";
+			png_image.src=SSC.imgroot+"/redx100x100.png";
 			png_image.alt="X";}
 		    var close_button=make("div","close button"); {
 			close_button.appendChild(svg_image);
@@ -226,12 +226,12 @@ SSC.Dialog=(function(){
 
 SSC.Editor=(function(){
 
-    var make=SSC.make, make_text=SSC.make_text;
-    var text=SSC.text, fillin=SSC.fillin;
-    var hasClass=SSC.hasClass, addClass=SSC.addClass;
-    var dropClass=SSC.dropClass;
-    var addListener=SSC.addListener, cancel=SSC.cancel;
-    var getID=SSC.getID, getSignature=SSC.getSignature, byID=SSC.byID;
+    var make=SSC.Utils.make, make_text=SSC.Utils.make_text;
+    var text=SSC.Utils.text, fillin=SSC.Utils.fillin;
+    var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass;
+    var dropClass=SSC.Utils.dropClass;
+    var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
+    var getID=SSC.Utils.getID, getSignature=SSC.Utils.getSignature, byID=SSC.Utils.byID;
     var Dialog=SSC.Dialog, getDialog=SSC.getDialog;
 
     var TAB=0x09;
@@ -323,7 +323,7 @@ SSC.Editor=(function(){
     function makeEditContentDialog(node){
 	var dialog=SSC.Dialog(SSC.Templates.editcontent,
 			      {signature: getSignature(node,true),
-			       imgroot: SSC.default_root},
+			       imgroot: SSC.imgroot},
 			      {classname: "ssceditcontent"});
 	var textarea=dialog.querySelector("TEXTAREA");
 	textarea.value=node.innerHTML;
@@ -343,7 +343,7 @@ SSC.Editor=(function(){
 	var dialog=SSC.Dialog(SSC.Templates.editelement,
 			      {nparents: parents.length,
 			       nchildren: children.length,
-			       imgroot: SSC.default_root},
+			       imgroot: SSC.imgroot},
 			      {classname: "ssceditelement", noclose: true,
 			       nparents: parents.length, nchildren: children.length,
 			       nselectors: selectors.length});
@@ -432,7 +432,7 @@ SSC.Editor=(function(){
 	var dialog=SSC.Dialog(SSC.Templates.reclass,
 			      {simplespec: SSC.stripregex(selector),
 			       count: selected.length,spec: selector,
-			       imgroot: SSC.default_root},
+			       imgroot: SSC.imgroot},
 			      {classname: "sscreclass"});
 	var newspec=dialog.querySelector(".sscnewspec");
 	addListener(newspec,"keydown",rc_keydown);
@@ -448,7 +448,7 @@ SSC.Editor=(function(){
 	var startnode=range.startnode, ntext=startnode.nodeValue;
 	var inside=ntext.slice(range.startoff,range.endoff);
 	var dialog=SSC.Dialog(SSC.Templates.simpleselection,
-			      {imgroot: SSC.default_root,
+			      {imgroot: SSC.imgroot,
 			       selection: inside},
 			      {classname: "ssceditselection"});
 	var wrapwidget=dialog.querySelector(".button.wrap");
@@ -718,15 +718,15 @@ SSC.Editor=(function(){
     SSC.onclick=editor_click;
 
     function setupEditor(){
-	var svg_image=make("img","button svg"); {
+	var svg_image=make("img","svg"); {
 	    svg_image.src=fillin("{{imgroot}}/changemarkup.svgz",
-				 {imgroot:SSC.default_root});
+				 {imgroot:SSC.imgroot});
 	    svg_image.alt="=&gt;";}
-	var png_image=make("img","button notsvg"); {
+	var png_image=make("img","notsvg"); {
 	    png_image.src=fillin("{{imgroot}}/changemarkup100x100.png",
-				 {imgroot:SSC.default_root});
+				 {imgroot:SSC.imgroot});
 	    png_image.alt="=&gt;";}
-	var button=make("span","reclass");
+	var button=make("span","button image reclass");
 	button.appendChild(svg_image); button.appendChild(png_image);
 	addListener(button,"click",reclass_selector);
 	var buttons=byID("SSCTOOLBARBUTTONS");

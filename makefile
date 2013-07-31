@@ -3,12 +3,13 @@
 
 default: app.js app.css TAGS
 
-TEMPLATES=toolbar.js editelement.js editcontent.js reclass.js \
-	editselection.js simpleselection.js
 JAVASCRIPT_SOURCES=ssc.js edit.js
 CSS_SOURCES=ssc.css dialog.css edit.css
 HTML_SOURCES=editcontent.html editselection.html simpleselection.html \
 	editelement.html reclass.html toolbar.html
+TEMPLATES=toolbar.js editelement.js editcontent.js reclass.js \
+	editselection.js simpleselection.js
+
 TAGS: ${JAVASCRIPT_SOURCES} ${CSS_SOURCES} ${HTML_SOURCES}
 	etags $^
 
