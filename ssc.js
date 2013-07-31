@@ -1,27 +1,71 @@
 var SSC=(function(){
 
-    var default_root='https://static.sbooks.net/showsomeclass';
+    var imgroot='https://static.sbooks.net/showsomeclass';
+    var Utils={};
 
+    /* Event functions */
+
+    function addListener(node,evtype,handler){
+	if (!(node)) return;
+	else if (typeof node==="string")
+	    node=document.getELementById(node);
+	else if (node.nodeType) {}
+	else if (node.length) {
+	    var copy=[]; var i=0, lim=node.length;
+	    while (i<lim) copy.push(node[i++]);
+	    i=0; while (i<lim) addListener(copy[i++],evtype,handler);
+	    return;}
+	if (!(node)) return;
+	else if (node.addEventListener)
+	    node.addEventListener(evtype,handler,false);
+	else if (node.attachEvent)
+	    node.attachEvent("on"+evtype,handler);
+	else return;}
+    Utils.addListener=addListener;
+    function cancel(evt){
+	if (evt.preventDefault) evt.preventDefault();
+	else evt.returnValue=false;
+	evt.cancelBubble=true;}
+    Utils.cancel=cancel;
+
+    /* Key codes */
+
+    var CKEY=Utils.CKEY=0x43;
+    var TAB=Utils.TAB=0x09;
+    var RETURN=Utils.RETURN=0x0d;
+    var SPACE=Utils.SPACE=0x0a;
+    var ESCAPE=Utils.ESCAPE=0x1b;
+    var PLUS=Utils.PLUS=187;
+    var MINUS=Utils.MINUS=189;
+    
     /* DOM utilities */
 
     function byID(id){return document.getElementById(id);}
+    Utils.byID=byID;
 
-    function make(tag,classname,content,id){
-	var elt=document.createElement(tag);
-	if (classname) elt.className=classname;
-	if (!(content)) {}
-	else if (typeof content === "string")
-	    elt.innerHTML=content;
-	else if (content.nodeType)
-	    elt.appendChild(content);
-	else elt.innerHTML=fillin(content);
-	if (id) elt.id=id;
-	return elt;}
-    function make_text(input){
-	if (typeof input === "string")
-	    return document.createTextNode(input);
-	else return document.createTextNode(fillin(input));}
-    var text=make_text;
+    function bySpec(elt,spec,all){
+	if (all)
+	    return elt.querySelectorAll(spec);
+	else return elt.querySelector(spec);}
+    Utils.bySpec=bySpec;
+
+    /* Assigning temporary IDs */
+
+    var tmpid_count=1;
+    /* Track them so we can temporarily remove them */
+    var tmpid_elts=[];
+
+    function getID(node){
+	if (node.id) return node.id;
+	var newid="sscTMP"+(tmpid_count++);
+	// This is very unlikely, but let's be obsessive
+	while (byID(newid)) newid="sscTMP"+(tmpid_count++);
+	node.id=newid;
+	tmpid_elts.push(node);
+	return node.id;}
+    Utils.getID=getID;
+
+    /* Fillin in text templates */
 
     function fillin(data,text){ /* Filling in templates */
 	if (typeof data === "string") {
@@ -38,6 +82,39 @@ var SSC=(function(){
 		    text=text.replace(pat,value.toString());}}
 	    return text;}
 	else return text;}
+    Utils.fillin=fillin;
+
+    var events=["click","keydown","keypress","change","touchstart","touchmove","touchend"];
+
+    function make(tag,classname,content,opts){
+	var elt=document.createElement(tag);
+	if (classname) elt.className=classname;
+	if (!(content)) {}
+	else if ((typeof content === "string")&&(opts))
+	    elt.innerHTML=fillin(content,opts);
+	else if (typeof content === "string")
+	    elt.innerHTML=content;
+	else if (content.nodeType)
+	    elt.appendChild(content);
+	else elt.innerHTML=fillin(content);
+	if (opts) {
+	    if (opts.id) elt.id=opts.id;
+	    if (opts.title) elt.title=opts.title;
+	    if (opts.href) elt.href=opts.href;
+	    if (opts.name) elt.name=opts.name;
+	    if (opts.src) elt.src=opts.src;
+	    if (opts.alt) elt.alt=opts.alt;
+	    var i=0; var lim=events.length; while (i<lim) {
+		var evtype=events[i++];
+		if (opts[evtype]) addListener(elt,evtype,opts[evtype]);}}
+	return elt;}
+    Utils.make=make;
+    function make_text(input){
+	if (typeof input === "string")
+	    return document.createTextNode(input);
+	else return document.createTextNode(fillin(input));}
+    var text=make_text;
+    Utils.make_text=Utils.text=make;
 
     /* Manipulating node classes */
 
@@ -49,6 +126,7 @@ var SSC=(function(){
 	var rx=new RegExp("\\b"+name+"\\b","g");
 	classpats[name]=rx;
 	return rx;}
+    Utils.classPat=classPat;
     function addClass(elt,classname){
 	if (typeof elt === "string") elt=byID(elt);
 	if (!(elt)) return;
@@ -87,28 +165,7 @@ var SSC=(function(){
 	else if (current.search(pat)>=0) return true;
 	else return false;}
 
-    /* Adding listeners */
-
-    function addListener(node,evtype,handler){
-	if (!(node)) return;
-	else if (typeof node==="string")
-	    node=document.getELementById(node);
-	else if (node.nodeType) {}
-	else if (node.length) {
-	    var copy=[]; var i=0, lim=node.length;
-	    while (i<lim) copy.push(node[i++]);
-	    i=0; while (i<lim) addListener(copy[i++],evtype,handler);
-	    return;}
-	if (!(node)) return;
-	else if (node.addEventListener)
-	    node.addEventListener(evtype,handler,false);
-	else if (node.attachEvent)
-	    node.attachEvent("on"+evtype,handler);
-	else return;}
-    function cancel(evt){
-	if (evt.preventDefault) evt.preventDefault();
-	else evt.returnValue=false;
-	evt.cancelBubble=true;}
+    Utils.addClass=addClass; Utils.dropClass=dropClass; Utils.hasClass=hasClass;
 
     /* Getting node signatures */
 
@@ -160,7 +217,7 @@ var SSC=(function(){
 	var match=hybrid_pattern.exec(spec);
 	if (match) {
 	    var sel=match[1];
-	    var rx=new RegExp(match[2].replace(/&slash;/g,"/"),match[3]||"mig");
+	    var rx=new RegExp(match[2].replace(/\\\//g,"/"),match[3]||"mig");
 	    var candidates=document.querySelectorAll(sel);
 	    var output=[];
 	    var i=0, lim=candidates.length;
@@ -173,27 +230,8 @@ var SSC=(function(){
     /* Stripping out the regex part of a hybrid pattern */
     function stripregex(spec){return spec.replace(/\/[^\/]+\//,"");}
     
-    /* Generating temporary IDs if needed.  We don't currently use
-     * this, but we might. */
-
-    /* Serial number to guarantee uniqueness. */
-    var tmpid_count=1;
-
-    /* We use tmpid_elts to keep track of all the elements we've
-     * given IDs so that we can take them back if we ever need to
-     * extract and save the body of the document. */
-    var tmpid_elts=[];
-
-    function getID(node){
-	if (node.id) return node.id;
-	var newid="sscTMP"+(tmpid_count++);
-	// This is very unlikely, but let's be obsessive
-	while (byID(newid)) newid="sscTMP"+(tmpid_count++);
-	node.id=newid;
-	tmpid_elts.push(node);
-	return node.id;}
-
-    /* The state of the selector app. */
+    /* The state of the selector app. This is also maintained on the
+     * SSC object itself. */
 
     // The CSS selector itself
     var selector=false;
@@ -204,7 +242,7 @@ var SSC=(function(){
     // The index of the focus in selected.  This is helpful for
     //  tabbing forward and backward in the sequence.
     var focus_index=false;
-    // The 'real title' used in construction new titles
+    // The 'real title' used in constructing new document titles
     var real_title=false;
 
     /* Various status functions for the app */
@@ -230,7 +268,7 @@ var SSC=(function(){
 	selected=[];
 	if ((!(real_title))&&(document.title))
 	    real_title=document.title||"";
-	document.title="(no class!) "+real_title;}
+	document.title="(showsomeclass) "+real_title;}
 
     /* Selectively display a particular node */
     function show(node){
@@ -243,9 +281,12 @@ var SSC=(function(){
 		addClass(scan,"sscWRAPPER");
 		scan=scan.parentNode;}}}
 
-    /* Selectively display all the nodes matching a spec
-       and update the state variables for the app.  */
-    function select(spec,force,nomsg){
+    /* Selectively display all the nodes matching a spec, update the
+       state variables and properties for the app.  The *force*
+       argument does it's work even if the spec matches the current
+       selector.
+    */
+    function select(spec,force){
 	if (!(spec)) clear();
 	else if ((spec===selector)&&(!(force))) return;
 	else clear();
@@ -254,7 +295,7 @@ var SSC=(function(){
 	var i=0, lim=nodes.length;
 	enable(); addClass(document.body,"sscTOOLBAR");
 	while (i<lim) show(nodes[i++]);
-	document.title="("+nodes.length+"x"+spec+") "+real_title;
+	document.title=spec+" (x"+nodes.length+") "+real_title;
 	var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
 	var styleinfo=byID("SSCSTYLEINFO");
 	if (input) {
@@ -282,7 +323,7 @@ var SSC=(function(){
 	if (lim) SSC.focus(nodes[0]);
     	window.location.hash="#"+spec;}
 
-    /* THE FOCUS is used for moving back and forth through the
+    /* The FOCUS is used for moving back and forth through the
        selected nodes. */
     function setFocus(node,index){
 	if ((node)&&(typeof index!=="number"))
@@ -325,18 +366,13 @@ var SSC=(function(){
 	selected: function getselected(){ return selected;},
 	refresh: function refresh(){select(selector,true);},
 	focusIndex: function focusIndex(){ return focus_index;},
-	getFocus: function(){return focus;},
-	// Utility functions
-	$: $, addClass: addClass, dropClass: dropClass, getSignature: getSignature,
-	hasClass: hasClass, hasText: hasText, stripregex: stripregex, getID: getID,
-	fillin: fillin, make: make, make_text: make_text, text: make_text,
-	addListener: addListener, cancel: cancel, byID: byID,
-	default_root: default_root, Templates: {}};})();
+	getFocus: function(){return focus;}, $: $,
+	Templates: {}, Utils: Utils, imgroot: imgroot};})();
 
 SSC.updateSelectors=(function(){
-
-    var make=SSC.make, text=SSC.text, fillin=SSC.fillin;
-    var addListener=SSC.addListener, byID=SSC.byID;
+    
+    var make=SSC.Utils.make, text=SSC.Utils.text, fillin=SSC.Utils.fillin;
+    var addListener=SSC.Utils.addListener, byID=SSC.Utils.byID;
     
     function countSelectors(root){
 	var counts={}, all=[];
@@ -424,6 +460,7 @@ SSC.updateSelectors=(function(){
     return updateSelectors;})();
 
 SSC.getStyleInfo=(function(){
+
     function getRules(sel,results){
 	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
 	var pat=new RegExp(sel.replace(".","\\.")+"\\b","gi");
@@ -467,9 +504,13 @@ SSC.Templates.toolbar=
     "<div class='styleinfo' id='SSCSTYLEINFO'></div>";
 
 (function(){
-    var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
-    var hasClass=SSC.hasClass, addClass=SSC.addClass, dropClass=SSC.dropClass;
-    var addListener=SSC.addListener, cancel=SSC.cancel, byID=SSC.byID;
+    var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin;
+    var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass, dropClass=SSC.Utils.dropClass;
+    var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
+    var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
+    var RETURN=SSC.Utils.RETURN, ESCAPE=SSC.Utils.ESCAPE, TAB=SSC.Utils.TAB;
+
+    var $=SSC.$;
 
     /* Using the URL hash as a selector */
 
@@ -480,29 +521,32 @@ SSC.Templates.toolbar=
 
     addListener(window,"hashchange",selectHash);
 
+    /* The application toolbar */
+
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",
-			 fillin(SSC.Templates.toolbar,
-				{imgroot: SSC.default_root}),
-			 "SSCTOOLBAR");
-	var input=toolbar.querySelector('input'); {
+			 SSC.Templates.toolbar,
+			 {imgroot: SSC.imgroot,id: "SSCTOOLBAR"});
+	var input=bySpec(toolbar,'input'); {
 	    addListener(input,"keydown",sscinput_keydown);
 	    addListener(input,"focus",sscinput_focus);
 	    addListener(input,"blur",sscinput_blur);}
-	var dropbox=toolbar.querySelector("SELECT"); {
+	var dropbox=bySpec(toolbar,"SELECT"); {
 	    addListener(dropbox,"change",selector_selected);
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
-	var hide_button=toolbar.querySelector(".hide"); {
+	var hide_button=bySpec(toolbar,".hide"); {
 	    addListener(hide_button,"click",hideToolbar);}
-	var tapzone=make("div",false,false,"SSCTAPZONE"); {
+	var tapzone=make("div",false,false,{id: "SSCTAPZONE"}); {
 	    addListener(tapzone,"click",showToolbar);}
-	var showrules=toolbar.querySelector(".showrules"); {
+	var showrules=bySpec(toolbar,".showrules"); {
 	    addListener(showrules,"click",toggleStyleInfo);}
 	document.body.appendChild(toolbar);}
 
     function showToolbar(){addClass(document.body,"sscTOOLBAR");}
     function hideToolbar(){dropClass(document.body,"sscTOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
+
+    /* Toolbar event handlers */
 
     function toggleStyleInfo(){
 	if (hasClass("SSCTOOLBAR","showstyle"))
@@ -511,7 +555,8 @@ SSC.Templates.toolbar=
 
     function sscinput_focus(){
 	sscinput_complete();
-	addClass("SSCTOOLBAR","focused"); }
+	dropClass("SSCTOOLBAR","showstyle");
+	addClass("SSCTOOLBAR","focused");}
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
 
     function sscinput_keydown(evt){
@@ -521,11 +566,14 @@ SSC.Templates.toolbar=
 	if (kc===RETURN) {
 	    var spec=target.value;
 	    SSC.select(spec,true);
-	    target.blur();}
+	    target.blur();
+	    cancel(evt);}
+	else if (kc===ESCAPE) {
+	    target.blur(); cancel(evt);}
 	else {
 	    setTimeout(sscinput_complete,50);}}
+    
     var selector_complete_string=false;
-    var selector_completions=false;
     function sscinput_complete(){
 	var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
 	var prefix=selector_prefix(input.value);
@@ -565,17 +613,9 @@ SSC.Templates.toolbar=
 	if (comma<0) return string;
 	else return string.slice(comma+1);}
 
-    /* Keyboard interaction */
+    /* Window event handlers */
 
-    var CKEY=0x43;
-    var TAB=0x09;
-    var RETURN=0x0d;
-    var SPACE=0x0a;
-    var ESCAPE=0x1b;
-    var PLUS=187;
-    var MINUS=189;
-
-    var usekeys=[TAB,CKEY,ESCAPE,RETURN];
+    var usekeys=[TAB,ESCAPE,RETURN];
 
     function window_keydown(evt){
 	evt=evt||event;
@@ -611,11 +651,6 @@ SSC.Templates.toolbar=
 		SSC.focus(max);
 	    else SSC.focus(0);
 	    cancel(evt);}
-	else if (key===CKEY) {
-	    if (evt.shiftKey) showCloud();
-	    else if (hasClass(document.body,"sscSHOWCLOUD"))
-		hideCloud();
-	    else showCloud();}
 	else if (key===RETURN) {
 	    addClass(document.body,"sscTOOLBAR");
 	    if (evt.shiftKey) {

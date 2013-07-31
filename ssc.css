@@ -113,10 +113,10 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
     height: 90%; width: auto; vertical-align: top;}
 
 .sscapp .button, div.sscapp button {
-    font-size: 50%; font-weight: bold;
     padding: 2px; padding-right: 1ex; padding-left: 1ex;
+    border-radius: 1ex; margin-left: 1ex; margin-top: 2px;
     background-color: silver;
-    border-radius: 1ex;
+    font-weight: bold;
     cursor: pointer;}
 .sscapp img.button, div.sscapp .button.image, div.sscapp button.image {
     max-height: 2em; width: auto;
