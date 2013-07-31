@@ -1,3 +1,25 @@
+/* -*- Mode: Javascript; -*- */
+
+/* ################# showsomelcass/ssc.js ###################### */
+
+/* Copyright (C) 2012-2013 beingmeta, inc.
+
+   This program comes with absolutely NO WARRANTY, including implied
+   warranties of merchantability or fitness for any particular
+   purpose.
+
+   Use, modification, and redistribution of this program is permitted
+   under either the GNU General Public License (GPL) Version 2 (or
+   any later version) or under the GNU Lesser General Public License
+   (version 3 or later).
+
+   These licenses may be found at www.gnu.org, particularly:
+   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+   http://www.gnu.org/licenses/lgpl-3.0-standalone.html
+
+*/
+/* jshint browser: true */
+
 var SSC=(function(){
 
     var imgroot='https://static.sbooks.net/showsomeclass';
@@ -22,6 +44,7 @@ var SSC=(function(){
 	    node.attachEvent("on"+evtype,handler);
 	else return;}
     Utils.addListener=addListener;
+
     function cancel(evt){
 	if (evt.preventDefault) evt.preventDefault();
 	else evt.returnValue=false;
@@ -73,19 +96,18 @@ var SSC=(function(){
 	if ((!(text))&&(data)&&(data.template)) text=data.template;
 	// Maybe a warning?
 	if (typeof text !== "string") return;
-	if (data) {
-	    for (var prop in data) {
-		if (data.hasOwnProperty(prop)) {
-		    if (prop==="template") continue;
-		    var value=data[prop];
-		    var pat=new RegExp("{{"+prop+"}}","g");
-		    text=text.replace(pat,value.toString());}}
-	    return text;}
-	else return text;}
+	var substs=text.match(/{{\w+}}/gm);
+	if (substs) {
+	    var i=0, n=substs.length; while (i<n) {
+		var match=substs[i++];
+		var prop=match.slice(2,-2);
+		var val=((data.hasOwnProperty(prop))&&(data[prop]));
+		if (val) text=
+		    text.replace(new RegExp(match,"g"),val.toString());}}
+	return text;}
     Utils.fillin=fillin;
 
-    var events_pat=/click|keydown|keypress|change|touchstart|touchmove|touchend/;
-    var spec_events_pat=/([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)/;
+    /* Making DOM nodes */
 
     function make(tag,classname,content,opts){
 	var elt=document.createElement(tag);
@@ -106,23 +128,33 @@ var SSC=(function(){
 	    if (opts.name) elt.name=opts.name;
 	    if (opts.src) elt.src=opts.src;
 	    if (opts.alt) elt.alt=opts.alt;
-	    for (var key in opts) if (opts.hasOwnProperty(key)) {
-		try {
-		    if (events_pat.exec(key))
-			addListener(elt,evtype,opts[evtype]);
-		    else if (match=spec_events_pat.exec(key)) {
-			addListener(elt.querySelectorAll(match[1]),match[2],
-				    opts[key]);}
-		    else {}}
-		catch (ex) {}}}
+	    setupListeners(elt,opts);}
 	return elt;}
     Utils.make=make;
+
     function make_text(input){
 	if (typeof input === "string")
 	    return document.createTextNode(input);
 	else return document.createTextNode(fillin(input));}
     var text=make_text;
     Utils.make_text=Utils.text=make;
+
+    var events_pat=/click|keydown|keypress|change|touchstart|touchmove|touchend/;
+    var spec_events_pat=/([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)/;
+
+    function setupListeners(node,opts){
+	var ex; // Not really used, 
+	for (var key in opts) if (opts.hasOwnProperty(key)) {
+	    try {
+		if (events_pat.exec(key))
+		    addListener(elt,key,opts[evtype]);
+		else if (match=spec_events_pat.exec(key)) {
+		    addListener(elt.querySelectorAll(match[1]),match[2],
+				opts[key]);}
+		else {}}
+	    catch (ex) {}}
+	return node;}
+    Utils.setupListeners=setupListeners;
 
     /* Manipulating node classes */
 
@@ -558,13 +590,17 @@ SSC.Templates.toolbar=
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
 	var hide_button=bySpec(toolbar,".hide"); {
 	    addListener(hide_button,"click",hideToolbar);}
-	var tapzone=make("div",false,false,{id: "SSCTAPZONE"}); {
-	    addListener(tapzone,"click",showToolbar);}
 	var showrules=bySpec(toolbar,".showrules"); {
 	    addListener(showrules,"click",toggleStyleInfo);}
-	document.body.appendChild(toolbar);}
+	var tapzone=make("div",false,false,{id: "SSCTAPZONE"}); {
+	    addListener(tapzone,"click",showToolbar);}
+	document.body.appendChild(toolbar);
+	document.body.appendChild(tapzone);}
 
-    function showToolbar(){addClass(document.body,"sscTOOLBAR");}
+    function showToolbar(evt){
+	evt=evt||event;
+	addClass(document.body,"sscTOOLBAR");
+	cancel(evt);}
     function hideToolbar(){
 	dropClass("SSCTOOLBAR","showstyle");
 	dropClass(document.body,"sscTOOLBAR");}
