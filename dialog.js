@@ -1,16 +1,35 @@
+/* -*- Mode: Javascript; -*- */
+
+/* ################# showsomelcass/dialog.js ###################### */
+
+/* Copyright (C) 2012-2013 beingmeta, inc.
+
+   This program comes with absolutely NO WARRANTY, including implied
+   warranties of merchantability or fitness for any particular
+   purpose.
+
+   Use, modification, and redistribution of this program is permitted
+   under either the GNU General Public License (GPL) Version 2 (or
+   any later version) or under the GNU Lesser General Public License
+   (version 3 or later).
+
+   These licenses may be found at www.gnu.org, particularly:
+   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+   http://www.gnu.org/licenses/lgpl-3.0-standalone.html
+
+*/
+/* jshint browser: true */
+
 SSC.Dialog=(function(){
 
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin, $=SSC.$;
     var addListener=SSC.Utils.addListener, hasClass=SSC.Utils.hasClass, byID=SSC.Utils.byID;
-    var make_text=SSC.Utils.make_text;
+    var make_text=SSC.Utils.make_text, getParent=SSC.Utils.make_text;
 
     function getDialog(elt){
 	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
 	    elt=((elt.target)||(elt.srcElement));
-	while (elt) {
-	    if (hasClass(elt,"sscdialog")) return elt;
-	    else elt=elt.parentNode;}
-	return false;}
+	return getParent(elt,"sscdialog");}
     SSC.getDialog=getDialog;
 
     /* Creating a dialog */
@@ -22,83 +41,36 @@ SSC.Dialog=(function(){
 	    // Assume it's seconds, convert to msecs
 	    if (opts<100) opts=opts*1000;
 	    // Divide the delay between wait and finale
-	    opts={delay: opts/2,finale: opts/2};}
+	    opts={wait: opts/2,finale: opts/2};}
 	else if ((!(opts))&&(data)) opts=data;
 	else {}
-	if ((opts.timeout===false)&&(!(opts.finale))) opts.keep=true;
-	else if ((opts.timeout)&&(!(opts.hasOwnProperty('finale')))) {
-	    // If we just have a delay, and no finale, divide the delay
-	    var d=opts.timeout;
-	    // Assume it's seconds, convert to msecs
-	    if (d<100) d=d*1000;
-	    opts.timeout=d/3; opts.finale=(2*d)/3;}
-	else {
-	    if ((opts.timeout)&&(opts.timeout<100)) opts.timeout=opts.timeout*1000;
-	    if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;}
+	if (!((opts.hasOwnProperty("timeout"))||
+	      (opts.hasOwnProperty("wait"))||
+	      (opts.hasOwnProperty("finale"))))
+	    opts.keep=true;
+	else if ((opts.hasOwnProperty("wait"))&&
+		 (opts.hasOwnProperty("finale"))) {}
+	else if (opts.hasOwnProperty("timeout")) {
+	    var timeout=opts.timeout;
+	    if (opts.hasOwnProperty("wait")) 
+		opts.finale=timeout-opts.wait;
+	    else if (opts.hasOwnProperty("finale"))
+		opts.wait=timeout-opts.finale;
+	    else {
+		opts.wait=timeout/3; opts.finale=(2*timeout)/3;}}
+	else {}
+	// Convert from seconds to milliseconds
+	if ((opts.wait)&&(opts.wait<100)) opts.wait=opts.wait*1000;
+	if ((opts.finale)&&(opts.finale<100)) opts.finale=opts.finale*1000;
 	var classname="sscdialog sscapp";
 	if (opts.classname) {
 	    var custom=opts.classname.trim();
-	    if (custom.search(/\bsscdialog\b/)<0) custom=custom+" sscdialog";
-	    if (custom.search(/\bsscapp\b/)<0) custom=custom+" sscapp";
+	    if (custom.search(/\bsscdialog\b/)<0)
+		custom="sscdialog "+custom;
+	    if (custom.search(/\bsscapp\b/)<0)
+		custom="sscapp "+custom;
 	    classname=custom.replace(/\s+/g," ");}
-	var box=make("div",classname,false,opts.id); {
-	    if (!((opts.modal)&&(opts.choices)&&(opts.choices.length))) {
-		if (!(opts.noclose)) {
-		    var svg_image=make("img","svg"); {
-			svg_image.src=SSC.imgroot+"/redx.svgz";
-			svg_image.alt="X";}
-		    var png_image=make("img","notsvg"); {
-			png_image.src=SSC.imgroot+"/redx100x100.png";
-			png_image.alt="X";}
-		    var close_button=make("div","close button"); {
-			close_button.appendChild(svg_image);
-			close_button.appendChild(png_image);
-			box.appendChild(close_button);}}
-		if ((opts.timeout)&&(!(opts.keep))) {
-		    var keep_button=make("DIV","keep button","Keep"); {
-			box.appendChild(keep_button);}}}}
-	if (opts.title) {
-	    var title_text=opts.title;
-	    var title=make("div","title",title_text);
-	    box.appendChild(title);}
-	box.appendChild(make("div","sscmessages","","SSCMESSAGEBOX"));
-	if (typeof text === "string") {
-	    var frag=document.createElement("div"); frag.innerHTML=text;
-	    var children=frag.childNodes; var toadd=[];
-	    var k=0, klim=children.length;
-	    while (k<klim) toadd.push(children[k++]);
-	    k=0; while (k<klim) box.appendChild(toadd[k++]);}
-	else if (text.nodeType) box.appendChild(text);
-	else if (text.template)
-	    box.appendChild(make_text(fillin(text)));
-	else {}
-	if ((opts.choices)&&(opts.choices.length)) {
-	    var choices=opts.choices, buttons=[];
-	    var i=0, lim=choices.length; while (i<lim) {
-		var choice=choices[i++];
-		var button=document.createElement("BUTTON");
-		if (typeof choice === "string") 
-		    choice={label: choice, value: choice};
-		if (choice.classname) button.className=choice.classname;
-		button.appendChild(document.createTextNode(
-		    (((choice.label)&&(choice.data))?(fillin(choice.label,choice.data)):(choice.label))));
-		button.value=choice.value;
-		button.name=choice.name||choice.label;
-		if (button.handler)
-		    addListener(button,"click",button.handler);
-		else addListener(button,"click",choice_button_handler);
-		buttons.push(button);}
-	    var container=document.createElement("DIV"); {
-		var j=0; container.className="choices"; 
-		while (j<lim) {
-		    container.appendChild(buttons[j++]);
-		    container.appendChild(document.createTextNode(" "));}}
-	    box.appendChild(choices);}
-	addListener(box.querySelectorAll(
-	    "div.button.close,button.close,button[value='CLOSE']"),
-		    "click",close);
-	addListener(box.querySelectorAll("div.button.keep,button.keep"),
-		    "click",keep);
+	var box=make("div",classname,text);
 	box.id="SSCMESSAGE";
 	document.body.appendChild(box);
 	if (opts.keep) box.className=box.className+" keep";
@@ -106,11 +78,32 @@ SSC.Dialog=(function(){
 	//  CSS transitions, because the selective display CSS uses
 	//  !important opacity definitions which get in the way of the
 	//  transitions.
-	if ((opts.timeout)&&
-	    (!(opts.modal))&&
-	    (!(opts.keep)))
-	    startClosing(box,opts);
+	if (((opts.timeout)||(opts.wait)||(opts.keep))&&
+	    (!(opts.modal))&&(!(opts.keep))) {
+	    setupHeader(box,data,opts);
+	    startClosing(box,opts);}
 	return box;}
+
+    function setupHeader(box,data,opts){
+	var header=make("div","sscdialogtitle");
+	var svg_image=make("img","svg"); {
+	    svg_image.src=SSC.imgroot+"/redx.svgz";
+	    svg_image.alt="X";}
+	var png_image=make("img","notsvg"); {
+	    png_image.src=SSC.imgroot+"/redx100x100.png";
+	    png_image.alt="X";}
+	var close_button=make("div","close button"); {
+	    close_button.appendChild(svg_image);
+	    close_button.appendChild(png_image);}
+	var keep_button=make("DIV","keep button","Keep");
+	header.appendChild(close_button);
+	header.appendChild(keep_button);
+	if (opts.title)
+	    header.appendChild(make_text(fillin(opts.title),data));
+	if (box.firstChild)
+	    box.insertBefore(header,box.firstChild);
+	else box.appendChild(header);
+	return header;}
 
     /* Gradual closing */
 

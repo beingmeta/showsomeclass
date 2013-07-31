@@ -1,27 +1,21 @@
 /* Dialogs */
 
 div.sscdialog {
+    font-family: sans,sans-serif; font-size: 200%;
     border-radius: 1em; -webkit-border-radius: 1em;
     -moz-border-radius: 1em; -o-border-radius: 1em;
-    position: fixed; top: 10%; left: 20%; right: 20%; width: 60%;
-    transition-property: opacity: transition-duration: 5s;
-    background-color: rgba(0,0,0,0.8); color: white;
-    text-align: center;
-    font-family: sans,sans-serif; font-size: 200%;
-    padding: 1ex; padding-bottom: 2em;}
-div.sscdialog div.button.keep {float: left; color: green;}
-div.sscdialog div.button.close {float: right; color: red;}
-div.sscdialog.keep div.button.keep {visibility: hidden;}
+    position: fixed; width: 20%; height: 30%;
+    top: auto; bottom: auto; left: auto; right: auto;
+    background-color: rgba(0,0,0,0.8); color: ivory;
+    padding: 1ex; padding-bottom: 2em;
+    text-align: center;}
+div.sscdialog .button.keep {float: left; color: green;}
+div.sscdialog .button.close {float: right; color: red;}
+div.sscdialog.keep .button.keep {visibility: hidden;}
 
-div.sscdialog div.button.close, div.sscdialog button.close,
+div.sscdialog .button.close, div.sscdialog button.close,
 div.sscdialog button[VALUE='CLOSE'] {
     color: red;}
-
-div.sscdialog div.clicktodismiss {
-    position: absolute; bottom: 0px;
-    text-align: center; width: 80%; left: 10%; right: 10%;
-    font-size: 50%; color: yellow;
-    padding-bottom: 0.5ex;}
 
 div.sscdialog p.sschelp {
     text-align: left; font-size: 70%; margin-top: 1ex;
@@ -39,14 +33,9 @@ div.sscdialog table { width: 100%; color: ivory;}
 div.sscdialog table th { text-align: right;}
 div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
 div.sscdialog table td { text-align: left;}
+
 div.sscdialog div.buttons { text-align: center; }
 div.sscdialog div.buttons button {}
-div.sscdialog div.buttons button[VALUE='CANCEL'] {}
-div.sscdialog div.buttons button[VALUE='OK'] {}
-div.sscdialog div.buttons button[VALUE='UNWRAP'] {}
-div.sscdialog div.buttons button[VALUE='REMOVE'] {}
-div.sscdialog div.buttons button[VALUE='WRAP'] {}
-div.sscdialog div.buttons button[VALUE='CONTENT'] {}
-div.sscdialog div.buttons button[VALUE='DONE'] {}
-div.sscdialog div.buttons button[VALUE='CHANGE'] {}
+
+/* Buttons */
 
