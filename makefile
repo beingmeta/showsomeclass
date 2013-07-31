@@ -8,6 +8,5 @@ TEMPLATES=toolbar.js editelement.js editcontent.js reclass.js \
 
 app.js: ssc.js ${TEMPLATES} edit.js
 	cat ssc.js ${TEMPLATES} edit.js > $@
-app.css: ssc.css
-	cp ssc.css showsomeclass.css
-
+app.css: ssc.css dialog.css edit.css
+	cat ssc.css dialog.css edit.css > app.css

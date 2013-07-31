@@ -1,0 +1,72 @@
+div.sscdialog.ssceditelement, div.sscdialog.ssceditcontent {
+    right: 10%; bottom: 10%; left: auto; top: auto;
+    padding-bottom: 1em;}
+div.sscdialog.ssceditelement { max-width: 15em; }
+div.sscdialog.ssceditcontent { max-width: 80%;}
+div.sscdialog.ssceditelement div.sscelementspec {
+    margin-right: 1.5em;}
+div.sscdialog.ssceditelement div.sscelementspec input[TYPE="TEXT"] {
+    font-size: 24px; width: 100%;}
+
+div.sscdialog.ssceditelement select { font-size: 24px;}
+div.sscdialog.ssceditelement .button.close {
+    height: 2em; width: auto;}
+div.sscdialog.ssceditelement input.sscspecinput {
+    }
+
+div.sscdialog.ssceditelement table.sscattribs input[TYPE="TEXT"] {
+    font-size: 16px;}
+div.sscdialog.ssceditelement table.sscattribs th {
+    font-size: 20px; vertical-align: bottom;
+    width: 25%;}
+
+div.sscdialog.ssceditcontent textarea { height: 7em; }
+div.sscdialog.ssceditcontent div.title { text-align: left;}
+div.sscdialog.ssceditcontent div.buttons { text-align: right;}
+
+div.sscdialog.sscreclass div.title {
+    text-align: left; margin-bottom: 1ex;}
+div.sscdialog.sscreclass div.buttons { text-align: right;}
+div.sscdialog.sscreclass th, div.sscdialog.sscreclass td {
+    font-size: 24px;}
+div.sscdialog.sscreclass table input[type='TEXT'] {
+    font-size: 24px;}
+div.sscdialog.sscreclass table th {
+    padding-right: 1ex; vertical-align: bottom; width: 7em;}
+
+div.sscdialog div.ssctextinput {
+    margin-right: 3em;}
+div.sscdialog div.ssctextinput input[TYPE='TEXT'] {
+    width: 100%;}
+
+div.sscdialog.ssceditselection input[TYPE='TEXT'] {
+    font-size: 100%;}
+div.sscdialog.ssceditselection input[NAME='SELECTION'] {
+    width: 80%;}
+div.sscdialog.ssceditselection input[NAME='WRAP'] {
+    width: 50%;}
+div.sscdialog.ssceditselection button { float: right;}
+
+div.ssceditselection { height: 1em;}
+div.ssceditselection .button {
+    height: 1em; width: auto;}
+div.ssceditselection .button.cancel,
+div.ssceditselection .button.wrap,
+div.ssceditselection .button.ok {
+    float: right;}
+
+div.ssceditselection div.inputbox {
+    margin-left: 1.5em; margin-right: 2.5em;}
+div.ssceditselection div.sscinputbox input {
+    width: 100%;}
+div.ssceditselection input.sscwrapinput { display: none;}
+
+div.sscdialog.ssceditselection.sscwrapping { height: 2em;}
+div.sscdialog.ssceditselection.sscwrapping input.sscwrapinput {
+    display: block; width: 100%;}
+
+div.sscdialog.ssceditselection input[NAME='SELECTION'] {
+    width: 80%;}
+div.sscdialog.ssceditselection input[NAME='WRAP'] {
+    width: 50%;}
+div.sscdialog.ssceditselection button { float: right;}
