@@ -152,6 +152,21 @@ div.sscdialog.sscreclass table input[type='TEXT'] {
 div.sscdialog.sscreclass table th {
     padding-right: 1ex; vertical-align: bottom; width: 7em;}
 
+div.sscdialog div.ssctextinput {
+    margin-right: 3em;}
+div.sscdialog div.ssctextinput input[TYPE='TEXT'] {
+    width: 100%;}
+div.sscdialog button, div.sscdialog .button {
+    width: 3em; height: 3em;}
+
+div.sscdialog.ssceditselection input[TYPE='TEXT'] {
+    font-size: 100%;}
+div.sscdialog.ssceditselection input[NAME='SELECTION'] {
+    width: 80%;}
+div.sscdialog.ssceditselection input[NAME='WRAP'] {
+    width: 50%;}
+div.sscdialog.ssceditselection button { float: right;}
+
 /* The toolbar */
 
 div.ssctoolbar {}
