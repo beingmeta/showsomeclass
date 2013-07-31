@@ -84,7 +84,8 @@ var SSC=(function(){
 	else return text;}
     Utils.fillin=fillin;
 
-    var events=["click","keydown","keypress","change","touchstart","touchmove","touchend"];
+    var events_pat=/click|keydown|keypress|change|touchstart|touchmove|touchend/;
+    var spec_events_pat=/([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)/;
 
     function make(tag,classname,content,opts){
 	var elt=document.createElement(tag);
@@ -98,15 +99,22 @@ var SSC=(function(){
 	    elt.appendChild(content);
 	else elt.innerHTML=fillin(content);
 	if (opts) {
+	    var match=false, ex;
 	    if (opts.id) elt.id=opts.id;
 	    if (opts.title) elt.title=opts.title;
 	    if (opts.href) elt.href=opts.href;
 	    if (opts.name) elt.name=opts.name;
 	    if (opts.src) elt.src=opts.src;
 	    if (opts.alt) elt.alt=opts.alt;
-	    var i=0; var lim=events.length; while (i<lim) {
-		var evtype=events[i++];
-		if (opts[evtype]) addListener(elt,evtype,opts[evtype]);}}
+	    for (var key in opts) if (opts.hasOwnProperty(key)) {
+		try {
+		    if (events_pat.exec(key))
+			addListener(elt,evtype,opts[evtype]);
+		    else if (match=spec_events_pat.exec(key)) {
+			addListener(elt.querySelectorAll(match[1]),match[2],
+				    opts[key]);}
+		    else {}}
+		catch (ex) {}}}
 	return elt;}
     Utils.make=make;
     function make_text(input){
