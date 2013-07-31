@@ -2,6 +2,7 @@ SSC.Dialog=(function(){
 
     var make=SSC.make, text=SSC.make, fillin=SSC.fillin, $=SSC.$;
     var addListener=SSC.addListener, hasClass=SSC.hasClass, byID=SSC.byID;
+    var make_text=SSC.make_text;
 
     function getDialog(elt){
 	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
@@ -560,6 +561,35 @@ SSC.Editor=(function(){
 	SSC.Editor.node.innerHTML=input.value;
 	SSC.Dialog.close(SSC.getDialog(button));}
 
+    function es_done(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	var input=dialog.querySelector(".sscselection");
+	var wrapinput=dialog.querySelector('.sscwrapper');
+	var selection=SSC.Editor.selection;
+	var oldnode=selection.startnode;
+	var oldtext=oldnode.nodeValue;
+	var newtext=oldtext.slice(0,selection.startoff)+input.value+
+	    oldtext.slice(selection.endoff);
+	var wrapper=wrapinput.value.trim();
+	if ((!(wrapper))||(wrapper.length===0)) 
+	    oldnode.parentNode.replaceChild(text(newtext),oldnode);
+	else {
+	    var spec=wrapper.split(".");
+	    var newtag=spec[0]||"span";
+	    var classname=spec.slice(1).join(" ");
+	    var newelt=make(newtag,classname,newtext);
+	    oldnode.parentNode.replaceChild(newelt,oldnode);}
+	SSC.Editor.selection=false;
+	Dialog.close(dialog);
+	SSC.Editor.dialog=false;}
+    function es_keydown(evt){
+	evt=evt||event;
+	var kc=evt.keyCode;
+	if (kc===RETURN) {
+	    cancel(evt); return es_done();}}
+
     function rc_done(evt){
 	var target=((evt.nodeType)?(evt):
 		    ((evt.target)||(evt.srcElement)));
@@ -588,7 +618,7 @@ SSC.Editor=(function(){
     /* Edit functions */
 
     function Editor(arg,dialog){
-	var node=false, selector=false;
+	var node=false, selector=false, selection=false;
 	if (arg.nodeType) node=arg;
 	else if ((typeof arg === "string")&&
 		 (document.getElementById(arg)))
@@ -601,20 +631,24 @@ SSC.Editor=(function(){
 	    else if (candidates.length===1) 
 		node=candidates[0];
 	    else selector=arg;}
+	else if (arg instanceof Selection) {
+	    selection=arg;}
 	else {
 	    SSC.Message("Not sure what to edit: "+arg+"?");
 	    return;}
-	var current=SSC.Editor.dialog;
-	if (current) {
-	    var closefn=SSC.Editor.closefn;
+	set_editnode(false);
+	SSC.Editor.selection=false;
+	var current_dialog=SSC.Editor.dialog;
+	if (current_dialog) {
 	    SSC.Editor.dialog=false;
-	    SSC.Editor.closefn=false;
-	    set_editnode(false);
-	    if (closefn) closefn(current);
-	    SSC.Dialog.close(current);}
+	    SSC.Dialog.close(current_dialog);}
 	if (node) set_editnode(node);
-	else if (selector) SSC.select(selector);
 	else set_editnode(false);
+	if (selector) SSC.select(selector);
+	if (selection) SSC.Editor.selection=
+	    {startnode: selection.anchorNode, startoff: selection.anchorOffset,
+	     endnode: selection.focusNode, endoff: selection.focusOffset};
+	else SSC.Editor.selection=false;
 	if (!(dialog)) {
 	    if (node)
 		SSC.Editor.dialog=dialog=makeEditElementDialog(node);
@@ -631,8 +665,19 @@ SSC.Editor=(function(){
 	var selection=window.getSelection();
 	if ((selection)&&(!(evt.shiftKey))&&
 	    ((selection.anchorNode!==selection.focusNode)||
-	     (selection.anchorOffset!==selection.focusOffset)))
-	    return;
+	     (selection.anchorOffset!==selection.focusOffset))) {
+	    if (selection.anchorNode===selection.focusNode) {
+		var dialog=SSC.Dialog(SSC.Templates.simpleselection,
+				      {selection:selection.toString(),
+				       imgroot: SSC.default_root},
+				      {classname: "ssceditselection",
+				       noclose: true});
+		var textinput=dialog.querySelector('.sscselection');
+		addListener(textinput,"keydown",es_keydown);
+		var wrapinput=dialog.querySelector('.sscwrapper');
+		addListener(wrapinput,"keydown",es_keydown);
+		Editor(selection,dialog);}
+	    return;}
 	var target=evt.target||evt.srcElement;
 	var scan=target;
 	while (scan) {
