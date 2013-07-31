@@ -165,7 +165,20 @@ var SSC=(function(){
 	else if (current.search(pat)>=0) return true;
 	else return false;}
 
-    Utils.addClass=addClass; Utils.dropClass=dropClass; Utils.hasClass=hasClass;
+    function getParent(elt,classname){
+	var body=document.body;
+	if (typeof elt === "string") elt=byID(elt);
+	if (!(elt)) return false;
+	else if (!(elt.nodeType)) return false;
+	else while (elt) {
+	    if (elt===body) return false;
+	    else if ((elt.nodeType===1)&&(hasClass(elt,classname)))
+		break;
+	    else elt=elt.parentNode;}
+	return elt||false;}
+
+    Utils.addClass=addClass; Utils.dropClass=dropClass;
+    Utils.hasClass=hasClass; Utils.getParent=getParent;
 
     /* Getting node signatures */
 
@@ -185,6 +198,7 @@ var SSC=(function(){
 	// We could interpret other attribs args (arrays, regexes, etc)
 	else {}
 	return sig;}
+    Utils.getSignature=getSignature;
 
     /* Copying an array (or array-like object, such as a NodeList) into a new array. */
 
