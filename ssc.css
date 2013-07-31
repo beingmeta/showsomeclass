@@ -99,7 +99,8 @@ div#SSCTOOLBAR div#sscstyleinfo {
     /* left: 10em; max-width: 50%; */
     left: 10%; max-width: 80%;
     display: none;}
-div#SSCTOOLBAR.showstyle div#sscstyleinfo { display: block;}
+body.sscTOOLBAR div#SSCTOOLBAR.showstyle div#sscstyleinfo {
+    display: block;}
 
 div#SSCTOOLBAR .styleinfo p {
     margin-left: 1em; text-indent: -1em;}

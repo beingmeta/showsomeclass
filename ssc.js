@@ -557,7 +557,9 @@ SSC.Templates.toolbar=
 	document.body.appendChild(toolbar);}
 
     function showToolbar(){addClass(document.body,"sscTOOLBAR");}
-    function hideToolbar(){dropClass(document.body,"sscTOOLBAR");}
+    function hideToolbar(){
+	dropClass("SSCTOOLBAR","showstyle");
+	dropClass(document.body,"sscTOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
     /* Toolbar event handlers */
