@@ -3,7 +3,8 @@
 
 default: app.js app.css
 
-TEMPLATES=toolbar.js editelement.js editcontent.js reclass.js editselection.js
+TEMPLATES=toolbar.js editelement.js editcontent.js reclass.js \
+	editselection.js simpleselection.js
 
 app.js: ssc.js ${TEMPLATES} edit.js
 	cat ssc.js ${TEMPLATES} edit.js > $@
