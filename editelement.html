@@ -1,18 +1,25 @@
-<div class='button close image'>
-  <img src='{{imgroot}}/redx.svgz' class='svg'/>
-  <img src='{{imgroot}}/redx100x100.png' class='notsvg'/>
+<div class="row">
+  <div class='button close image'>
+    <img src='{{imgroot}}/redx.svgz' class='svg'/>
+    <img src='{{imgroot}}/redx100x100.png' class='notsvg'/>
+  </div>
+  <div class='button expand image'>
+    <img src='{{imgroot}}/bluehamburger.svgz' class='svg'/>
+    <img src='{{imgroot}}/bluehamburger100x100.png' class='notsvg'/>
+  </div>
+  <div class='sscsignature'>
+    <input class='sscspecinput sscinitfocus'
+	   TYPE='TEXT' NAME='SPEC' VALUE='{{signature}}'/>
+  </div>
 </div>
-<div class='sscelementspec'>
-  <input class='sscspecinput' TYPE='TEXT' NAME='SPEC'/>
-</div>
-<input class='sscstyleinput' TYPE='TEXT' NAME='STYLE'/>
-<table class='sscattribs'>
-</table>
 <div class='buttons'>
   <button value='UNWRAP' 'Remove this element by replacing it with its contents'>Unwrap Content</button>
   <button value='DELETE' title='Delete this element'>Delete Element</button>
   <button value='CONTENT' title='Edit the HTML content of this element'>Edit Content</button>
 </div>
+<input class='sscstyleinput' TYPE='TEXT' NAME='STYLE'/>
+<table class='sscattribs'>
+</table>
 <select class='sscparents'>
   <option value='' selected='SELECTED'>Parents ({{nparents}}):</option>
 </select>

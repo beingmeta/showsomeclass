@@ -1,4 +1,10 @@
-<div class='title'>Change {{count}} elements</div>
+<div class="row">
+  <div class='button image close'>
+    <img src='{{imgroot}}/redx.svgz' class='svg'/>
+    <img src='{{imgroot}}/redx100x100.png' class='notsvg'/>
+  </div>
+  <div class='title'>Change {{count}} element(s)</div>
+</div>
 <table class='sscreclass'>
   <tr><th>matching</th><td>{{spec}}</td></tr>
   <tr>
@@ -9,4 +15,15 @@
 </table>
 <div class='buttons'>
   <button class='close' value='CHANGE'>Change</button>
+  <p>Specifying regular class selectors (e.g. <tt>.cite</tt>) will
+  strip all existing classes and replace them with the specified
+  classes.</p>
+  <p>Use <em>plus</em> and <em>minus</em> (<kbd>+</kbd>/<kbd>-</kbd>)
+    to add or delete classes, for example <tt>.+citation.-ms339</tt>
+    will add the class <tt>citation</tt> and drop the
+    class <tt>ms339</tt> from all the matching
+    elements, <em>without</em> affecting any other classes.</p>
+  <p>This can also be used to change the element tag itself, to
+  convert (for example) some classes of <tt>div</tt>s to <tt>p</tt>s
+  or a particular kind of <tt>span</tt> to a <tt>strong</tt>.</p>
 </div>

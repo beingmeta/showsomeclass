@@ -1,32 +1,75 @@
-div.sscdialog.ssceditelement, div.sscdialog.ssceditcontent {
+/* Edit element */
+
+div.ssceditelement, div.ssceditcontent {
     right: 10%; bottom: 10%; left: auto; top: auto;
     padding-bottom: 1em;}
-div.sscdialog.ssceditelement { max-width: 15em; }
-div.sscdialog.ssceditcontent { max-width: 80%;}
-div.sscdialog.ssceditelement div.sscelementspec {
-    margin-right: 1.5em;}
-div.sscdialog.ssceditelement div.sscelementspec input[TYPE="TEXT"] {
+div.ssceditelement {
+    min-width: 30em; max-width: 75%;}
+div.ssceditelement .button.image {
+    width: 1em; height: 1em; float: right;}
+div.ssceditelement div.sscsignature {
+    margin-right: 3em; clear: left;}
+div.ssceditelement div.sscsignature input[TYPE="TEXT"] {
     font-size: 24px; width: 100%;}
 
-div.sscdialog.ssceditelement select { font-size: 24px;}
-div.sscdialog.ssceditelement .button.close {
-    height: 2em; width: auto;}
-div.sscdialog.ssceditelement input.sscspecinput {
-    }
+div.ssceditelement div.buttons { padding-bottom: 1ex; }
+div.ssceditelement div.buttons button[value="UNWRAP"] { float: left;}
+div.ssceditelement div.buttons button[value="DELETE"] { float: right;}
 
-div.sscdialog.ssceditelement table.sscattribs input[TYPE="TEXT"] {
-    font-size: 16px;}
-div.sscdialog.ssceditelement table.sscattribs th {
+div.ssceditelement table.sscattribs { margin-top: 0.25ex;}
+
+div.ssceditelement table.sscattribs input[TYPE="TEXT"] {
+    font-size: 16px; width: 100%;}
+div.ssceditelement table.sscattribs th {
     font-size: 20px; vertical-align: bottom;
     width: 25%;}
 
-div.sscdialog.ssceditcontent textarea { height: 7em; }
-div.sscdialog.ssceditcontent div.title { text-align: left;}
-div.sscdialog.ssceditcontent div.buttons { text-align: right;}
+div.ssceditelement select { font-size: 24px;}
 
-div.sscdialog.sscreclass div.title {
-    text-align: left; margin-bottom: 1ex;}
-div.sscdialog.sscreclass div.buttons { text-align: right;}
+/* Expansion rules */
+
+div.ssceditelement input[NAME='STYLE'] { display: none; }
+div.ssceditelement table.sscattribs { display: none;}
+div.ssceditelement select { display: none; }
+div.ssceditelement.sscexpanded input[NAME='STYLE'] { display: block; }
+div.ssceditelement.sscexpanded table.sscattribs { display: table;}
+div.ssceditelement.sscexpanded select { display: block; }
+
+/* Edit content */
+
+div.ssceditcontent { width: 50%;}
+div.ssceditcontent div.title {
+    text-align: left; margin-right: 2em;}
+div.ssceditcontent .button.image {
+    width: 1em; height: 1em; float: right;}
+div.ssceditcontent div.buttons .button {
+    font-size: 75%; float: right; margin-right: 0px;}
+
+div.ssceditcontent textarea { height: 7em; }
+
+div.ssceditcontent div.buttons { text-align: left;}
+div.ssceditcontent div.buttons button,
+div.ssceditcontent div.buttons .button {
+    float: right;}
+
+/* Reclass dialog */
+
+div.sscreclass {
+    min-width: 25em; max-width: 50%;
+    right: 10%; top: 15%;}
+div.sscreclass div.title {
+    text-align: left; margin-right: 2em;}
+div.sscreclass .button.image {
+    width: 1em; height: 1em; float: right;}
+div.sscdialog.sscreclass div.buttons {
+    text-align: left;}
+div.sscdialog.sscreclass div.buttons .button,
+div.sscdialog.sscreclass div.buttons button {
+    float: right;}
+div.sscdialog.sscreclass div.buttons p {
+    font-size: 50%; margin-top: 1ex; margin-left: 2em; text-indent: -2em;}
+div.sscdialog.sscreclass div.buttons p tt { font-weight: bold; font-size: 120%;}
+
 div.sscdialog.sscreclass th, div.sscdialog.sscreclass td {
     font-size: 24px;}
 div.sscdialog.sscreclass table input[type='TEXT'] {
@@ -34,10 +77,37 @@ div.sscdialog.sscreclass table input[type='TEXT'] {
 div.sscdialog.sscreclass table th {
     padding-right: 1ex; vertical-align: bottom; width: 7em;}
 
-div.sscdialog div.ssctextinput {
-    margin-right: 3em;}
-div.sscdialog div.ssctextinput input[TYPE='TEXT'] {
-    width: 100%;}
+/* Editing text selections */
+
+div.ssctextedit {
+    min-width: 30%; max-width: 70%;
+    left: 10%; top: 20%;}
+div.sscdialog.ssctextedit { padding-bottom: 1ex;}
+div.ssctextedit .button {
+    margin-top: 0px; margin-left: 0.25ex;
+    float: right; vertical-align: top;
+    padding-top: 0px;}
+div.ssctextedit div.row.row2 {
+    margin-top: 0.5ex; display: none;}
+div.ssctextedit .button.wrap { font-size: 50%; }
+div.ssctextedit .button.image {
+    font-size: 80%; width: 1em; height: 1em;}
+
+div.ssctextedit div.ssctextwrap {
+    margin-right: 5em;
+    clear: left;}
+div.ssctextedit div.ssctextwrap input[TYPE='TEXT'] { width: 100%; }
+div.ssctextedit div.ssctextinput {
+    margin-right: 5em;
+    clear: left;}
+div.ssctextedit div.ssctextinput input[TYPE='TEXT'] { width: 100%; }
+
+div.ssctextedit.sscwrap div.row.row2 { display: block;}
+div.ssctextedit.sscwrap div.ssctextinput {
+    clear: both; margin-right: 0px; width: 100%;}
+div.ssctextedit.sscwrap .row1 .button { display: none;}
+
+/* Edit selection */
 
 div.sscdialog.ssceditselection input[TYPE='TEXT'] {
     font-size: 100%;}
