@@ -4,6 +4,8 @@ img.svg { display: none;}
 body.haveSVG img.svg { display: inline;}
 body.haveSVG img.notsvg { display: none;}
 
+img.inline { max-height: 1em; width: auto; vertical-align: baseline; }
+
 /* Make spans more visible */
 
 body.cxSSC span:hover {text-decoration: overline;}
@@ -126,4 +128,24 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 /* Images in buttons take up 90% of the height, and align towards the top */
 .sscapp .button img, .sscapp button img {
     height: 90%; width: auto; vertical-align: top;}
+
+/* Help classes */
+
+.sschelp { }
+
+.sschelp p > defn:first-child,
+.sschelp p > strong:first-child {
+  font-size: 120%; }
+
+.sschelp p:first-child > defn:first-child,
+.sschelp p:first-child > strong:first-child {
+  font-size: 150%; }
+
+div#SSCHELP {
+  position: fixed; top: 20%; bottom: 10%; left: 15%; right: 15%;
+  background-color: rgba(255,255,255,0.6); color: ivory;
+  text-align: left;}
+
+div#SSCHELP p { 
+  margin-left: 3em; max-width: 40em;}
 

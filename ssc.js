@@ -55,6 +55,9 @@ var SSC=(function(){
 
     var CKEY=Utils.CKEY=0x43;
     var SKEY=Utils.SKEY=0x4b;
+    var OPENBRACE=Utils.OPENBRACE=0x7B;
+    var CLOSEBRACE=Utils.CLOSEBRACE=0x7D;
+    var HKEY=Utils.SKEY=0x48;
     var TAB=Utils.TAB=0x09;
     var RETURN=Utils.RETURN=0x0d;
     var SPACE=Utils.SPACE=0x0a;
@@ -147,7 +150,7 @@ var SSC=(function(){
 	var match=false, ex=false;
 	for (var key in opts) if (opts.hasOwnProperty(key)) {
 	    if (events_pat.exec(key))
-		addListener(node,key,opts[evtype]);
+		addListener(node,key,opts[key]);
 	    else if (match=spec_events_pat.exec(key)) {
 		var elts=
 		addListener(node.querySelectorAll(match[1]),match[2],
@@ -422,7 +425,8 @@ var SSC=(function(){
 	focusIndex: function focusIndex(){ return focus_index;},
 	getFocus: function(){return focus;},
 	$: $, simplespec: simplespec,
-	Templates: {}, Utils: Utils, imgroot: imgroot};})();
+	Templates: {}, Handlers: {},
+	Utils: Utils, imgroot: imgroot};})();
 
 SSC.updateSelectors=(function(){
     
@@ -546,17 +550,48 @@ SSC.getStyleInfo=(function(){
 
     return getStyleInfo;})();
 
-SSC.Templates.toolbar=
-    "<span id='SSCTOOLBARBUTTONS'>"+
-    "<button class='button showrules'>Rules</button>"+
-    "<button title='Hide the toolbar' class='button hide'>Hide</button></span>\n"+
-    "<div class='combobox'>"+
-    "<input type='TEXT' id='SSCINPUT' NAME='SELECTOR' placeholder='a CSS selector'/>\n"+
-    "<select id='SSCDROPBOX' class='dropbox'></select>"+
-    "</div>"+
-    "<span class='text' id='SSCMATCHPHRASE'>"+
-    "<span id='SSCMATCHCOUNT'>some</span> matches, at #<span id='SSCMATCHINDEX'>#</span></span>"+
-    "<div class='styleinfo' id='SSCSTYLEINFO'></div>";
+SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
+    <span class=\"button image scandown\" \
+      title=\"Go to the next selected element\"> \
+      <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Rules\"/> \
+	<img class=\"notsvg\" \
+	  src=\"{{imgroot}}/downarrow_white100x100.png\" alt=\"Rules\"/> \
+    </span> \
+    <span class=\"button image scanup\" \
+      title=\"Go to the previous selected element\"> \
+      <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Rules\"/> \
+	<img class=\"notsvg\" \
+	  src=\"{{imgroot}}/uparrow_white100x100.png\" alt=\"Rules\"/> \
+    </span> \
+    <span class=\"button image showrules\"> \
+      <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\" \
+	title=\"Show some of the CSS style rules for this selector\" \
+	alt=\"Rules\"/> \
+	<img class=\"notsvg\" \
+	  src=\"{{imgroot}}/stylebraces100x100.png\" \
+	  title=\"Show some of the CSS style rules for this selector\" \
+	  alt=\"Rules\"/> \
+    </span> \
+    <span class=\"button image hide\"> \
+      <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
+	title=\"Hide this toolbar\" \
+	alt=\"Hide\"/> \
+	<img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" \
+	  alt=\"Hide\"/> \
+    </span> \
+  </div> \
+  <div class=\"combobox\"> \
+    <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\" \
+      placeholder=\"a CSS selector\"/> \
+      <select id=\"SSCDROPBOX\" class=\"dropbox\"></select> \
+  </div> \
+  <span class=\"text\" id=\"SSCMATCHPHRASE\"> \
+    <span id=\"SSCMATCHCOUNT\">some</span> \
+    matches, at \
+    #<span id=\"SSCMATCHINDEX\">#</span> \
+  </span> \
+  <div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div> \
+";
 
 (function(){
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin;
@@ -564,6 +599,7 @@ SSC.Templates.toolbar=
     var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
     var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
     var RETURN=SSC.Utils.RETURN, ESCAPE=SSC.Utils.ESCAPE, TAB=SSC.Utils.TAB;
+    var OPENBRACE=SSC.Utils.OPENBRACE, CLOSEBRACE=SSC.Utils.CLOSEBRACE;
 
     var $=SSC.$;
 
@@ -580,21 +616,20 @@ SSC.Templates.toolbar=
 
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",
-			 SSC.Templates.toolbar,
-			 {imgroot: SSC.imgroot,id: "SSCTOOLBAR"});
-	var input=bySpec(toolbar,'input'); {
-	    addListener(input,"keydown",sscinput_keydown);
-	    addListener(input,"focus",sscinput_focus);
-	    addListener(input,"blur",sscinput_blur);}
+			 SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
+			 {imgroot: SSC.imgroot,id: "SSCTOOLBAR",
+			  "input:keydown": sscinput_keydown,
+			  "input:focus": sscinput_focus,
+			  "input:blur": sscinput_blur,
+			  "select:change": selector_selected,
+			  ".hide:click": hideToolbar,
+			  ".showrules:click": toggleStyleInfo,
+			  ".uparrow:click": scan_backward,
+			  ".downarrow:click": scan_forward});
 	var dropbox=bySpec(toolbar,"SELECT"); {
-	    addListener(dropbox,"change",selector_selected);
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
-	var hide_button=bySpec(toolbar,".hide"); {
-	    addListener(hide_button,"click",hideToolbar);}
-	var showrules=bySpec(toolbar,".showrules"); {
-	    addListener(showrules,"click",toggleStyleInfo);}
-	var tapzone=make("div",false,false,{id: "SSCTAPZONE"}); {
-	    addListener(tapzone,"click",showToolbar);}
+	var tapzone=make("div",false,false,
+			 {id: "SSCTAPZONE",click: showToolbar});
 	document.body.appendChild(toolbar);
 	document.body.appendChild(tapzone);}
 
@@ -674,9 +709,34 @@ SSC.Templates.toolbar=
 	if (comma<0) return string;
 	else return string.slice(comma+1);}
 
+    function scan_forward(evt) {
+	var index=SSC.focusIndex();
+	var max=SSC.selected().length-1;
+	if (max<0) {}
+	else if (typeof index === "number") {
+	    if (index>=max) {}
+	    else if (index<0) SSC.focus(0);
+	    else SSC.focus(index+1);}
+	else SSC.focus(0);
+	if (evt) cancel(evt);}
+    SSC.Handlers.scan_forward=scan_forward;
+
+    function scan_backward(evt) {
+	var index=SSC.focusIndex();
+	var max=SSC.selected().length-1;
+	if (max<0) {}
+	else if (typeof index === "number") {
+	    if (index<=0) {}
+	    else if (index>=max)
+		SSC.focus(max);
+	    else SSC.focus(index-1);}
+	else SSC.focus(max);
+	if (evt) cancel(evt);}
+    SSC.Handlers.scan_backward=scan_backward;
+
     /* Window event handlers */
 
-    var usekeys=[TAB,ESCAPE,RETURN,SKEY];
+    var usekeys=[TAB,ESCAPE,RETURN,OPENBRACE];
 
     function window_keydown(evt){
 	evt=evt||event;
@@ -688,7 +748,7 @@ SSC.Templates.toolbar=
 	if ((target)&&
 	    ((target.tagName==='INPUT')||(target.tagName==='TEXTAREA')))
 	    return;
-	if (key===SKEY) {
+	if (key===OPENBRACE) {
 	    if (hasClass(document.body,"ssc__TOOLBAR")) {
 		if (hasClass("SSCTOOLBAR","showstyle"))
 		    dropClass("SSCTOOLBAR","showstyle");
@@ -708,18 +768,8 @@ SSC.Templates.toolbar=
 		    SSC.select(false);
 		    SSC.disable();}}}
 	else if (key===TAB) {
-	    var index=SSC.focusIndex();
-	    var max=SSC.selected().length-1;
-	    if (max<0) {}
-	    else if (typeof index === "number") {
-		if (evt.shiftKey) {
-		    if (index<=0) {} else SSC.focus(index-1);}
-		else if (index>=max) {}
-		else SSC.focus(index+1);}
-	    else if (evt.shiftKey)
-		SSC.focus(max);
-	    else SSC.focus(0);
-	    cancel(evt);}
+	    if (evt.shiftKey) scan_backward(evt);
+	    else scan_forward(evt);}
 	else if (key===RETURN) {
 	    addClass(document.body,"ssc__TOOLBAR");
 	    if (evt.shiftKey) {
