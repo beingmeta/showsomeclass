@@ -24,7 +24,7 @@ SSC.Dialog=(function(){
 
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin, $=SSC.$;
     var addListener=SSC.Utils.addListener, hasClass=SSC.Utils.hasClass, byID=SSC.Utils.byID;
-    var make_text=SSC.Utils.make_text, getParent=SSC.Utils.make_text;
+    var make_text=SSC.Utils.make_text, getParent=SSC.Utils.getParent;
 
     function getDialog(elt){
 	if ((!(elt.nodeType))&&((elt.target)||(elt.srcElement)))
@@ -71,7 +71,6 @@ SSC.Dialog=(function(){
 		custom="sscapp "+custom;
 	    classname=custom.replace(/\s+/g," ");}
 	var box=make("div",classname,text);
-	box.id="SSCMESSAGE";
 	document.body.appendChild(box);
 	if (opts.keep) box.className=box.className+" keep";
 	// We do this "old school" with an interval, rather than using
@@ -82,6 +81,7 @@ SSC.Dialog=(function(){
 	    (!(opts.modal))&&(!(opts.keep))) {
 	    setupHeader(box,data,opts);
 	    startClosing(box,opts);}
+	SSC.Utils.setupListeners(box,opts);
 	return box;}
 
     function setupHeader(box,data,opts){
