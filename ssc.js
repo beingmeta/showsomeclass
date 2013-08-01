@@ -137,7 +137,7 @@ var SSC=(function(){
 	    return document.createTextNode(input);
 	else return document.createTextNode(fillin(input));}
     var text=make_text;
-    Utils.make_text=Utils.text=make;
+    Utils.make_text=Utils.text=text;
 
     var events_pat=/^(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
     var spec_events_pat=/^([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
