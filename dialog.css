@@ -2,12 +2,11 @@
 
 div.sscdialog {
     font-family: sans,sans-serif; font-size: 200%;
-    border-radius: 1em; -webkit-border-radius: 1em;
-    -moz-border-radius: 1em; -o-border-radius: 1em;
-    position: fixed; width: 20%; height: 30%;
-    top: auto; bottom: auto; left: auto; right: auto;
+    border-radius: 1ex; -webkit-border-radius: 1ex;
+    -moz-border-radius: 1ex; -o-border-radius: 1ex;
+    position: fixed; top: auto; bottom: auto; left: auto; right: auto;
     background-color: rgba(0,0,0,0.8); color: ivory;
-    padding: 1ex; padding-bottom: 2em;
+    padding: 0.5ex; padding-bottom: 1em;
     text-align: center;}
 div.sscdialog .button.keep {float: left; color: green;}
 div.sscdialog .button.close {float: right; color: red;}
@@ -26,16 +25,21 @@ div.sscdialog p.sschelp tt, div.sscdialog p.sschelp kbd {
 
 /* Edit styling */
 
-div.sscdialog input[TYPE="TEXT"],  div.sscdialog select,
-div.sscdialog textarea, div.sscdialog div.buttons {
-    width: 100%; display: block; margin-top: 0.25ex;}
-div.sscdialog table { width: 100%; color: ivory;}
+div.sscdialog > input[TYPE="TEXT"],  div.sscdialog select,
+div.sscdialog textarea, div.sscdialog div.buttons,
+div.sscdialog div.row {
+    width: 100%; display: block; clear: both;}
+div.sscdialog table { width: 100%; clear: both; color: ivory;}
 div.sscdialog table th { text-align: right;}
-div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
 div.sscdialog table td { text-align: left;}
+div.sscdialog table input[TYPE="TEXT"] { width: 100%;}
+div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
+div.sscdialog table td input[TYPE="TEXT"] { text-align: left;}
 
 div.sscdialog div.buttons { text-align: center; }
-div.sscdialog div.buttons button {}
+div.sscdialog textarea { text-align: left; }
+div.sscdialog div.buttons button, div.sscdialog div.buttons .button {
+    margin-left: 1ex; margin-right: 1ex;}
 
-/* Buttons */
+
 
