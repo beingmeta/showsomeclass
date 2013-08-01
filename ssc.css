@@ -118,11 +118,10 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
     background-color: silver;
     font-weight: bold;
     cursor: pointer;}
-.ssctoolbar .button, .ssctoolbar button { margin-left: 1ex; }
+.ssctoolbar .button, .ssctoolbar button { margin-left: 2px; }
 
 .sscapp img.button, div.sscapp .button.image, div.sscapp button.image {
-    max-height: 2em; width: auto;
-    padding-right: 2px; padding-left: 2px;
+    max-height: 2em; padding-right: 2px; padding-left: 2px;
     background-color: transparent;}
 
 /* Images in buttons take up 90% of the height, and align towards the top */

@@ -624,8 +624,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 			  "select:change": selector_selected,
 			  ".hide:click": hideToolbar,
 			  ".showrules:click": toggleStyleInfo,
-			  ".uparrow:click": scan_backward,
-			  ".downarrow:click": scan_forward});
+			  ".scanup:click": scan_backward,
+			  ".scandown:click": scan_forward});
 	var dropbox=bySpec(toolbar,"SELECT"); {
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
 	var tapzone=make("div",false,false,
