@@ -54,6 +54,7 @@ var SSC=(function(){
     /* Key codes */
 
     var CKEY=Utils.CKEY=0x43;
+    var SKEY=Utils.SKEY=0x4b;
     var TAB=Utils.TAB=0x09;
     var RETURN=Utils.RETURN=0x0d;
     var SPACE=Utils.SPACE=0x0a;
@@ -675,7 +676,7 @@ SSC.Templates.toolbar=
 
     /* Window event handlers */
 
-    var usekeys=[TAB,ESCAPE,RETURN];
+    var usekeys=[TAB,ESCAPE,RETURN,SKEY];
 
     function window_keydown(evt){
 	evt=evt||event;
@@ -687,7 +688,15 @@ SSC.Templates.toolbar=
 	if ((target)&&
 	    ((target.tagName==='INPUT')||(target.tagName==='TEXTAREA')))
 	    return;
-	if (key===ESCAPE) {
+	if (key===SKEY) {
+	    if (hasClass(document.body,"ssc__TOOLBAR")) {
+		if (hasClass("SSCTOOLBAR","showstyle"))
+		    dropClass("SSCTOOLBAR","showstyle");
+		else addClass("SSCTOOLBAR","showstyle");}
+	    else {
+		addClass("SSCTOOLBAR","showstyle");
+		addClass(document.body,"ssc__TOOLBAR");}}
+	else if (key===ESCAPE) {
 	    var changed=false;
 	    // Close any windows which are up
 	    dropClass("SSCTOOLBAR","showstyle");
