@@ -137,6 +137,7 @@ SSC.Editor=(function(){
 			       imgroot: SSC.imgroot,
 			       ".button.close:click": SSC.Dialog.close,
 			       ".button.expand:click": ee_expand,
+			       ".button.contract:click": ee_contract,
 			      ".buttons:click": ee_buttonclick,
 			       "input[name='SPEC']": ee_specinput,
 			       "input[name='STYLE']": ee_styleinput,
@@ -221,6 +222,7 @@ SSC.Editor=(function(){
 
     function make_selection_editor(range){
 	var startnode=range.startnode, ntext=startnode.nodeValue;
+	var endnode=range.endnode, ntext=startnode.nodeValue;
 	var template, inside;
 	if ((startnode===endnode)&&((range.endoff-range.startoff)<40)) {
 	    inside=ntext.slice(range.startoff,range.endoff);
@@ -319,10 +321,12 @@ SSC.Editor=(function(){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
 	var dialog=getDialog(target);
-	if (target) {
-	    if (hasClass(dialog,"sscexpanded"))
-		dropClass(dialog,"sscexpanded");
-	    else addClass(dialog,"sscexpanded");}}
+	if (dialog) addClass(dialog,"sscexpanded");}
+    function ee_contract(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	if (dialog) dropClass(dialog,"sscexpanded");}
     function ee_buttonclick(evt){
 	evt=evt||event;
 	var button=evt.target||evt.srcElement;

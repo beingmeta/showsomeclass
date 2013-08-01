@@ -12,6 +12,9 @@ div.ssceditelement div.sscsignature {
 div.ssceditelement div.sscsignature input[TYPE="TEXT"] {
     font-size: 24px; width: 100%;}
 
+div.ssceditelement .button.contract, div.ssceditelement button.contract {
+    display: none;}
+
 div.ssceditelement div.buttons { padding-bottom: 1ex; }
 div.ssceditelement div.buttons button[value="UNWRAP"] { float: left;}
 div.ssceditelement div.buttons button[value="DELETE"] { float: right;}
@@ -34,6 +37,14 @@ div.ssceditelement select { display: none; }
 div.ssceditelement.sscexpanded input[NAME='STYLE'] { display: block; }
 div.ssceditelement.sscexpanded table.sscattribs { display: table;}
 div.ssceditelement.sscexpanded select { display: block; }
+
+div.ssceditelement.sscexpanded .button.contract,
+div.ssceditelement.sscexpanded button.contract {
+    display: inline-block;}
+div.ssceditelement.sscexpanded .button.expand,
+div.ssceditelement.sscexpanded button.expand {
+    display: none;}
+
 
 /* Edit content */
 
@@ -67,7 +78,8 @@ div.sscdialog.sscreclass div.buttons .button,
 div.sscdialog.sscreclass div.buttons button {
     float: right;}
 div.sscdialog.sscreclass div.buttons p {
-    font-size: 50%; margin-top: 1ex; margin-left: 2em; text-indent: -2em;}
+    font-size: 50%; margin-top: 1ex;
+    margin-left: 3em; text-indent: -2em;}
 div.sscdialog.sscreclass div.buttons p tt { font-weight: bold; font-size: 120%;}
 
 div.sscdialog.sscreclass th, div.sscdialog.sscreclass td {
