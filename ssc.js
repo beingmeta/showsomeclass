@@ -139,20 +139,19 @@ var SSC=(function(){
     var text=make_text;
     Utils.make_text=Utils.text=make;
 
-    var events_pat=/click|keydown|keypress|change|touchstart|touchmove|touchend/;
-    var spec_events_pat=/([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)/;
+    var events_pat=/^(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
+    var spec_events_pat=/^([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
 
     function setupListeners(node,opts){
-	var ex; // Not really used, 
+	var match=false, ex=false;
 	for (var key in opts) if (opts.hasOwnProperty(key)) {
-	    try {
-		if (events_pat.exec(key))
-		    addListener(elt,key,opts[evtype]);
-		else if (match=spec_events_pat.exec(key)) {
-		    addListener(elt.querySelectorAll(match[1]),match[2],
-				opts[key]);}
-		else {}}
-	    catch (ex) {}}
+	    if (events_pat.exec(key))
+		addListener(node,key,opts[evtype]);
+	    else if (match=spec_events_pat.exec(key)) {
+		var elts=
+		addListener(node.querySelectorAll(match[1]),match[2],
+			    opts[key]);}
+	    else {}}
 	return node;}
     Utils.setupListeners=setupListeners;
 
@@ -282,7 +281,7 @@ var SSC=(function(){
 	else return copy(document.querySelectorAll(spec));}
 
     /* Stripping out the regex part of a hybrid pattern */
-    function stripregex(spec){return spec.replace(/\/[^\/]+\//,"");}
+    function simplespec(spec){return spec.replace(/\/[^\/]+\//,"");}
     
     /* The state of the selector app. This is also maintained on the
      * SSC object itself. */
@@ -347,7 +346,7 @@ var SSC=(function(){
 	if (!(spec)) return;
 	var nodes=$(spec);
 	var i=0, lim=nodes.length;
-	enable(); addClass(document.body,"sscTOOLBAR");
+	enable(); addClass(document.body,"ssc__TOOLBAR");
 	while (i<lim) show(nodes[i++]);
 	document.title=spec+" (x"+nodes.length+") "+real_title;
 	var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
@@ -420,7 +419,8 @@ var SSC=(function(){
 	selected: function getselected(){ return selected;},
 	refresh: function refresh(){select(selector,true);},
 	focusIndex: function focusIndex(){ return focus_index;},
-	getFocus: function(){return focus;}, $: $,
+	getFocus: function(){return focus;},
+	$: $, simplespec: simplespec,
 	Templates: {}, Utils: Utils, imgroot: imgroot};})();
 
 SSC.updateSelectors=(function(){
@@ -599,11 +599,11 @@ SSC.Templates.toolbar=
 
     function showToolbar(evt){
 	evt=evt||event;
-	addClass(document.body,"sscTOOLBAR");
+	addClass(document.body,"ssc__TOOLBAR");
 	cancel(evt);}
     function hideToolbar(){
 	dropClass("SSCTOOLBAR","showstyle");
-	dropClass(document.body,"sscTOOLBAR");}
+	dropClass(document.body,"ssc__TOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
     /* Toolbar event handlers */
@@ -691,7 +691,7 @@ SSC.Templates.toolbar=
 	    var changed=false;
 	    // Close any windows which are up
 	    dropClass("SSCTOOLBAR","showstyle");
-	    dropClass(document.body,"sscTOOLBAR");
+	    dropClass(document.body,"ssc__TOOLBAR");
 	    if (!(SSC.isenabled())) SSC.enable();
 	    else {
 		if (SSC.focus()) {SSC.focus(false); changed=true;}
@@ -712,7 +712,7 @@ SSC.Templates.toolbar=
 	    else SSC.focus(0);
 	    cancel(evt);}
 	else if (key===RETURN) {
-	    addClass(document.body,"sscTOOLBAR");
+	    addClass(document.body,"ssc__TOOLBAR");
 	    if (evt.shiftKey) {
 		var input=byID("SSCINPUT");
 		if (input) input.focus();}}
