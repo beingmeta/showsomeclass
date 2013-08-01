@@ -90,8 +90,8 @@ div#SSCTOOLBAR button.hide, div#SSCTOOLBAR .button.hide {
     font-weight: bold; color: red;}
 div#SSCTOOLBAR button.showrules, div#SSCTOOLBAR .button.showrules {}
 
-body.sscTOOLBAR div#SSCTOOLBAR { top: 0px;}
-body.sscTOOLBAR div#SSCTAPZONE { display: none; }
+body.ssc__TOOLBAR div#SSCTOOLBAR { top: 0px;}
+body.ssc__TOOLBAR div#SSCTAPZONE { display: none; }
 
 div#SSCTOOLBAR div#sscstyleinfo {
     position: absolute; top: 1.7em; 
@@ -99,7 +99,7 @@ div#SSCTOOLBAR div#sscstyleinfo {
     /* left: 10em; max-width: 50%; */
     left: 10%; max-width: 80%;
     display: none;}
-body.sscTOOLBAR div#SSCTOOLBAR.showstyle div#sscstyleinfo {
+body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#sscstyleinfo {
     display: block;}
 
 div#SSCTOOLBAR .styleinfo p {
