@@ -115,17 +115,8 @@ SSC.Editor=(function(){
 	else {}
 	return node;}
 
-    /* Making edit dialogs */
+    /* Edit Element dialog */
     
-    function makeEditContentDialog(node){
-	var dialog=SSC.Dialog(SSC.Templates.editcontent,
-			      {signature: getSignature(node,true),
-			       imgroot: SSC.imgroot,
-			       classname: "ssceditcontent",
-			       "BUTTON.done:click": ec_done});
-	var textarea=bySpec(dialog,"TEXTAREA"); textarea.value=node.innerHTML;
-	return dialog;}
-
     function makeEditElementDialog(node){
 	var parents=getParents(node);
 	var children=getChildren(node);
@@ -134,15 +125,8 @@ SSC.Editor=(function(){
 			      {nparents: parents.length,
 			       nchildren: children.length,
 			       signature: getSignature(node,true),
-			       imgroot: SSC.imgroot,
-			       ".button.close:click": SSC.Dialog.close,
-			       ".button.expand:click": ee_expand,
-			       ".button.contract:click": ee_contract,
-			      ".buttons:click": ee_buttonclick,
-			       "input[name='SPEC']": ee_specinput,
-			       "input[name='STYLE']": ee_styleinput,
-			       classname: "ssceditelement", noclose: true,
-			       nparents: parents.length, nchildren: children.length});
+			       imgroot: SSC.imgroot},
+			      SSC.Inits.editelement);
 	var styletext=(node.style.cssText).trim();
 	var styleinput=dialog.querySelector(".sscstyleinput");
 	if (styletext) {
@@ -194,106 +178,13 @@ SSC.Editor=(function(){
     function make_attrib_row(name,value){
 	if (name)
 	    return make("tr",false,fixed_row,
-			{attribname: name,attribval:value,name: name,
-			 "td input:keydown": ee_attrib});
+			{attribname: name,attribval:value},
+			{name: name, "td input:keydown": ee_attrib});
 	else return make("tr",false,new_row,
-			 {"td input:keydown": ee_attrib,name: "NEW_NEW"});}
+			 {"td input:keydown": ee_attrib},{name: "NEW_NEW"});}
 
-    function makeReclassElementsDialog(selector){
-	var selected;
-	if (!(selector)) {
-	    selector=SSC.selector();
-	    selected=SSC.selected();}
-	else selected=SSC.$(selector);
-	var dialog=SSC.Dialog(SSC.Templates.reclass,
-			      {simplespec: SSC.simplespec(selector),
-			       count: selected.length,spec: selector,
-			       imgroot: SSC.imgroot,
-			       classname: "sscreclass",
-			       ".sscnewspec:keydown": rc_keydown,
-			       ".button.close:click": SSC.Dialog.close,
-			       "button[value='CHANGE']:click": rc_done});
-	dialog.sscselector=selector;
-	return dialog;}
-
-    function reclass_selector(evt){
-	var dialog=makeReclassElementsDialog(SSC.selector());
-	document.body.appendChild(dialog);}
-
-    function make_selection_editor(range){
-	var startnode=range.startnode, ntext=startnode.nodeValue;
-	var endnode=range.endnode, ntext=startnode.nodeValue;
-	var template, inside;
-	if ((startnode===endnode)&&((range.endoff-range.startoff)<40)) {
-	    inside=ntext.slice(range.startoff,range.endoff);
-	    template=SSC.Templates.textedit;}
-	else {
-	    inside=false; template=SSC.Templates.bigtextedit;}
-	var dialog=SSC.Dialog(template,
-			      {imgroot: SSC.imgroot,selection: inside,
-			       classname: "ssctextedit",
-			       ".button.ok:click": es_done,
-			       ".button.wrap:click": es_wrap_click,
-			       ".button.close:click": SSC.Dialog.close,
-			       "input[type='TEXT']:keydown": es_keydown});
-	if (!(inside)) {
-	    var textarea=bySpec(dialog,'TEXTAREA');
-	    textarea.value=getHTML(range);}
-	return dialog;}
-
-    /* This should get the HTML for a range, expanding the range if needed. */
-    function getHTML(range){
-	if (range.startnode===range.endnode)
-	    return range.startnode.nodeValue.slice(range.startoff,range.endoff);
-	/* Find the common parent and include all the nodes enclosing the selection. */
-	else return "";}
-
-    function es_done(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	var textinput=dialog.querySelector("input[name='SELECTION']");
-	var wrapinput=dialog.querySelector("input[name='WRAPPER']");
-	var range=SSC.Editor.selection;
-	var oldnode=range.startnode;
-	var oldtext=oldnode.nodeValue;
-	var newtext=textinput.value;
-	var wrapper=wrapinput.value.trim();
-	var newnode=false;
-	if ((wrapper)&&(wrapper.length)) {
-	    var parsed=wrapper.split(".");
-	    var tag=parsed[0]||"span";
-	    var classname=parsed.slice(1).join(" ");
-	    newnode=make(tag,classname,newtext);}
-	else newnode=make_text(newtext);
-	var frag=document.createDocumentFragment();
-	frag.appendChild(make_text(oldtext.slice(0,range.startoff)));
-	frag.appendChild(newnode);
-	frag.appendChild(make_text(oldtext.slice(range.endoff)));
-	oldnode.parentNode.replaceChild(frag,oldnode);
-	SSC.Editor.selection=false;
-	SSC.Dialog.close(dialog);}
-    function es_keydown(evt){
-	var kc=evt.keyCode; if (kc===RETURN) return es_done(evt);}
-    function es_cancel(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	Dialog.close(dialog);
-	cancel(evt);}
-    function es_wrap_click(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	if (!(dialog)) return;
-	else if (hasClass(dialog,"sscwrap"))
-	    dropClass(dialog,"sscwrap");
-	else addClass(dialog,"sscwrap");
-	cancel(evt);}
-
-    /* Edit handlers */
-
-    function set_editnode(node){
-	if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
-	SSC.Editor.node=node;}
-
+    /* Edit Element handlers */
+    
     function ee_specinput(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
@@ -399,6 +290,26 @@ SSC.Editor=(function(){
 	if (goto) {
 	    cancel(evt); return Editor(goto);}}
 
+
+    SSC.Inits.editelement={
+	"button.close:click": SSC.Dialog.close,
+	"button.expand:click": ee_expand,
+	"button.contract:click": ee_contract,
+	"input[name='SPEC']": ee_specinput,
+	"input[name='STYLE']": ee_styleinput,
+	".buttons:click": ee_buttonclick,
+	classname: "ssceditelement"};
+
+    /* Edit Content dialog */
+
+    function makeEditContentDialog(node){
+	var dialog=SSC.Dialog(SSC.Templates.editcontent,
+			      {signature: getSignature(node,true),
+			       imgroot: SSC.imgroot},
+			      SSC.Inits.editcontent);
+	var textarea=bySpec(dialog,"TEXTAREA"); textarea.value=node.innerHTML;
+	return dialog;}
+
     function ec_done(evt){
 	evt=evt||event;
 	var button=evt.target||evt.srcElement;
@@ -406,6 +317,31 @@ SSC.Editor=(function(){
 	var input=dialog.querySelector('TEXTAREA');
 	SSC.Editor.node.innerHTML=input.value;
 	SSC.Dialog.close(SSC.getDialog(button));}
+
+    SSC.Inits.editcontent={
+	classname: "ssceditcontent",
+	"button.done:click": ec_done,
+	"button.close:click": SSC.Dialog.close};
+
+    /* Reclass Dialog */
+
+    function makeReclassElementsDialog(selector){
+	var selected;
+	if (!(selector)) {
+	    selector=SSC.selector();
+	    selected=SSC.selected();}
+	else selected=SSC.$(selector);
+	var dialog=SSC.Dialog(SSC.Templates.reclass,
+			      {simplespec: SSC.simplespec(selector),
+			       count: selected.length,spec: selector,
+			       imgroot: SSC.imgroot},
+			      SSC.Inits.reclass);
+	dialog.sscselector=selector;
+	return dialog;}
+
+    function reclass_selector(evt){
+	var dialog=makeReclassElementsDialog(SSC.selector());
+	document.body.appendChild(dialog);}
 
     function rc_done(evt){
 	var target=((evt.nodeType)?(evt):
@@ -428,6 +364,94 @@ SSC.Editor=(function(){
 	evt=evt||event;
 	var kc=evt.keyCode;
 	if (kc===RETURN) {cancel(evt); rc_done(evt);}}
+
+    SSC.Inits.reclass={
+	classname: "sscreclass",
+	".sscnewspec:keydown": rc_keydown,
+	"button.close:click": SSC.Dialog.close,
+	"button[value='CHANGE']:click": rc_done};
+    
+    /* Edit selection */
+
+    function make_selection_editor(range){
+	var startnode=range.startnode, ntext=startnode.nodeValue;
+	var endnode=range.endnode, ntext=startnode.nodeValue;
+	var template, inside, init;
+	if ((startnode===endnode)&&((range.endoff-range.startoff)<40)) {
+	    inside=ntext.slice(range.startoff,range.endoff);
+	    template=SSC.Templates.textedit;
+	    init=SSC.Inits.textedit;}
+	else {
+	    inside=false;
+	    template=SSC.Templates.bigtextedit;
+	    init=SSC.Inits.bigtextedit||SSC.Inits.textedit;}
+	var dialog=SSC.Dialog(template,
+			      {imgroot: SSC.imgroot,selection: inside},
+			      init);
+	if (!(inside)) {
+	    var textarea=bySpec(dialog,'TEXTAREA');
+	    textarea.value=getHTML(range);}
+	return dialog;}
+
+    /* This should get the HTML for a range, expanding the range if needed. */
+    function getHTML(range){
+	if (range.startnode===range.endnode)
+	    return range.startnode.nodeValue.slice(range.startoff,range.endoff);
+	/* Find the common parent and include all the nodes enclosing the selection. */
+	else return "";}
+
+    function es_done(evt){
+	evt=evt||event; var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	var textinput=dialog.querySelector("input[name='SELECTION']");
+	var wrapinput=dialog.querySelector("input[name='WRAPPER']");
+	var range=SSC.Editor.selection;
+	var oldnode=range.startnode;
+	var oldtext=oldnode.nodeValue;
+	var newtext=textinput.value;
+	var wrapper=wrapinput.value.trim();
+	var newnode=false;
+	if ((wrapper)&&(wrapper.length)) {
+	    var parsed=wrapper.split(".");
+	    var tag=parsed[0]||"span";
+	    var classname=parsed.slice(1).join(" ");
+	    newnode=make(tag,classname,newtext);}
+	else newnode=make_text(newtext);
+	var frag=document.createDocumentFragment();
+	frag.appendChild(make_text(oldtext.slice(0,range.startoff)));
+	frag.appendChild(newnode);
+	frag.appendChild(make_text(oldtext.slice(range.endoff)));
+	oldnode.parentNode.replaceChild(frag,oldnode);
+	SSC.Editor.selection=false;
+	SSC.Dialog.close(dialog);}
+    function es_keydown(evt){
+	var kc=evt.keyCode; if (kc===RETURN) return es_done(evt);}
+    function es_cancel(evt){
+	evt=evt||event; var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	Dialog.close(dialog);
+	cancel(evt);}
+    function es_wrap_click(evt){
+	evt=evt||event; var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	if (!(dialog)) return;
+	else if (hasClass(dialog,"sscwrap"))
+	    dropClass(dialog,"sscwrap");
+	else addClass(dialog,"sscwrap");
+	cancel(evt);}
+
+    SSC.Inits.textedit={
+	classname: "ssctextedit",
+	"button.ok:click": es_done,
+	"button.wrap:click": es_wrap_click,
+	"button.close:click": SSC.Dialog.close,
+	"input[type='TEXT']:keydown": es_keydown};
+
+    /* Edit handlers */
+
+    function set_editnode(node){
+	if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
+	SSC.Editor.node=node;}
 
     /* Setting dialogs for particular nodes */
 
