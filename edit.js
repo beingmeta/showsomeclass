@@ -540,15 +540,79 @@ SSC.Editor=(function(){
 	addClass(document.body,"ssc__TOOLBAR");}
     SSC.onclick=editor_click;
 
-    var pubpoint=false;
+    function save_current(){
+	var content=false;
+	var html=document.querySelector('HTML');
+	var elts=SSC.Utils.tmpid_elts;
+	var saved_ids={}, apps=[], crumbs=[];
+	var matches=document.querySelectorAll('.sscapp');
+	    var i=0, lim=matches.length; while (i<lim) {
+		apps.push(matches[i++]);}
+	    i=0; while (i<lim) {
+		var app=apps[i];
+		var crumb=make_text("");
+		crumbs[i]=crumb;
+		app.parentNode.replaceChild(crumb,app);
+		i++;}
+	    var j=0, n_tmpids=elts.length;
+	    while (j<n_tmpids) {
+		var elt=elts[j++]; var id=elt.id;
+		if ((id)&&(id.search("sscTMP")===0)) {
+		    saved_ids[id]=elt;
+		    elt.id=null;}}
+	    content="<html>\n"+html.innerHTML+"\n</html>";
+	/* Now reset things */
+	i=0, lim=apps.length; while (i<lim) {
+	    var app=apps[i], crumb=crumbs[i]; i++;
+	    crumb.parentNode.replaceChild(app,crumb);}
+	for (var tmpid in saved_ids) {
+	    if (saved_ids.hasOwnProperty(tmpid)) {
+		saved_ids[tmpid].id=tmpid;}}
+	/* Now open the save dialog */
+	if (content) {
+	    var dialog=SSC.Dialog(SSC.Templates.savedialog,
+				  {pubpoint: SSC.pubpoint},
+				  SSC.Inits.savedialog);
+	    var source=bySpec(dialog,"input[NAME='NEWSOURCE']");
+	    source.value=content;
+	    if (SSC.dialog) SSC.Dialog.close(SSC.dialog);
+	    SSC.dialog=dialog;
+	    document.body.appendChild(dialog);
+	    dialog.style.display='block';}}
+
     function initpubpoint(){
+	var pubpoint=false;
 	var head=document.querySelector("HEAD");
 	var links=document.querySelectorAll("link");
 	var i=0, lim=links.length; while (i<lim) {
 	    var link=links[i++];
-	    if ((link.rel==="SBOOKS.pubpoint")&&(link.href))
-		pubpoint=link.href;}}
+	    if (((link.rel==="SSC.pubpoint")||
+		 (link.rel==="SBOOKS.pubpoint")||
+		 (link.rel==="x-pubpoint")||
+		 (link.rel==="pubpoint"))&&
+		(link.href))
+		pubpoint=link.href;}
+	if (pubpoint) SSC.pubpoint=pubpoint;}
+    SSC.prelaunch=initpubpoint;
+    function setupEditor(){
+	if (!(SSC.pubpoint)) {
+	    var save_button=byID("SSCEDITSAVEBUTTON");
+	    if (save_button)
+		save_button.parentNode.removeChild(save_button);}}
+    SSC.postlaunch=setupEditor;
 
-    SSC.Inits.toolbar[".reclass:click",reclass_selector);
+    SSC.Inits.toolbar[".reclass:click"]=reclass_selector;
+    SSC.Inits.toolbar[".save:click"]=save_current;
+
+    function cancel_save(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	SSC.Dialog.close(dialog);
+	cancel(evt);}
+
+    SSC.Inits.savedialog={
+	"button[VALUE='CANCEL']:click": cancel_save,
+	classname: "sscsavedialog"};
 
     return Editor;})();

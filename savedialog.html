@@ -1,0 +1,17 @@
+<form action="{{pubpoint}}"
+      method="POST" enc="multipart/form-data"
+      target="_blank">
+  <h1>Save your changes</h1>
+  <table>
+    <tr><th>to</th><td><tt title="{{pubpoint}}">{{pubpoint}}</tt></tr>
+    <tr><th>w/note</th>
+      <td><textarea NAME="COMMENT"
+		    PLACEHOLDER="Provide an (optional) note describing any significant changes you have made."></textarea></td></tr>
+  </table>
+  <input TYPE="HIDDEN" NAME="CLIENT" VALUE="Show Some Class"/>
+  <input TYPE="HIDDEN" NAME="NEWSOURCE"/>
+  <div class="buttons">
+    <button NAME="ACTION" VALUE="CANCEL">Cancel</span>
+    <button NAME="ACTION" VALUE="SAVE">OK</button>
+  </div>
+</form>

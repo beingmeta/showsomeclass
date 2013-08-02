@@ -126,13 +126,13 @@ div.ssctextedit.sscwrap .row1 button {
 
 /* Edit selection */
 
-div.sscdialog.ssceditselection input[TYPE='TEXT'] {
+div.ssceditselection input[TYPE='TEXT'] {
     font-size: 100%;}
-div.sscdialog.ssceditselection input[NAME='SELECTION'] {
+div.ssceditselection input[NAME='SELECTION'] {
     width: 80%;}
-div.sscdialog.ssceditselection input[NAME='WRAP'] {
+div.ssceditselection input[NAME='WRAP'] {
     width: 50%;}
-div.sscdialog.ssceditselection button { float: right;}
+div.ssceditselection button { float: right;}
 
 div.ssceditselection { height: 1em;}
 div.ssceditselection .button, div.ssceditselection button {
@@ -148,12 +148,32 @@ div.ssceditselection div.sscinputbox input {
     width: 100%;}
 div.ssceditselection input.sscwrapinput { display: none;}
 
-div.sscdialog.ssceditselection.sscwrapping { height: 2em;}
-div.sscdialog.ssceditselection.sscwrapping input.sscwrapinput {
+div.ssceditselection.sscwrapping { height: 2em;}
+div.ssceditselection.sscwrapping input.sscwrapinput {
     display: block; width: 100%;}
 
-div.sscdialog.ssceditselection input[NAME='SELECTION'] {
+div.ssceditselection input[NAME='SELECTION'] {
     width: 80%;}
-div.sscdialog.ssceditselection input[NAME='WRAP'] {
+div.ssceditselection input[NAME='WRAP'] {
     width: 50%;}
-div.sscdialog.ssceditselection button { float: right;}
+div.ssceditselection button { float: right;}
+
+/* Save dialog */
+
+div.sscsavedialog {
+    top: 25%; bottom: 25%; height: 50%;
+    left: 30%; right: 30%; width: 40%:}
+div.sscsavedialog h1 {}
+div.sscsavedialog button { font-size: 100%;}
+div.sscsavedialog table {
+    margin-left: 2%; margin-right: 8%; width: 90%;
+    margin-bottom: 1em;}
+div.sscsavedialog table th {
+    font-size: 120%; text-align: right;}
+div.sscsavedialog table td {
+    text-align: left;
+    padding-left: 1ex;
+    line-height: 120%;}
+div.sscsavedialog table td tt { font-size: 75%;}
+div.sscsavedialog table td textarea {
+    font-size: 16px; min-height: 8em;}
