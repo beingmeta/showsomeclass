@@ -1,41 +1,48 @@
-  <div id="SSCTOOLBARBUTTONS">
-    <span class="button image scandown"
-      title="Go to the next selected element">
-      <img class="svg" src="{{imgroot}}/downarrow_white.svgz" alt="Rules"/>
-	<img class="notsvg"
-	  src="{{imgroot}}/downarrow_white100h.png" alt="Rules"/>
-    </span>
-    <span class="button image scanup"
-      title="Go to the previous selected element">
-      <img class="svg" src="{{imgroot}}/uparrow_white.svgz" alt="Rules"/>
-	<img class="notsvg"
-	  src="{{imgroot}}/uparrow_white100h.png" alt="Rules"/>
-    </span>
-    <span class="button image showrules">
-      <img class="svg" src="{{imgroot}}/stylebraces.svgz"
-	title="Show some of the CSS style rules for this selector"
-	alt="Rules"/>
-	<img class="notsvg"
-	  src="{{imgroot}}/stylebraces100x100.png"
-	  title="Show some of the CSS style rules for this selector"
-	  alt="Rules"/>
-    </span>
-    <span class="button image hide">
-      <img class="svg" src="{{imgroot}}/redx.svgz"
-	title="Hide this toolbar"
-	alt="Hide"/>
-	<img class="notsvg" src="{{imgroot}}/redx100x100.png"
-	  alt="Hide"/>
-    </span>
-  </div>
-  <div class="combobox">
-    <input type="TEXT" id="SSCINPUT" NAME="SELECTOR"
-      placeholder="a CSS selector"/>
-      <select id="SSCDROPBOX" class="dropbox"></select>
-  </div>
-  <span class="text" id="SSCMATCHPHRASE">
-    <span id="SSCMATCHCOUNT">some</span>
-    matches, at
-    #<span id="SSCMATCHINDEX">#</span>
+<div id="SSCTOOLBARBUTTONS">
+  <button class="image scanup"
+	title="Go to the previous selected element">
+    <img class="svg" src="{{imgroot}}/uparrow_white.svgz" alt="Rules"/>
+    <img class="notsvg"
+	 src="{{imgroot}}/uparrow_white100h.png" alt="Rules"/>
   </span>
-  <div class="styleinfo" id="SSCSTYLEINFO"></div>
+  <button class="image scandown"
+	title="Go to the next selected element">
+    <img class="svg" src="{{imgroot}}/downarrow_white.svgz" alt="Rules"/>
+    <img class="notsvg"
+	 src="{{imgroot}}/downarrow_white100h.png" alt="Rules"/>
+  </span>
+  <button class="image showrules">
+    <img class="svg" src="{{imgroot}}/stylebraces.svgz"
+	 title="Show some of the CSS style rules for this selector"
+	 alt="Rules"/>
+    <img class="notsvg"
+	 src="{{imgroot}}/stylebraces100x100.png"
+	 title="Show some of the CSS style rules for this selector"
+	 alt="Rules"/>
+  </span>
+  <button class="image hide">
+    <img class="svg" src="{{imgroot}}/cloudfloppy.svgz"
+	 title="Save this document"
+	 alt="Save"/>
+    <img class="notsvg" src="{{imgroot}}/cloudfloppy100x100.png"
+	 alt="Save"/>
+  </span>
+  <button class="image save">
+    <img class="svg" src="{{imgroot}}/redx.svgz"
+	 title="Save this document"
+	 alt="Hide"/>
+    <img class="notsvg" src="{{imgroot}}/redx100x100.png"
+	 alt="Hide"/>
+  </span>
+</div>
+<div class="combobox">
+  <input type="TEXT" id="SSCINPUT" NAME="SELECTOR"
+	 placeholder="a CSS selector"/>
+  <select id="SSCDROPBOX" class="dropbox"></select>
+</div>
+<span class="text" id="SSCMATCHPHRASE">
+  <span id="SSCMATCHCOUNT">some</span>
+  matches, at
+  #<span id="SSCMATCHINDEX">#</span>
+</span>
+<div class="styleinfo" id="SSCSTYLEINFO"></div>

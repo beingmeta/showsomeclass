@@ -11,6 +11,13 @@ img.inline { max-height: 1em; width: auto; vertical-align: baseline; }
 body.cxSSC span:hover {text-decoration: overline;}
 body.cxSSC .sscapp span:hover {text-decoration: inherit;}
 
+/* Reset button display */
+
+body.cxSSC button.image {
+  border: 0px; padding: 0px; margin: 0px;
+  border-color: transparent;
+  vertical-align: top;}
+
 /* Selective display of selected elements */
 
 body.cxSSC *, body.cxSSC > * {opacity: 0.50 !important;}
@@ -82,10 +89,13 @@ div.ssctoolbar div.combobox select:focus { display: block;}
 div#SSCTOOLBAR #SSCTOOLBARBUTTONS { float: right; padding-right: 1ex;}
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     padding-left: 0.5ex; text-align: left; font-size: 90%;}
-div#SSCTOOLBAR button, div#SSCTOOLBAR .button { max-height: 100%;} 
+div#SSCTOOLBAR button, div#SSCTOOLBAR .button { max-height: 100%;}
 div#SSCTOOLBAR button img, div#SSCTOOLBAR .button img {
     background-color: transparent;
-    height: 100%; width: auto;}
+    height: 90%; width: auto; padding-top: 3px; padding-bottom: 1px;}
+div#SSCTOOLBAR .button.scanup img,
+div#SSCTOOLBAR button.scanup img {
+    padding-top: 1px; padding-bottom: 3px;}
 div#SSCTOOLBAR button.left { float: left;}
 div#SSCTOOLBAR button.right { float: right;}
 div#SSCTOOLBAR button.hide, div#SSCTOOLBAR .button.hide {

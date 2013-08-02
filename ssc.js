@@ -113,12 +113,13 @@ var SSC=(function(){
 
     /* Making DOM nodes */
 
-    function make(tag,classname,content,opts){
+    function make(tag,classname,content,data,opts){
 	var elt=document.createElement(tag);
+	if (!(opts)) opts=data;
 	if (classname) elt.className=classname;
 	if (!(content)) {}
 	else if ((typeof content === "string")&&(opts))
-	    elt.innerHTML=fillin(content,opts);
+	    elt.innerHTML=fillin(content,data);
 	else if (typeof content === "string")
 	    elt.innerHTML=content;
 	else if (content.nodeType)
@@ -425,7 +426,7 @@ var SSC=(function(){
 	focusIndex: function focusIndex(){ return focus_index;},
 	getFocus: function(){return focus;},
 	$: $, simplespec: simplespec,
-	Templates: {}, Handlers: {},
+	Templates: {}, Handlers: {}, Inits: {},
 	Utils: Utils, imgroot: imgroot};})();
 
 SSC.updateSelectors=(function(){
@@ -617,15 +618,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
     function setupToolbar(){
 	var toolbar=make("div","sscapp ssctoolbar",
 			 SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
-			 {imgroot: SSC.imgroot,id: "SSCTOOLBAR",
-			  "input:keydown": sscinput_keydown,
-			  "input:focus": sscinput_focus,
-			  "input:blur": sscinput_blur,
-			  "select:change": selector_selected,
-			  ".hide:click": hideToolbar,
-			  ".showrules:click": toggleStyleInfo,
-			  ".scanup:click": scan_backward,
-			  ".scandown:click": scan_forward});
+			 {imgroot: SSC.imgroot},
+			 SSC.Inits.toolbar);
 	var dropbox=bySpec(toolbar,"SELECT"); {
 	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
 	var tapzone=make("div",false,false,
@@ -808,6 +802,17 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	SSC.select(spec,true);}
     SSC.window_click=window_click;
     
+    SSC.Inits.toolbar={
+	id: "SSCTOOLBAR",
+	"input:keydown": sscinput_keydown,
+	"input:focus": sscinput_focus,
+	"input:blur": sscinput_blur,
+	"select:change": selector_selected,
+	".hide:click": hideToolbar,
+	".showrules:click": toggleStyleInfo,
+	".scanup:click": scan_backward,
+	".scandown:click": scan_forward};
+
     // Referencing SSC.nodeclick let's it be overriden by apps using SSC
     addListener(window,"load",function(){
 	setupToolbar();
