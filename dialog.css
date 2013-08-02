@@ -8,6 +8,10 @@ div.sscdialog {
     background-color: rgba(0,0,0,0.8); color: ivory;
     padding: 0.5ex; padding-bottom: 1em;
     text-align: center;}
+
+div.sscdialog h1 {
+    font-size: 150%; margin-bottom: 0.5em;}
+
 div.sscdialog .button.keep {float: left; color: green;}
 div.sscdialog .button.close {float: right; color: red;}
 div.sscdialog.keep .button.keep {visibility: hidden;}
