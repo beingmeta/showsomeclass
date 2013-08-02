@@ -91,6 +91,7 @@ var SSC=(function(){
 	tmpid_elts.push(node);
 	return node.id;}
     Utils.getID=getID;
+    Utils.tmpid_elts=tmpid_elts;
 
     /* Fillin in text templates */
 
@@ -814,7 +815,13 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	".scandown:click": scan_forward};
 
     // Referencing SSC.nodeclick let's it be overriden by apps using SSC
-    addListener(window,"load",function(){
+    function loadSSC(){
+	if (SSC.prelaunch) {
+	    var prelaunchfn=SSC.prelaunch; SSC.prelaunch=false;
+	    setTimeout(function(){
+		prelaunchfn(); SSC.prelaunch=false;
+		setTimeout(loadSSC,50);},50);
+	    return;}
 	setupToolbar();
 	var hash=(location)&&(location.hash);
 	if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
@@ -829,7 +836,9 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	    setTimeout(function(){
 		SSC.focus((SSC.selected())[0]);},
 		       200);
-	if (SSC.onload) {
-	    var loadfn=SSC.onload; SSC.onload=false;
-	    setTimeout(loadfn,50);};});})();
+	if (SSC.postlaunch) {
+	    var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
+	    setTimeout(postlaunch,50);}}
+    
+    addListener(window,"load",loadSSC);})();
 
