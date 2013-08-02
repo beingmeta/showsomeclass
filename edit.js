@@ -540,20 +540,15 @@ SSC.Editor=(function(){
 	addClass(document.body,"ssc__TOOLBAR");}
     SSC.onclick=editor_click;
 
-    function setupEditor(){
-	var svg_image=make("img","svg"); {
-	    svg_image.src=fillin("{{imgroot}}/changemarkup.svgz",
-				 {imgroot:SSC.imgroot});
-	    svg_image.alt="=&gt;";}
-	var png_image=make("img","notsvg"); {
-	    png_image.src=fillin("{{imgroot}}/changemarkup100x100.png",
-				 {imgroot:SSC.imgroot});
-	    png_image.alt="=&gt;";}
-	var button=make("span","button image reclass");
-	button.appendChild(svg_image); button.appendChild(png_image);
-	addListener(button,"click",reclass_selector);
-	var buttons=byID("SSCTOOLBARBUTTONS");
-	buttons.insertBefore(button,buttons.firstChild);}
-    SSC.onload=setupEditor;
+    var pubpoint=false;
+    function initpubpoint(){
+	var head=document.querySelector("HEAD");
+	var links=document.querySelectorAll("link");
+	var i=0, lim=links.length; while (i<lim) {
+	    var link=links[i++];
+	    if ((link.rel==="SBOOKS.pubpoint")&&(link.href))
+		pubpoint=link.href;}}
+
+    SSC.Inits.toolbar[".reclass:click",reclass_selector);
 
     return Editor;})();

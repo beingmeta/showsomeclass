@@ -103,6 +103,12 @@ div#SSCTOOLBAR button.hide, div#SSCTOOLBAR .button.hide {
     font-weight: bold; color: red;}
 div#SSCTOOLBAR button.showrules, div#SSCTOOLBAR .button.showrules {}
 
+div#SSCTOOLBAR button:before, div#SSCTOOLBAR .button:before {
+    content: "·"; color: silver; vertical-align: bottom;
+    padding-left: 1px; padding-right: 1px;}
+div#SSCTOOLBAR button:first-child:before, div#SSCTOOLBAR .button:first-child:before {
+    display: none;}
+
 body.ssc__TOOLBAR div#SSCTOOLBAR { top: 0px;}
 body.ssc__TOOLBAR div#SSCTAPZONE { display: none; }
 
