@@ -5,7 +5,7 @@ div.ssceditelement, div.ssceditcontent {
     padding-bottom: 1em;}
 div.ssceditelement {
     min-width: 30em; max-width: 75%;}
-div.ssceditelement .button.image {
+div.ssceditelement .button.image, div.ssceditelement button.image {
     width: 1em; height: 1em; float: right;}
 div.ssceditelement div.sscsignature {
     margin-right: 3em; clear: left;}
@@ -45,13 +45,16 @@ div.ssceditelement.sscexpanded .button.expand,
 div.ssceditelement.sscexpanded button.expand {
     display: none;}
 
+div.ssceditelement div.buttons {
+    margin-left: 10%; margin-right: 10%; width: 80%;
+    margin-top: 0.5ex;}
 
 /* Edit content */
 
 div.ssceditcontent { width: 50%;}
 div.ssceditcontent div.title {
     text-align: left; margin-right: 2em;}
-div.ssceditcontent .button.image {
+div.ssceditcontent .button.image, div.ssceditcontent button.image {
     width: 1em; height: 1em; float: right;}
 div.ssceditcontent div.buttons .button {
     font-size: 75%; float: right; margin-right: 0px;}
@@ -70,7 +73,7 @@ div.sscreclass {
     right: 10%; top: 15%;}
 div.sscreclass div.title {
     text-align: left; margin-right: 2em;}
-div.sscreclass .button.image {
+div.sscreclass .button.image, div.sscreclass button.image {
     width: 1em; height: 1em; float: right;}
 div.sscdialog.sscreclass div.buttons {
     text-align: left;}
@@ -95,14 +98,14 @@ div.ssctextedit {
     min-width: 30%; max-width: 70%;
     left: 10%; top: 20%;}
 div.sscdialog.ssctextedit { padding-bottom: 1ex;}
-div.ssctextedit .button {
+div.ssctextedit .button, div.ssctextedit button {
     margin-top: 0px; margin-left: 0.25ex;
     float: right; vertical-align: top;
     padding-top: 0px;}
 div.ssctextedit div.row.row2 {
     margin-top: 0.5ex; display: none;}
-div.ssctextedit .button.wrap { font-size: 50%; }
-div.ssctextedit .button.image {
+div.ssctextedit .button.wrap, div.ssctextedit button.wrap { font-size: 50%; }
+div.ssctextedit .button.image, div.ssctextedit button.image {
     font-size: 80%; width: 1em; height: 1em;}
 
 div.ssctextedit div.ssctextwrap {
@@ -117,7 +120,9 @@ div.ssctextedit div.ssctextinput input[TYPE='TEXT'] { width: 100%; }
 div.ssctextedit.sscwrap div.row.row2 { display: block;}
 div.ssctextedit.sscwrap div.ssctextinput {
     clear: both; margin-right: 0px; width: 100%;}
-div.ssctextedit.sscwrap .row1 .button { display: none;}
+div.ssctextedit.sscwrap .row1 .button,
+div.ssctextedit.sscwrap .row1 button {
+    display: none;}
 
 /* Edit selection */
 
@@ -130,11 +135,11 @@ div.sscdialog.ssceditselection input[NAME='WRAP'] {
 div.sscdialog.ssceditselection button { float: right;}
 
 div.ssceditselection { height: 1em;}
-div.ssceditselection .button {
+div.ssceditselection .button, div.ssceditselection button {
     height: 1em; width: auto;}
-div.ssceditselection .button.cancel,
-div.ssceditselection .button.wrap,
-div.ssceditselection .button.ok {
+div.ssceditselection button.cancel, div.ssceditselection .button.cancel,
+div.ssceditselection button.wrap, div.ssceditselection .button.wrap,
+div.ssceditselection button.ok, div.ssceditselection .button.ok {
     float: right;}
 
 div.ssceditselection div.inputbox {

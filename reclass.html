@@ -1,20 +1,20 @@
 <div class="row">
-  <div class='button image close'>
-    <img src='{{imgroot}}/redx.svgz' class='svg'/>
-    <img src='{{imgroot}}/redx100x100.png' class='notsvg'/>
-  </div>
-  <div class='title'>Change {{count}} element(s)</div>
+  <button class="image close">
+    <img src="{{imgroot}}/redx.svgz" class="svg"/>
+    <img src="{{imgroot}}/redx100x100.png" class="notsvg"/>
+  </button>
+  <div class="title">Change {{count}} element(s)</div>
 </div>
-<table class='sscreclass'>
+<table class="sscreclass">
   <tr><th>matching</th><td>{{spec}}</td></tr>
   <tr>
     <th>to match</th>
-    <td><input class='sscnewspec' TYPE='TEXT' NAME='NEWSPEC'
-	       VALUE='{{simplespec}}'/></td>
+    <td><input class="sscnewspec" TYPE="TEXT" NAME="NEWSPEC"
+	       VALUE="{{simplespec}}"/></td>
   </tr>
 </table>
-<div class='buttons'>
-  <button class='close' value='CHANGE'>Change</button>
+<div class="buttons">
+  <button class="close" value="CHANGE">Change</button>
   <p>Specifying regular class selectors (e.g. <tt>.cite</tt>) will
   strip all existing classes and replace them with the specified
   classes.</p>

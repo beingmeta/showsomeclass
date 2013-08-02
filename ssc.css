@@ -16,7 +16,8 @@ body.cxSSC .sscapp span:hover {text-decoration: inherit;}
 body.cxSSC button.image {
   border: 0px; padding: 0px; margin: 0px;
   border-color: transparent;
-  vertical-align: top;}
+  vertical-align: top;
+  font-size: 100%;}
 
 /* Selective display of selected elements */
 
