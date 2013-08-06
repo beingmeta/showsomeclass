@@ -38,22 +38,6 @@ body.cxSSC .sscapp {
 
 body.cxSSC .sscapp { opacity: 0.9 !important;}
 body.cxSSC .sscapp * { opacity: 1.0 !important;}
-body.cxSSC.cxSSCREDUCED .sscapp {font-size: 100%; !important;}
-body.cxSSC.cxSSCREDUCED .sscapp * {font-size: 100%; !important;}
-
-body.cxSSC.cxSSCOMPACT div.sscapp p,
-body.cxSSC.cxSSCOMPACT div.sscapp div, 
-body.cxSSC.cxSSCOMPACT div.sscapp blockquote, 
-body.cxSSC.cxSSCOMPACT div.sscapp section, 
-body.cxSSC.cxSSCOMPACT div.sscapp aside,
-body.cxSSC.cxSSCOMPACT div.sscapp h1, 
-body.cxSSC.cxSSCOMPACT div.sscapp h2, 
-body.cxSSC.cxSSCOMPACT div.sscapp h3, 
-body.cxSSC.cxSSCOMPACT div.sscapp h4, 
-body.cxSSC.cxSSCOMPACT div.sscapp h5,
-body.cxSSC.cxSSCOMPACT div.sscapp h6, 
-body.cxSSC.cxSSCOMPACT div.sscapp h7 {
-    display: block;}
 
 /* The toolbar */
 
@@ -75,6 +59,8 @@ div#SSCTAPZONE {
 
 div.ssctoolbar img { max-height: 100%; width: auto;}
 
+div.ssctoolbar button {
+  border: 0px; padding: 0px; margin: 0px;}
 div.ssctoolbar div.combobox {
     width: 10em; height: 1em; overflow: visible; display: inline-block;
     text-align: left; margin-left: 0.25em;}
@@ -112,13 +98,13 @@ div#SSCTOOLBAR button:first-child:before, div#SSCTOOLBAR .button:first-child:bef
 body.ssc__TOOLBAR div#SSCTOOLBAR { top: 0px;}
 body.ssc__TOOLBAR div#SSCTAPZONE { display: none; }
 
-div#SSCTOOLBAR div#sscstyleinfo {
+div#SSCTOOLBAR div#SSCSTYLEINFO {
     position: absolute; top: 1.7em; 
     background-color: inherit; padding: 1em;
     /* left: 10em; max-width: 50%; */
     left: 10%; max-width: 80%;
     display: none;}
-body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#sscstyleinfo {
+body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#SSCSTYLEINFO {
     display: block;}
 
 div#SSCTOOLBAR .styleinfo p {
@@ -136,6 +122,8 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
     font-weight: bold;
     cursor: pointer;}
 .ssctoolbar .button, .ssctoolbar button { margin-left: 2px; }
+.sscapp .button.image, div.sscapp button.image {
+  padding-top: 0px; margin-top: 0px;}
 
 .sscapp img.button, div.sscapp .button.image, div.sscapp button.image {
     max-height: 2em; padding-right: 2px; padding-left: 2px;
