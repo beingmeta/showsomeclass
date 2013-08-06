@@ -532,7 +532,7 @@ SSC.getStyleInfo=(function(){
 	    var rules=sheet.rules; var j=0, n_rules=rules.length;
 	    while (j<n_rules) {
 		var rule=rules[j++];
-		if (rule.selectorText.search(pat)>=0)
+		if (rule.cssText.search(pat)>=0)
 		    results.push(rule.cssText);}}
 	return results;}
 
