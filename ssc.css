@@ -90,7 +90,7 @@ div#SSCTOOLBAR button.hide, div#SSCTOOLBAR .button.hide {
 div#SSCTOOLBAR button.showrules, div#SSCTOOLBAR .button.showrules {}
 
 div#SSCTOOLBAR button:before, div#SSCTOOLBAR .button:before {
-    content: "·"; color: silver; vertical-align: bottom;
+    content: "·"; color: silver; vertical-align: middle;
     padding-left: 1px; padding-right: 1px;}
 div#SSCTOOLBAR button:first-child:before, div#SSCTOOLBAR .button:first-child:before {
     display: none;}
@@ -119,6 +119,7 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
     padding: 2px; padding-right: 1ex; padding-left: 1ex;
     border-radius: 1ex; margin-top: 2px;
     background-color: silver;
+    vertical-align: top;
     font-weight: bold;
     cursor: pointer;}
 .ssctoolbar .button, .ssctoolbar button { margin-left: 2px; }
