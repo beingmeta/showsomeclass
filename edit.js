@@ -25,7 +25,7 @@ SSC.Editor=(function(){
     var make=SSC.Utils.make, make_text=SSC.Utils.make_text;
     var text=SSC.Utils.text, fillin=SSC.Utils.fillin;
     var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass;
-    var dropClass=SSC.Utils.dropClass;
+    var dropClass=SSC.Utils.dropClass, getParent=SSC.Utils.getParent;
     var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
     var getID=SSC.Utils.getID, getSignature=SSC.Utils.getSignature;
     var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
@@ -64,6 +64,9 @@ SSC.Editor=(function(){
 
     // Note that we don't do attributes yet 
     function adjustNode(node,spec){
+	var gotid=((/#[^.#\[ ]+/g).exec(spec));
+	if (gotid) gotid=gotid[0];
+	if (gotid) spec=spec.replace((/#[^.#\[ ]+/g),"");
 	var parsed=(spec.trim()).split(/[.]/), tag=parsed[0];
 	var absolute=[], adds=[], drops=[];
 	var k=1, len=parsed.length; while (k<len) {
@@ -192,20 +195,27 @@ SSC.Editor=(function(){
 	    var target=evt.target||evt.srcElement;
 	    if ((target)&&(target.value)) {
 		var node=adjustNode(SSC.Editor.node,target.value);
-		set_editnode(node);
-		setEditElement(node,SSC.Editor.dialog);}
+		SSC.Dialog.close(SSC.Editor.dialog);
+		set_editnode(false);}
 	    cancel(evt);}}
     function ee_ok(evt){
 	evt=evt||event;
 	var target=evt.target||evt.srcElement;
-	var form=getParent(target,'form');
-	var specinput=bySpec(form,"input[name='spec']");
-	if (specinput) {
-	    var node=adjustNode(SSC.Editor.node,specinput.value);
-	    set_editnode(node);
-	    setEditElement(node,SSC.Editor.dialog);
+	var form=getParent(target,"ssceditelement");
+	var specinput=bySpec(form,"input[name='SPEC']");
+	var styleinput=bySpec(form,"input[name='STYLE']");
+	var node=SSC.Editor.node;
+	if (!(node)) {
 	    SSC.Dialog.close(SSC.Editor.dialog);
-	    cancel(evt);}}
+	    cancel(evt);
+	    return;}
+	if ((specinput)&&(specinput.value)) 
+	    node=adjustNode(node,specinput.value);
+	if ((styleinput)&&(styleinput.value))
+	    node.style=styleinput.value;
+	SSC.Dialog.close(SSC.Editor.dialog);
+	set_editnode(false);
+	cancel(evt);}
     function ee_styleinput(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
@@ -307,8 +317,8 @@ SSC.Editor=(function(){
 	"button.expand:click": ee_expand,
 	"button.contract:click": ee_contract,
 	"button.ok:click": ee_ok,
-	"input[name='SPEC']": ee_specinput,
-	"input[name='STYLE']": ee_styleinput,
+	"input[name='SPEC']:keydown": ee_specinput,
+	"input[name='STYLE']:keydown": ee_styleinput,
 	".buttons:click": ee_buttonclick,
 	classname: "ssceditelement"};
 
