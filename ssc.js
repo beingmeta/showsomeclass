@@ -522,18 +522,22 @@ SSC.updateSelectors=(function(){
 
 SSC.getStyleInfo=(function(){
 
-    function getRules(sel,results){
+    function getRules(sel,results,seen){
 	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
-	var pat=new RegExp(sel.replace(".","\\.")+"\\b","gi");
+	var pat=((sel.indexOf('.')>=0)?
+		 (new RegExp(sel.replace(".","\\.")+"\\b","gi")):
+		 (new RegExp(sel+"[ ,\n]","gi")));
 	if (!(results)) results=[];
 	while (i<n_sheets) {
 	    var sheet=sheets[i++];
 	    if (!(sheet.rules)) continue;
 	    var rules=sheet.rules; var j=0, n_rules=rules.length;
 	    while (j<n_rules) {
-		var rule=rules[j++];
-		if (rule.cssText.search(pat)>=0)
-		    results.push(rule.cssText);}}
+		var rule=rules[j++], text=rule.cssText;
+		if (text.search(pat)>=0) {
+		    var norm=text.replace(/\s+/g," ");
+		    if (seen[norm]) continue; else seen[norm]=norm;
+		    results.push(text);}}}
 	return results;}
 
     function getStyleInfo(selector){
@@ -543,9 +547,9 @@ SSC.getStyleInfo=(function(){
 	var selectors=SSC.possibleSelectors(
 	    ((parsed[0]!=="")&&(parsed[0])),parsed.slice(1));
 	selectors.sort(function(x,y){return x.length-y.length;});
-	var results=[];
+	var results=[], seen={};
 	var i=0, lim=selectors.length;
-	while (i<lim) getRules(selectors[i++],results);
+	while (i<lim) getRules(selectors[i++],results,seen);
 	return results;}
 
     getStyleInfo.getRules=getRules;
