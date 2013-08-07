@@ -191,9 +191,20 @@ SSC.Editor=(function(){
 	if (kc===RETURN) {
 	    var target=evt.target||evt.srcElement;
 	    if ((target)&&(target.value)) {
-		var node=adjustNode(SSC.Editor.node);
+		var node=adjustNode(SSC.Editor.node,target.value);
 		set_editnode(node);
 		setEditElement(node,SSC.Editor.dialog);}
+	    cancel(evt);}}
+    function ee_ok(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var form=getParent(target,'form');
+	var specinput=bySpec(form,"input[name='spec']");
+	if (specinput) {
+	    var node=adjustNode(SSC.Editor.node,specinput.value);
+	    set_editnode(node);
+	    setEditElement(node,SSC.Editor.dialog);
+	    SSC.Dialog.close(SSC.Editor.dialog);
 	    cancel(evt);}}
     function ee_styleinput(evt){
 	evt=evt||event;
@@ -295,6 +306,7 @@ SSC.Editor=(function(){
 	"button.close:click": SSC.Dialog.close,
 	"button.expand:click": ee_expand,
 	"button.contract:click": ee_contract,
+	"button.ok:click": ee_ok,
 	"input[name='SPEC']": ee_specinput,
 	"input[name='STYLE']": ee_styleinput,
 	".buttons:click": ee_buttonclick,
