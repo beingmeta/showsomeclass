@@ -1,37 +1,22 @@
-<div class="row row1">
-  <button class="close image"
+<button class="close image"
 	title="close this dialog without saving changes">
-    <img src="{{imgroot}}/redx.svgz" alt="cancel" class="svg" alt="close/cancel"/>
-    <img src="{{imgroot}}/redx100x100.png" alt="cancel" class="notsvg" alt="close/cancel"/>
-  </button>
-  <button class="ok image"
+  <img src="{{imgroot}}/redx.svgz" alt="cancel" class="svg" alt="close/cancel"/>
+  <img src="{{imgroot}}/redx100x100.png" alt="cancel" class="notsvg" alt="close/cancel"/>
+</button>
+<button class="ok image"
 	title="save your edit(s) and close this dialog (Enter also works)">
-    <img src="{{imgroot}}/checkmark.svgz" alt="cancel" class="svg" alt="save/close"/>
-    <img src="{{imgroot}}/checkmark100x100.png" alt="cancel" class="notsvg" alt="save/close"/>
-  </button>
-  <button class="wrap image"
+  <img src="{{imgroot}}/checkmark.svgz" alt="cancel" class="svg" alt="save/close"/>
+  <img src="{{imgroot}}/checkmark100x100.png" alt="cancel" class="notsvg" alt="save/close"/>
+</button>
+<button class="wrap image"
 	title="Wrap this text (as edited) in additional markup">
-    <img src="{{imgroot}}/markupwrap_white.svgz" alt="cancel" class="svg" alt="wrap"/>
-    <img src="{{imgroot}}/markupwrap_white100x100.png" alt="cancel" class="notsvg" alt="wrap"/>
-  </button>
-  <div class="sscselection">
-    <input TYPE="TEXT" NAME="SELECTION" VALUE="{{selection}}"
-	   class="sscinitfocus"/>
-  </div>
+  <img src="{{imgroot}}/markupwrap_ondark.svgz" alt="cancel" class="svg" alt="wrap"/>
+  <img src="{{imgroot}}/markupwrap_ondark100x100.png" alt="cancel" class="notsvg" alt="wrap"/>
+</button>
+<div class="ssctextwrap sscsignature">
+  <input TYPE="TEXT" NAME="WRAPPER" value=""
+	 PLACEHOLDER="Wrapper (e.g. em, blockquote, etc)"/>
 </div>
-<div class="row row2">
-  <button class="close image"
-	title="close this dialog without saving changes">
-    <img src="{{imgroot}}/redx.svgz" alt="cancel" class="svg" alt="close/cancel"/>
-    <img src="{{imgroot}}/redx.svgz" alt="cancel" class="notsvg" alt="close/cancel"/>
-  </span>
-  <button class="ok image"
-	title="save your edit(s) and close this dialog (Enter also works)">
-    <img src="{{imgroot}}/checkmark.svgz" alt="cancel" class="svg" alt="save/close"/>
-    <img src="{{imgroot}}/checkmark100x100.png" alt="cancel" class="notsvg" alt="save/close"/>
-  </button>
-  <div class="ssctextwrap sscsignature">
-    <input TYPE="TEXT" NAME="WRAPPER" value=""
-	   PLACEHOLDER="Wrapper (e.g. em, blockquote, etc)"/>
-  </div>
+<div class="sscselection">
+  <textarea NAME="SELECTION" class="sscinitfocus">{{selection}}</textarea>
 </div>
