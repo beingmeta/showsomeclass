@@ -120,14 +120,12 @@ SSC.Editor=(function(){
 
     /* Edit Element dialog */
     
-    function makeEditElementDialog(node){
-	var parents=getParents(node);
+    function makeEditElementDialog(node,base){
+	var parents=getParents(node||base);
 	var children=getChildren(node);
 
 	var dialog=SSC.Dialog(SSC.Templates.editelement,
-			      {nparents: parents.length,
-			       nchildren: children.length,
-			       signature: getSignature(node,true),
+			      {signature: getSignature(node,true),
 			       imgroot: SSC.imgroot},
 			      SSC.Inits.editelement);
 	var styletext=(node.style.cssText).trim();
@@ -137,46 +135,58 @@ SSC.Editor=(function(){
 	    addListener(styleinput,"keydown",ee_styleinput);}
 	else dialog.removeChild(styleinput);
 
-	var up=dialog.querySelector('.sscparents');
+	var related=dialog.querySelector('.sscrelated'), add_node=true;;
 	if (parents.length) {
-	    var p=0, n_parents=parents.length; while (p<n_parents) {
-		var parent=parents[p++];
+	    var p=parents.length-1;
+	    while (p>=0) {
+		var parent=parents[p--];
 		var popt=make("OPTION",false,getSignature(parent,true));
 		popt.value=getID(parent);
-		up.appendChild(popt);}
-	    addListener(up,"change",ee_selected);}
-	else dialog.removeChild(up);
-	
-	var down=dialog.querySelector('.sscchildren'), n_opts=0;
+		if (parent===node) {
+		    popt.selected=true; add_node=false;}
+		related.appendChild(popt);}}
+	if (add_node) {
+	    var opt=make("OPTION",false,getSignature(node,true));
+	    opt.selected=true; related.appendChild(opt);}
 	if (children.length) {
 	    var c=0, n_children=children.length; while (c<n_children) {
 		var child=children[c++];
-		var copt=make("OPTION",false,getSignature(child,true));
+		var prefix=((child===SSC.Editor.base)?("*** "):(""));
+		var copt=make("OPTION",false,prefix+getSignature(child,true));
 		copt.value=getID(child);
-		down.appendChild(copt);}
-	    addListener(down,"change",ee_selected);}
-	else dialog.removeChild(down);
+		if (child===SSC.Editor.base) addClass(copt,"sscbase");
+		related.appendChild(copt);}}
+	addListener(related,"change",ee_selected);
 	
 	// var reclasser=dialog.querySelector(".sscreclass");
 	// addListener(reclasser,"change",reclasser_changed);
+	var n_attribs=0;
 	var attribtable=dialog.querySelector(".sscattribs"); {
 	    var attributes=node.attributes;
 	    if (attributes) {
 		i=0; var n_attribs=attributes.length;
 		while (i<n_attribs) {
 		    var attrib=attributes[i++]; var name=attrib.name;
-		    if ((name==='id')||(name==='class')||
-			(name==='style'))
+		    if ((name==='id')||(name==='class')||(name==='style'))
 			continue;
 		    var tr=make_attrib_row(name,attrib.value);
-		    attribtable.appendChild(tr);}}
+		    attribtable.appendChild(tr);
+		    n_attribs++;}}
+	    if ((n_attribs>0)&&(n_attribs<4))
+		addClass(dialog,"ssceditattrib");
 	    attribtable.appendChild(make_attrib_row(false,false));}
 	return dialog;}
 
-    var fixed_row="<th>{{attribname}}</th><td>{{attribval}}</td>>";
+    var fixed_row=
+	"<th>{{attribname}}</th>"+
+	("<td><input TYPE='TEXT' NAME='{{attribname}}' "+
+	 "VALUE='{{attribval}}'/></td>>");
     var new_row="<tr name='NEW__NEW'>"+
-	"<th><input TYPE='TEXT' NAME='NEW__ATTRIB' VALUE='' placeholder='new attribute'/></th>\n"+
-	"<td><input TYPE='TEXT' NAME='NEW__VALUE' VALUE='' placeholder='new attribute'/></td></tr>";
+	("<th><input TYPE='TEXT' NAME='NEW__ATTRIB'"+
+         "VALUE='' placeholder='new attribute'/></th>\n")+
+        ("<td><input TYPE='TEXT' NAME='NEW__VALUE' "+
+         "VALUE='' placeholder='new attribute value'/></td>\n")+
+	"</tr>";
 
     function make_attrib_row(name,value){
 	if (name)
@@ -184,7 +194,7 @@ SSC.Editor=(function(){
 			{attribname: name,attribval:value},
 			{name: name, "td input:keydown": ee_attrib});
 	else return make("tr",false,new_row,
-			 {"td input:keydown": ee_attrib},{name: "NEW_NEW"});}
+			 {"td input:keydown": ee_attrib,name: "NEW_NEW"});}
 
     /* Edit Element handlers */
     
@@ -248,6 +258,14 @@ SSC.Editor=(function(){
 	if (!(button)) return;
 	if (button.value==='CLOSE')
 	    SSC.Dialog.close(SSC.getDialog(button));
+	else if (button.value==='ATTRIBS') {
+	    var dialog=SSC.getDialog(button);
+	    if (hasClass(dialog,"ssceditattribs"))
+		dropClass(dialog,"ssceditattribs");
+	    else {
+		var input=bySpec(dialog,"input[name='NEW__ATTRIB']");
+		addClass(dialog,"ssceditattribs");
+	    	if (input) input.focus();}}
 	else if (button.value==='UNWRAP') {
 	    var node=SSC.Editor.node;
 	    var frag=document.createDocumentFragment();
@@ -259,7 +277,7 @@ SSC.Editor=(function(){
 		i=0; while (i<n_children) frag.appendChild(copied[i++]);
 		node.parentNode.insertBefore(frag,node);}
 	    parent.removeChild(node);
-	    Editor(parent,makeEditElementDialog(parent));
+	    Editor(parent);
 	    SSC.Dialog.close(SSC.getDialog(button));}
 	else if (button.value==='CONTENT') {
 	    Editor(SSC.Editor.node,makeEditContentDialog(SSC.Editor.node));}
@@ -293,9 +311,11 @@ SSC.Editor=(function(){
 		node.setAttribute(name,value);
 		table.appendChild(make_attrib_row(name,value));
 		if (target.name==="NEW__VALUE") {
-		    todrop=dialog.querySelector("tr[NAME='NEW__NEW']");
-		    if ((todrop)&&(todrop.parentNode))
-			todrop.parentNode.removeChild(todrop);
+		    var row=target; while (row) {
+			if (row.tagName==='TR') break;
+			else row=row.parentNode;}
+		    if ((row)&&(row.parentNode))
+			row.parentNode.removeChild(row);
 		    table.appendChild(make_attrib_row(false,false));}}
 	    else {
 		node.removeAttribute(name);
@@ -329,7 +349,11 @@ SSC.Editor=(function(){
 			      {signature: getSignature(node,true),
 			       imgroot: SSC.imgroot},
 			      SSC.Inits.editcontent);
-	var textarea=bySpec(dialog,"TEXTAREA"); textarea.value=node.innerHTML;
+	var textarea=bySpec(dialog,"TEXTAREA");
+	var html=node.innerHTML;
+	if ((html.indexOf('<')<0)&&(!(preserveSpace(node))))
+	    html=html.replace(/\s+/g,' ');
+	textarea.value=html;
 	return dialog;}
 
     function ec_done(evt){
@@ -485,10 +509,17 @@ SSC.Editor=(function(){
 
     function set_editnode(node){
 	if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
-	SSC.Editor.node=node;}
+	var base=SSC.Editor.base;
+	SSC.Editor.node=node;
+	if (node) {
+	    if (!((base)&&(hasParent(base,node))))
+		SSC.Editor.base=node;}}
 
-    /* Setting dialogs for particular nodes */
-
+    function hasParent(node,parent){
+	while (node) {
+	    if (node===parent) return true;
+	    else node=node.parentNode;}
+	return false;}
 
     /* Edit functions */
 
@@ -530,13 +561,17 @@ SSC.Editor=(function(){
 	else SSC.Editor.selection=false;
 	if (!(dialog)) {
 	    if (node)
-		SSC.Editor.dialog=dialog=makeEditElementDialog(node);
+		SSC.Editor.dialog=dialog=makeEditElementDialog(
+		    node,SSC.Editor.base);
 	    else if (selector)
-		SSC.Editor.dialog=dialog=makeReclassDialog(selector);
+		SSC.Editor.dialog=dialog=makeReclassDialog(
+		    selector);
 	    else {}}
 	else SSC.Editor.dialog=dialog;
 	var input=bySpec(dialog,'.sscinitfocus');
-	if (input) input.focus();
+	if (input) {
+	    input.focus();
+	    input.selectionStart=input.selectionEnd;}
 	if (node) SSC.select(getSignature(node));}
 
     Editor.node=false; Editor.dialog=false;

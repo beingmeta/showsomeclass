@@ -4,33 +4,25 @@
     <img src="{{imgroot}}/redx100x100.png" class="notsvg" alt="close/cancel"/>
   </button>
   <button class="ok image">
-    <img src="{{imgroot}}/checkmark.svgz" class="svg" alt="expand"/>
-    <img src="{{imgroot}}/checkmark100x100.png" class="notsvg" alt="expand"/>
-  </button>
-  <button class="expand image">
-    <img src="{{imgroot}}/opendown.svgz" class="svg" alt="expand"/>
-    <img src="{{imgroot}}/opendown100x100.png" class="notsvg" alt="expand"/>
-  </button>
-  <button class="contract image">
-    <img src="{{imgroot}}/closeup.svgz" class="svg" alt="contract"/>
-    <img src="{{imgroot}}/closeup100x100.png" class="notsvg" alt="contract"/>
+    <img src="{{imgroot}}/checkmark.svgz" class="svg" alt="OK"/>
+    <img src="{{imgroot}}/checkmark100x100.png" class="notsvg" alt="OK"/>
   </button>
   <div class="sscsignature">
     <input class="sscspecinput sscinitfocus"
 	   TYPE="TEXT" NAME="SPEC" VALUE="{{signature}}"/>
   </div>
 </div>
-<div class="buttons">
-  <button value="UNWRAP" "Remove this element by replacing it with its contents">Unwrap Content</button>
-  <button value="DELETE" title="Delete this element">Delete Element</button>
-  <button value="CONTENT" title="Edit the HTML content of this element">Edit Content</button>
-</div>
 <input class="sscstyleinput" TYPE="TEXT" NAME="STYLE"/>
+<div class="buttons">
+  <select class="sscrelated"></select>
+  <button value="UNWRAP" "Remove this element by replacing it with its contents">
+    Unwrap</button>
+  <button value="DELETE" title="Delete this element">
+    Delete</button>
+  <button value="ATTRIBS" title="Edit attributes">
+    Attributes</button>
+  <button value="CONTENT" title="Edit the HTML content of this element">
+    Content</button>
+</div>
 <table class="sscattribs">
 </table>
-<select class="sscparents">
-  <option value="" selected="SELECTED">Parents ({{nparents}}):</option>
-</select>
-<select class="sscchildren">
-  <option value="" selected="SELECTED">Children ({{nchildren}}):</option>
-</select>

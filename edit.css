@@ -7,36 +7,44 @@ div.ssceditelement {
     min-width: 30em; max-width: 75%;}
 div.ssceditelement .button.image, div.ssceditelement button.image {
     width: 1em; height: 1em; float: right;}
-div.ssceditelement div.sscsignature {
-    margin-right: 3em; clear: left;}
 div.ssceditelement div.sscsignature input[TYPE="TEXT"] {
     font-size: 24px; width: 100%;}
+
+div.ssceditelement div.sscsignature, div.ssceditelement div.buttons {
+    margin-right: 3em; clear: left; width: auto;}
 
 div.ssceditelement .button.contract, div.ssceditelement button.contract {
     display: none;}
 
-div.ssceditelement div.buttons { padding-bottom: 1ex; }
-div.ssceditelement div.buttons button[value="UNWRAP"] { float: left;}
-div.ssceditelement div.buttons button[value="DELETE"] { float: right;}
+div.ssceditelement div.buttons {
+    text-align: right; padding-bottom: 1ex;}
+div.ssceditelement div.buttons button {
+    font-size: 16px;
+    margin-left: 0px; margin-right: 0px;
+    float: right;}
 
-div.ssceditelement table.sscattribs { margin-top: 0.25ex;}
+div.ssceditelement select {
+    float: left; width: auto; font-size: 24px;}
+div.ssceditelement div.buttons select {
+    display: inline;}
 
+div.ssceditelement table.sscattribs {
+    margin-top: 0.25ex;
+    display: none;}
+div.ssceditelement.ssceditattribs table.sscattribs {
+    display: table;}
+
+div.ssceditelement table.sscattribs th {
+    font-size: 20px; vertical-align: baseline;
+    width: 25%;}
+div.ssceditelement table.sscattribs td {
+    padding-left: 1ex; vertical-align: baseline;}
 div.ssceditelement table.sscattribs input[TYPE="TEXT"] {
     font-size: 16px; width: 100%;}
-div.ssceditelement table.sscattribs th {
-    font-size: 20px; vertical-align: bottom;
-    width: 25%;}
 
-div.ssceditelement select { font-size: 24px;}
+select.sscrelated option.sscbase { font-weight: bold; }
 
 /* Expansion rules */
-
-div.ssceditelement input[NAME='STYLE'] { display: none; }
-div.ssceditelement table.sscattribs { display: none;}
-div.ssceditelement select { display: none; }
-div.ssceditelement.sscexpanded input[NAME='STYLE'] { display: block; }
-div.ssceditelement.sscexpanded table.sscattribs { display: table;}
-div.ssceditelement.sscexpanded select { display: block; }
 
 div.ssceditelement.sscexpanded .button.contract,
 div.ssceditelement.sscexpanded button.contract {
@@ -45,10 +53,6 @@ div.ssceditelement.sscexpanded .button.expand,
 div.ssceditelement.sscexpanded button.expand {
     display: none;}
 
-div.ssceditelement div.buttons {
-    margin-left: 10%; margin-right: 10%; width: 80%;
-    margin-top: 0.5ex;}
-
 /* Edit content */
 
 div.ssceditcontent { width: 50%;}
@@ -56,15 +60,13 @@ div.ssceditcontent div.title {
     text-align: left; margin-right: 2em;}
 div.ssceditcontent .button.image, div.ssceditcontent button.image {
     width: 1em; height: 1em; float: right;}
-div.ssceditcontent div.buttons .button {
-    font-size: 75%; float: right; margin-right: 0px;}
 
 div.ssceditcontent textarea { height: 7em; }
 
 div.ssceditcontent div.buttons { text-align: left;}
 div.ssceditcontent div.buttons button,
 div.ssceditcontent div.buttons .button {
-    float: right;}
+    font-size: 24px; margin-right: 0px; float: right;}
 
 /* Reclass dialog */
 
@@ -83,7 +85,8 @@ div.sscdialog.sscreclass div.buttons button {
 div.sscdialog.sscreclass div.buttons p {
     font-size: 50%; margin-top: 1ex;
     margin-left: 3em; text-indent: -2em;}
-div.sscdialog.sscreclass div.buttons p tt { font-weight: bold; font-size: 120%;}
+div.sscdialog.sscreclass div.buttons p tt {
+    font-weight: bold; font-size: 120%;}
 
 div.sscdialog.sscreclass th, div.sscdialog.sscreclass td {
     font-size: 24px;}
