@@ -832,6 +832,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	if (SSC.hasOwnProperty("onclick"))
 	    addListener(window,"click",SSC.onclick);
 	else addListener(window,"click",window_click);
+	if (SSC.hasOwnProperty("onselect"))
+	    addListener(window,"select",SSC.select);
     	if (SSC.hasOwnProperty("onkey"))
 	    addListener(window,"keydown",SSC.onkey);
 	else addListener(window,"keydown",window_keydown);

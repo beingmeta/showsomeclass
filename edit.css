@@ -1,3 +1,11 @@
+div.sscdialog div.sscsignature input[TYPE="TEXT"] {
+    font-size: 0.75em; width: 100%;}
+
+div.sscdialog div.row {
+    font-size: 150%; height: 1.2em;}
+div.sscdialog div.buttons {
+    font-size: 150%; min-height: 1.2em;}
+
 /* Edit element */
 
 div.ssceditelement, div.ssceditcontent {
@@ -7,8 +15,6 @@ div.ssceditelement {
     min-width: 30em; max-width: 75%;}
 div.ssceditelement .button.image, div.ssceditelement button.image {
     width: 1em; height: 1em; float: right;}
-div.ssceditelement div.sscsignature input[TYPE="TEXT"] {
-    font-size: 24px; width: 100%;}
 
 div.ssceditelement div.sscsignature, div.ssceditelement div.buttons {
     margin-right: 3em; clear: left; width: auto;}
@@ -61,7 +67,7 @@ div.ssceditcontent div.title {
 div.ssceditcontent .button.image, div.ssceditcontent button.image {
     width: 1em; height: 1em; float: right;}
 
-div.ssceditcontent textarea { height: 7em; }
+div.ssceditcontent textarea { height: 7em; font-size: 16px;}
 
 div.ssceditcontent div.buttons { text-align: left;}
 div.ssceditcontent div.buttons button,
@@ -99,26 +105,48 @@ div.sscdialog.sscreclass table th {
 
 div.ssctextedit {
     min-width: 30%; max-width: 70%;
-    left: 10%; top: 20%;}
+    height: auto; width: auto;
+    right: 10%; top: 20%; width: 50%;
+    resize: both;}
+div.ssctextedit.sscbigtext {
+    height: 50%; width: 70%;
+    font-size: 150%;}
+
+div.ssctextedit div.sscselection { margin-right: 3em;}
+div.ssctextedit div.sscselection { text-align: left; }
+div.ssctextedit div.sscselection input[TYPE='TEXT'] {
+    font-size: 40%; width: 100%;}
+
+div.ssctextedit input[TYPE="TEXT"] { font-size: 50%;}
+div.ssctextedit textarea {
+    height: 90%; width: 100%; font-size: 16px;
+    min-height: 7em; resize: both;}
 div.sscdialog.ssctextedit { padding-bottom: 1ex;}
 div.ssctextedit .button, div.ssctextedit button {
     margin-top: 0px; margin-left: 0.25ex;
     float: right; vertical-align: top;
     padding-top: 0px;}
 div.ssctextedit div.row.row2 {
+    font-size: 125%;
     margin-top: 0.5ex; display: none;}
-div.ssctextedit .button.wrap, div.ssctextedit button.wrap { font-size: 50%; }
 div.ssctextedit .button.image, div.ssctextedit button.image {
-    font-size: 80%; width: 1em; height: 1em;}
+    width: 1em; height: 1em;}
 
+div.ssctextedit.sscwrap .row.row1 { height: auto; }
+div.ssctextedit.sscwrap input[TYPE="TEXT"] { width: 98%; }
+    
 div.ssctextedit div.ssctextwrap {
     margin-right: 5em;
     clear: left;}
 div.ssctextedit div.ssctextwrap input[TYPE='TEXT'] { width: 100%; }
-div.ssctextedit div.ssctextinput {
-    margin-right: 5em;
+div.ssctextedit div.sscsignature {
+    margin-right: 2em;
     clear: left;}
 div.ssctextedit div.ssctextinput input[TYPE='TEXT'] { width: 100%; }
+div.ssctextedit div.sscwrapspec, div.ssctextedit div.sscmergespec {
+    display: none;}
+div.ssctextedit.sscwrap div.sscwrapspec {display: block;}
+div.ssctextedit.sscmerge div.sscmergespec {display: block;}
 
 div.ssctextedit.sscwrap div.row.row2 { display: block;}
 div.ssctextedit.sscwrap div.ssctextinput {

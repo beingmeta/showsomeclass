@@ -420,11 +420,10 @@ SSC.Editor=(function(){
     /* Edit selection */
 
     function make_selection_editor(range){
-	var startnode=range.startnode, ntext=startnode.nodeValue;
-	var endnode=range.endnode, ntext=startnode.nodeValue;
+	var startnode=range.startnode, endnode=range.endnode;
 	var template, inside, init;
 	if ((startnode===endnode)&&((range.endoff-range.startoff)<40)) {
-	    inside=ntext.slice(range.startoff,range.endoff);
+	    inside=getHTML(range);
 	    template=SSC.Templates.textedit;
 	    init=SSC.Inits.textedit;}
 	else {
@@ -435,6 +434,7 @@ SSC.Editor=(function(){
 			      {imgroot: SSC.imgroot,selection: inside},
 			      init);
 	if (!(inside)) {
+	    addClass(dialog,"sscbigtext");
 	    var textarea=bySpec(dialog,'TEXTAREA');
 	    textarea.value=getHTML(range);}
 	return dialog;}
@@ -448,15 +448,77 @@ SSC.Editor=(function(){
 	var ws=style.whiteSpace;
 	return (!((ws==='normal')||(ws==='nowrap')));}
 
+    function safeRange(selection){
+	if ((selection.anchorNode===selection.focusNode)||
+	    ((selection.anchorNode.parentNode)===
+	     (selection.focusNode.parentNode)))
+	    return {startnode: selection.anchorNode,
+		    startoff: selection.anchorOffset,
+		    endnode: selection.focusNode,
+		    endoff: selection.focusOffset};
+	else {
+	    var start=selection.anchorNode, end=selection.focusNode;
+	    var startoff=selection.anchorOffset, endoff=selection.focusOffset;
+	    var common=getCommon(start,end);
+	    while (start) {
+		if (start.parentNode===common) break;
+		else start=start.parentNode;}
+	    while (end) {
+		if (end.parentNode===common) break;
+		else end=end.parentNode;}
+	    if (start.nodeType!==3) startoff=false;
+	    if (end.nodeType!==3) endoff=false;
+	    /* Make sure you've got the order right before you make the
+	       range object. */
+	    var scan=start;
+	    while (scan) if (scan===end) break; else scan=scan.nextSibling;
+	    if (!(scan)) {
+		var tmpnode=start, tmpoff=startoff;
+		start=end; startoff=endoff;
+		end=tmpnode; endoff=tmpoff;}
+	    return {startnode: start, startoff: startoff,
+		    endnode: end, endoff: endoff};}}
+
     /* This should get the HTML for a range, expanding the range if needed. */
     function getHTML(range){
 	if (range.startnode===range.endnode) {
-	    var text=range.startnode.nodeValue.slice(range.startoff,range.endoff);
+	    var text=range.startnode.nodeValue.slice(
+		range.startoff,range.endoff);
 	    if (!(preserveSpace(range.startnode)))
 		return text.replace(/\s+/g,' ');
 	    else return text;}
-	/* Find the common parent and include all the nodes enclosing the selection. */
-	else return "";}
+	/* Find the common parent and include all the nodes enclosing
+	 * the selection. */
+	else {
+	    var start=range.startnode, end=range.endnode;
+	    if (start.parentNode!==end.parentNode) {
+		var common=getCommon(start,end);
+		while (start) {
+		    if (start.parentNode===common) break;
+		    else start=start.parentNode;}
+		while (end) {
+		    if (end.parentNode===common) break;
+		    else end=end.parentNode;}
+		range.startnode=start; if (start.nodeType!==3) range.startoff=0;
+		range.endnode=end; if (end.nodeType!==3) range.endoff=0;}
+	    var html="", scan=start;
+	    /* Get the nodes in the right order */
+	    while ((scan)&&(scan!==end)) scan=scan.nextSibling;
+	    if (!(scan)) {var tmp=start; start=end; end=tmp;}
+	    scan=start; while (scan) {
+		if (scan.nodeType===3) html=html+scan.nodeValue;
+		else if (scan.nodeType===1) html=html+scan.outerHTML;
+		else {}
+		if (scan===end) break;
+		else scan=scan.nextSibling;}
+	    return html;}}
+
+    function getCommon(start,end){
+	var scan=start;
+	while (scan) {
+	    if (hasParent(end,scan)) return scan;
+	    else scan=scan.parentNode;}
+	return false;}
 
     function es_done(evt){
 	evt=evt||event; var target=evt.target||evt.srcElement;
@@ -495,13 +557,36 @@ SSC.Editor=(function(){
 	if (!(dialog)) return;
 	else if (hasClass(dialog,"sscwrap"))
 	    dropClass(dialog,"sscwrap");
-	else addClass(dialog,"sscwrap");
+	else {
+	    var input=bySpec(dialog,"input[name='WRAPPER']");
+	    dropClass(dialog,"sscmerge");
+	    addClass(dialog,"sscwrap");
+	    if (input) input.focus();}
+	cancel(evt);}
+    function es_merge_click(evt){
+	evt=evt||event; var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target);
+	if (!(dialog)) return;
+	else if (hasClass(dialog,"sscmerge"))
+	    dropClass(dialog,"sscmerge");
+	else {
+	    var input=bySpec(dialog,"input[name='MERGESPEC']");
+	    dropClass(dialog,"sscwrap");
+	    addClass(dialog,"sscmerge");
+	    if (input) input.focus();}
 	cancel(evt);}
 
     SSC.Inits.textedit={
 	classname: "ssctextedit",
 	"button.ok:click": es_done,
 	"button.wrap:click": es_wrap_click,
+	"button.close:click": SSC.Dialog.close,
+	"input[type='TEXT']:keydown": es_keydown};
+    SSC.Inits.bigtextedit={
+	classname: "ssctextedit",
+	"button.ok:click": es_done,
+	"button.wrap:click": es_wrap_click,
+	"button.merge:click": es_merge_click,
 	"button.close:click": SSC.Dialog.close,
 	"input[type='TEXT']:keydown": es_keydown};
 
@@ -552,10 +637,7 @@ SSC.Editor=(function(){
 	else set_editnode(false);
 	if (selector) SSC.select(selector);
 	if (selection) {
-	    var range={startnode: selection.anchorNode,
-		       startoff: selection.anchorOffset,
-		       endnode: selection.focusNode,
-		       endoff: selection.focusOffset};
+	    var range=safeRange(selection);
 	    SSC.Editor.selection=range;
 	    SSC.Editor.dialog=dialog=make_selection_editor(range);}
 	else SSC.Editor.selection=false;
@@ -574,7 +656,8 @@ SSC.Editor=(function(){
 	    input.selectionStart=input.selectionEnd;}
 	if (node) SSC.select(getSignature(node));}
 
-    Editor.node=false; Editor.dialog=false;
+    // App state related fields
+    Editor.node=false; Editor.base=false; Editor.dialog=false;
 
     function editor_click(evt){
 	evt=evt||event;
@@ -608,6 +691,15 @@ SSC.Editor=(function(){
 	SSC.select(spec,false,true);
 	addClass(document.body,"ssc__TOOLBAR");}
     SSC.onclick=editor_click;
+
+    function editor_mouseup(evt){
+	evt=evt||event;
+	var sel=window.getSelection();
+	if ((sel)&&
+	    ((sel.anchorNode!==sel.focusNode)||
+	     (sel.anchorOffset!==sel.focusOffset))) {
+	    Editor(window.getSelection());
+	    cancel(evt);}}
 
     function save_current(){
 	var content=false;
@@ -664,6 +756,7 @@ SSC.Editor=(function(){
 	if (pubpoint) SSC.pubpoint=pubpoint;}
     SSC.prelaunch=initpubpoint;
     function setupEditor(){
+	addListener(window,"mouseup",editor_mouseup);
 	if (!(SSC.pubpoint)) {
 	    var save_button=byID("SSCEDITSAVEBUTTON");
 	    if (save_button)
