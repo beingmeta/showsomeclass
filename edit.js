@@ -430,14 +430,46 @@ SSC.Editor=(function(){
 	    inside=false;
 	    template=SSC.Templates.bigtextedit;
 	    init=SSC.Inits.bigtextedit||SSC.Inits.textedit;}
+	var mergespec=getMergeSpec(range);
 	var dialog=SSC.Dialog(template,
-			      {imgroot: SSC.imgroot,selection: inside},
+			      {imgroot: SSC.imgroot,selection: inside,
+			       mergespec:(mergespec||"")},
 			      init);
 	if (!(inside)) {
 	    addClass(dialog,"sscbigtext");
 	    var textarea=bySpec(dialog,'TEXTAREA');
 	    textarea.value=getHTML(range);}
 	return dialog;}
+
+    var ssc_internal_pat=
+	/ssc[ABCDEFGHIJKLMNOPQRSTUVWXYZ_]/g;
+
+    function getMergeSpec(range){
+	var tag=false, block=false, classes="", use_id=false;
+	var start=range.startnode, end=range.endnode, scan=start;
+	while (scan) {
+	    if (scan.nodeType!==1) {scan=scan.nextSibling; continue;}
+	    var classname=scan.className, id=scan.id;
+	    var classvec=((classname)?(classname.split(" ")):([]));
+	    if ((!(use_id))&&(id)&&(id.search("tmp")!==0)) use_id=id;
+	    if ((tag)&&(block)) {}
+	    else {
+		var style=window.getComputedStyle(scan);
+		if (style.display!=='inline') {
+		    block=true; tag=scan.tagName;}
+		else if (!(tag)) tag=scan.tagName;}
+	    var i=0, lim=classvec.length;
+	    while (i<lim) {
+		var cl=classvec[i++];
+		if (cl.search(ssc_internal_pat)===0) continue;
+		else if (classes.search(new RegExp("\\."+cl+"\\b","gi"))<0)
+		    classes=classes+"."+cl;}
+	    if (scan===end) break;
+	    else scan=scan.nextSibling;}
+	if (!(tag)) return false;
+	else if ((use_id)&&(classes.length))
+	    return tag+classes+"#"+use_id;
+	else return tag+classes;}
 
     function preserveSpace(node){
 	while (node) {
