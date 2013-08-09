@@ -435,6 +435,8 @@ SSC.Editor=(function(){
 			      {imgroot: SSC.imgroot,selection: inside,
 			       mergespec:(mergespec||"")},
 			      init);
+	if (startnode!==endnode) addClass(dialog,"sschtml");
+	
 	if (!(inside)) {
 	    addClass(dialog,"sscbigtext");
 	    var textarea=bySpec(dialog,'TEXTAREA');

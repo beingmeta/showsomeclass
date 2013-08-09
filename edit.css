@@ -145,6 +145,8 @@ div.ssctextedit.sscbigtext div.sscselection {
 div.ssctextedit.sscwrap .row.row1 { height: auto; }
 div.ssctextedit.sscwrap input[TYPE="TEXT"] { width: 98%; }
     
+div.ssctextedit button.merge { display: none;}
+div.ssctextedit.sschtml button.merge { display: inline;}
 div.ssctextedit div.ssctextwrap {
     margin-right: 5em;
     clear: left;}
@@ -157,11 +159,8 @@ div.ssctextedit div.sscwrapspec, div.ssctextedit div.sscmergespec {
 div.ssctextedit.sscwrap div.sscwrapspec {display: block;}
 div.ssctextedit.sscmerge div.sscmergespec {display: block;}
 
-div.ssctextedit.sscwrap div.row.row2 { display: block;}
 div.ssctextedit.sscwrap div.ssctextinput {
     clear: both; margin-right: 0px; width: 100%;}
-div.ssctextedit.sscwrap .row1 button {display: none;}
-div.ssctextedit.sscbigtext.sscwrap .row1 button {display: none;}
 
 /* Save dialog */
 
