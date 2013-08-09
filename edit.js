@@ -505,8 +505,15 @@ SSC.Editor=(function(){
 	    /* Get the nodes in the right order */
 	    while ((scan)&&(scan!==end)) scan=scan.nextSibling;
 	    if (!(scan)) {var tmp=start; start=end; end=tmp;}
-	    scan=start; while (scan) {
-		if (scan.nodeType===3) html=html+scan.nodeValue;
+	    scan=start;
+	    if ((range.startoff)&&(scan.nodeType===3)) {
+		html=scan.nodeValue.slice(range.startoff);
+		scan=scan.nextSibling;}
+	    while (scan) {
+		if (scan.nodeType===3) {
+		    if ((scan===end)&&(range.endoff))
+			html=html+scan.nodeValue.slice(0,range.endoff);
+		    else html=html+scan.nodeValue;}
 		else if (scan.nodeType===1) html=html+scan.outerHTML;
 		else {}
 		if (scan===end) break;
@@ -520,193 +527,327 @@ SSC.Editor=(function(){
 	    else scan=scan.parentNode;}
 	return false;}
 
-    function es_done(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	var textinput=dialog.querySelector("input[name='SELECTION']");
-	var wrapinput=dialog.querySelector("input[name='WRAPPER']");
-	var range=SSC.Editor.selection;
+    function es_simple_replace(range,edited,tagname,classname){
 	var oldnode=range.startnode;
 	var oldtext=oldnode.nodeValue;
-	var newtext=textinput.value;
-	var wrapper=wrapinput.value.trim();
-	var newnode=false;
-	if ((wrapper)&&(wrapper.length)) {
-	    var parsed=wrapper.split(".");
-	    var tag=parsed[0]||"span";
-	    var classname=parsed.slice(1).join(" ");
-	    newnode=make(tag,classname,newtext);}
-	else newnode=make_text(newtext);
-	var frag=document.createDocumentFragment();
-	frag.appendChild(make_text(oldtext.slice(0,range.startoff)));
-	frag.appendChild(newnode);
-	frag.appendChild(make_text(oldtext.slice(range.endoff)));
-	oldnode.parentNode.replaceChild(frag,oldnode);
+	var newtext=
+	    oldtext.slice(0,range.startoff)+textinput.value+
+	    oldtext.slice(range.endoff);
+	var newnode=((tagname)?(make(tagname,classname,edited)):make_text(edited));
+	oldnode.parentNode.replaceChild(newnode,oldnode);
+	SSC.Editor.selection=false;
+	SSC.Dialog.close(SSC.Editor.dialog);
+	SSC.Editor.dialog=false;}
+
+    function es_merge_children(node){
+	if ((node.childNodes)&&(node.childNodes.length)) {
+	    var children=node.childNodes, elts=[], textnode=false;
+	    var i=0, lim=children.length;
+	    while (i<lim) elts.push(children[i++]);
+	    node.innerHTML="";
+	    i=0, lim=elts.length; while (i<lim) {
+		var child=elts[i++];
+		if (child.nodeType===3) {
+		    if (textnode) {
+			var newtextnode=make_text(textnode.nodeValue+child.nodeValue);
+			node.replaceChild(newtextnode,textnode);
+			textnode=newtextnode;
+			continue;}
+		    else {node.appendChild(child); textnode=child; continue;}}
+		else if (child.nodeType!==1) {
+		    node.appendChild(child); textnode=false; continue;}
+		if (child.attributes) {
+		    var attribs=child.attributes;
+		    var a=0, n_attribs=attribs.length;
+		    while (a<n_attribs) {
+			var attrib=attribs[a++];
+			if (!(node.getAttribute(attrib.name)))
+			    node.setAttribute(attrib.name,attrib.value);}}
+		if ((child.childNodes)&&(child.childNodes.length)) {
+		    var grand=child.childNodes; var grandcopy=[];
+		    var j=0, n=grand.length;
+		    while (j<n) grandcopy.push(grand[j++]);
+		    j=0, n=grandcopy.length;
+		    while (j<n) {
+			var grandchild=grandcopy[j++];
+			if (grandchild.nodeType===3) {
+			    if (textnode) {
+				var newtextnode=make_text(textnode.nodeValue+grandchild.nodeValue);
+				node.replaceChild(newtextnode,textnode);
+				textnode=newtextnode;
+				continue;}
+			    else {node.appendChild(grandchild); textnode=grandchild;}}
+			else {
+			    node.appendChild(granchild);
+			    textnode=false;}}}
+		else node.appendChild(child);}}
+	return node;}
+
+    function es_extract_children(node){
+	if ((node.childNodes)&&(node.childNodes.length)) {
+	    var children=node.childNodes, elts=[];
+	    var i=0, lim=children.length;
+	    while (i<lim) elts.push(children[i++]);
+	    var frag=document.createDocumentFragment();
+	    i=0, lim=elts.length; while (i<lim) frag.appendChild(elts[i++]);
+	    return frag;}
+	else return false;}
+
+    function removeRange(range){
+	var startnode=range.startnode, scan=startnode;
+	var endnode=range.endnode, insert_before=false;
+	if (startnode===endnode) {
+	    if (startnode.nodeType===3) {
+		var text=startnode.nodeValue;
+		var parent=startnode.parentNode;
+		var before=make_text(text.slice(0,range.startoff));
+		var after=make_text(text.slice(range.endoff));
+		parent.insertBefore(before,startnode);
+		parent.replaceChild(after,startnode);
+		return after;}
+	    else {
+		var next=startnode.nextSibling;
+		startnode.parentNode.removeChild(node);
+		return next;}}
+	else if ((range.startoff)&&(startnode.nodeType===3)) {
+	    // If the first node is a text node and our range is offset,
+	    //  replace it with a shorter version and move forward.
+	    var textstart=document.createTextNode(
+		startnode.value.slice(0,range.startoff));
+	    startnode.parentNode.replaceChild(textstart,startnode);
+	    scan=textstart.nextSibling;}
+	// Do the same with a final text node, and also figure
+	// out where we'll insert our new node
+	if ((range.endoff===0)&&(endnode.nodeType===3))
+	    insert_before=end_node;
+	else if ((range.endoff)&&(endnode.nodeType===3)) {
+	    var textend=document.createTextNode(
+		endnode.value.slice(range.endoff));
+	    endnode.parentNode.replaceChild(textend,endnode);
+	    insert_before=text_end;}
+	else insert_before=endnode.nextSibling;
+	// Proceed along the sibling chain, removing nodes
+	// until you come to the insertion point
+	var parent=scan.parentNode;
+	while ((scan)&&(scan!==insert_before)) {
+	    var next=scan.nextSibling;
+	    parent.removeChild(scan);
+	    scan=next;}
+	return insert_before;}
+
+    function text_merge(before,after,parent){
+	var combined=make_text(before.nodeValue+after.nodeValue);
+	parent.replaceChild(combined,before);
+	parent.removeChild(after);}
+
+    function es_done(evt){
+	evt=evt||event; var target=evt.target||evt.srcElement;
+	var dialog=getDialog(target), range=SSC.Editor.selection;
+	var textinput=dialog.querySelector("textarea[name='SELECTION']");
+	var wrapinput=dialog.querySelector("input[name='WRAPSPEC']");
+	var mergeinput=dialog.querySelector("input[name='MERGESPEC']");
+	var dowrap=hasClass(dialog,"sscwrap"), domerge=hasClass(dialog,"sscmerge");
+	var nodespec=
+	    ((dowrap)?(wrapinput.value.trim()):
+	     (domerge)?(mergeinput.value.trim()):
+	     (false));
+	var nodetag=false, nodeclass=false;
+	if (nodespec) {
+	    var parsed=nodespec.split(".");
+	    nodetag=parsed[0]||"span";
+	    nodeclass=parsed.slice(1).join(" ");}
+	if ((range.startnode===range.endnode)&&(range.startnode.nodeType===3)) 
+	    es_simple_replace(range,textinput.value,nodetag,nodeclass);
+	else {
+	    var parent=range.startnode.parentNode;
+	    if (nodetag) newnode=make(nodetag,nodeclass,"");
+	    else newnode=document.createElement(parent.tagName);
+	    newnode.innerHTML=textinput.value;
+	    if (domerge) newnode=es_merge_children(newnode);
+	    else if (dowrap) {}
+	    else newnode=es_extract_children(newnode);
+	    var insert_before=removeRange(range);
+	    var insert_after=((insert_before)?(insert_before.prevSibling):(node.lastChild));
+	    // Now, insert the new node
+	    if (insert_before) parent.insertBefore(newnode,insert_before);
+	    else parent.appendChild(newnode);
+	    if ((insert_before)&&(insert_before.nodeType===3)&&
+		(insert_before.prevSibling)&&
+		(insert_before.prevSibling.nodeType===3))
+		text_merge(insert_before.prevSibling,insert_before,node);
+	    if ((insert_after)&&(insert_after.nodeType===3)&&
+		(insert_after.nextSibling)&&
+		(insert_after.nextSibling.nodeType===3))
+		text_merge(insert_after,insert_after.nextSibling,node);}
 	SSC.Editor.selection=false;
 	SSC.Dialog.close(dialog);}
-    function es_keydown(evt){
-	var kc=evt.keyCode; if (kc===RETURN) return es_done(evt);}
-    function es_cancel(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	Dialog.close(dialog);
-	cancel(evt);}
-    function es_wrap_click(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	if (!(dialog)) return;
-	else if (hasClass(dialog,"sscwrap"))
-	    dropClass(dialog,"sscwrap");
-	else {
-	    var input=bySpec(dialog,"input[name='WRAPPER']");
-	    dropClass(dialog,"sscmerge");
-	    addClass(dialog,"sscwrap");
-	    if (input) input.focus();}
-	cancel(evt);}
-    function es_merge_click(evt){
-	evt=evt||event; var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	if (!(dialog)) return;
-	else if (hasClass(dialog,"sscmerge"))
-	    dropClass(dialog,"sscmerge");
-	else {
-	    var input=bySpec(dialog,"input[name='MERGESPEC']");
-	    dropClass(dialog,"sscwrap");
-	    addClass(dialog,"sscmerge");
-	    if (input) input.focus();}
-	cancel(evt);}
 
-    SSC.Inits.textedit={
-	classname: "ssctextedit",
-	"button.ok:click": es_done,
-	"button.wrap:click": es_wrap_click,
-	"button.close:click": SSC.Dialog.close,
-	"input[type='TEXT']:keydown": es_keydown};
-    SSC.Inits.bigtextedit={
-	classname: "ssctextedit",
-	"button.ok:click": es_done,
-	"button.wrap:click": es_wrap_click,
-	"button.merge:click": es_merge_click,
-	"button.close:click": SSC.Dialog.close,
-	"input[type='TEXT']:keydown": es_keydown};
+	function es_keydown(evt){
+	    var kc=evt.keyCode; if (kc===RETURN) return es_done(evt);}
+	function es_cancel(evt){
+	    evt=evt||event; var target=evt.target||evt.srcElement;
+	    var dialog=getDialog(target);
+	    Dialog.close(dialog);
+	    cancel(evt);}
+	function es_wrap_click(evt){
+	    evt=evt||event; var target=evt.target||evt.srcElement;
+	    var dialog=getDialog(target);
+	    if (!(dialog)) return;
+	    else if (hasClass(dialog,"sscwrap"))
+		dropClass(dialog,"sscwrap");
+	    else {
+		var input=bySpec(dialog,"input[name='WRAPPER']");
+		dropClass(dialog,"sscmerge");
+		addClass(dialog,"sscwrap");
+		if (input) input.focus();}
+	    cancel(evt);}
+	function es_merge_click(evt){
+	    evt=evt||event; var target=evt.target||evt.srcElement;
+	    var dialog=getDialog(target);
+	    if (!(dialog)) return;
+	    else if (hasClass(dialog,"sscmerge"))
+		dropClass(dialog,"sscmerge");
+	    else {
+		var input=bySpec(dialog,"input[name='MERGESPEC']");
+		dropClass(dialog,"sscwrap");
+		addClass(dialog,"sscmerge");
+		if (input) input.focus();}
+	    cancel(evt);}
 
-    /* Edit handlers */
+	SSC.Inits.textedit={
+	    classname: "ssctextedit",
+	    "button.ok:click": es_done,
+	    "button.wrap:click": es_wrap_click,
+	    "button.close:click": SSC.Dialog.close,
+	    "input[type='TEXT']:keydown": es_keydown};
+	SSC.Inits.bigtextedit={
+	    classname: "ssctextedit",
+	    "button.ok:click": es_done,
+	    "button.wrap:click": es_wrap_click,
+	    "button.merge:click": es_merge_click,
+	    "button.close:click": SSC.Dialog.close,
+	    "input[type='TEXT']:keydown": es_keydown};
 
-    function set_editnode(node){
-	if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
-	var base=SSC.Editor.base;
-	SSC.Editor.node=node;
-	if (node) {
-	    if (!((base)&&(hasParent(base,node))))
-		SSC.Editor.base=node;}}
+	/* Edit handlers */
 
-    function hasParent(node,parent){
-	while (node) {
-	    if (node===parent) return true;
-	    else node=node.parentNode;}
-	return false;}
+	function set_editnode(node){
+	    if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
+	    var base=SSC.Editor.base;
+	    SSC.Editor.node=node;
+	    if (node) {
+		if (!((base)&&(hasParent(base,node))))
+		    SSC.Editor.base=node;}}
 
-    /* Edit functions */
+	function hasParent(node,parent){
+	    while (node) {
+		if (node===parent) return true;
+		else node=node.parentNode;}
+	    return false;}
 
-    function Editor(arg,dialog){
-	var node=false, selector=false, selection=false;
-	if (arg.nodeType) node=arg;
-	else if ((typeof arg === "string")&&
-		 (document.getElementById(arg)))
-	    node=document.getElementById(arg);
-	else if (typeof arg === "string") {
-	    var candidates=SSC.$(arg);
-	    if (candidates.length===0) {
+	/* Edit functions */
+
+	function Editor(arg,dialog){
+	    var node=false, selector=false, selection=false;
+	    if (arg.nodeType) node=arg;
+	    else if ((typeof arg === "string")&&
+		     (document.getElementById(arg)))
+		node=document.getElementById(arg);
+	    else if (typeof arg === "string") {
+		var candidates=SSC.$(arg);
+		if (candidates.length===0) {
+		    SSC.Message("Not sure what to edit: "+arg+"?");
+		    return;}
+		else if (candidates.length===1) 
+		    node=candidates[0];
+		else selector=arg;}
+	    else if (arg instanceof Selection) {
+		selection=arg;}
+	    else {
 		SSC.Message("Not sure what to edit: "+arg+"?");
 		return;}
-	    else if (candidates.length===1) 
-		node=candidates[0];
-	    else selector=arg;}
-	else if (arg instanceof Selection) {
-	    selection=arg;}
-	else {
-	    SSC.Message("Not sure what to edit: "+arg+"?");
-	    return;}
-	set_editnode(false);
-	SSC.Editor.selection=false;
-	var current_dialog=SSC.Editor.dialog;
-	if (current_dialog) {
-	    SSC.Editor.dialog=false;
-	    SSC.Dialog.close(current_dialog);}
-	if (node) set_editnode(node);
-	else set_editnode(false);
-	if (selector) SSC.select(selector);
-	if (selection) {
-	    var range=safeRange(selection);
-	    SSC.Editor.selection=range;
-	    SSC.Editor.dialog=dialog=make_selection_editor(range);}
-	else SSC.Editor.selection=false;
-	if (!(dialog)) {
-	    if (node)
-		SSC.Editor.dialog=dialog=makeEditElementDialog(
-		    node,SSC.Editor.base);
-	    else if (selector)
-		SSC.Editor.dialog=dialog=makeReclassDialog(
-		    selector);
-	    else {}}
-	else SSC.Editor.dialog=dialog;
-	var input=bySpec(dialog,'.sscinitfocus');
-	if (input) {
-	    input.focus();
-	    input.selectionStart=input.selectionEnd;}
-	if (node) SSC.select(getSignature(node));}
+	    set_editnode(false);
+	    SSC.Editor.selection=false;
+	    var current_dialog=SSC.Editor.dialog;
+	    if (current_dialog) {
+		SSC.Editor.dialog=false;
+		SSC.Dialog.close(current_dialog);}
+	    if (node) set_editnode(node);
+	    else set_editnode(false);
+	    if (selector) SSC.select(selector);
+	    if (selection) {
+		var range=safeRange(selection);
+		SSC.Editor.selection=range;
+		if (range.startnode===range.endnode)
+		    SSC.Editor.node=range.startnode;
+		else SSC.Editor.node=range.startnode.parentNode;
+		SSC.Editor.dialog=dialog=make_selection_editor(range);}
+	    else SSC.Editor.selection=false;
+	    if (!(dialog)) {
+		if (node)
+		    SSC.Editor.dialog=dialog=makeEditElementDialog(
+			node,SSC.Editor.base);
+		else if (selector)
+		    SSC.Editor.dialog=dialog=makeReclassDialog(
+			selector);
+		else {}}
+	    else SSC.Editor.dialog=dialog;
+	    var input=bySpec(dialog,'.sscinitfocus');
+	    if (input) {
+		input.focus();
+		input.selectionStart=input.selectionEnd;}
+	    if (node) SSC.select(getSignature(node));}
 
-    // App state related fields
-    Editor.node=false; Editor.base=false; Editor.dialog=false;
+	// App state related fields
+	Editor.node=false; Editor.base=false; Editor.dialog=false;
 
-    function editor_click(evt){
-	evt=evt||event;
-	var selection=window.getSelection();
-	if ((selection)&&(!(evt.shiftKey))&&
-	    ((selection.anchorNode!==selection.focusNode)||
-	     (selection.anchorOffset!==selection.focusOffset))) {
-	    if (selection.anchorNode===selection.focusNode) {
-		Editor(selection);}
-	    return;}
-	var target=evt.target||evt.srcElement;
-	var scan=target;
-	while (scan) {
-	    if (hasClass(scan,"sscapp")) return;
-	    else if ((!(evt.ctrlKey))&&
-		     (((target.tagName==="A")&&(target.href))||
-		      (target.onclick)|| (target.tagName==='INPUT')))
-		return;
-	    else if (scan===document.body) break;
-	    else scan=scan.parentNode;}
-	if (!(scan)) return; else scan=target;
-	while (scan.nodeType!==1) scan=scan.parentNode;
-	if (!(scan)) return;
-	if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
-	var spec=scan.tagName;
-	if (scan.className) {
-	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
-	    var classes=norm.split(/\s+/);
-	    if (classes.length) spec=spec+"."+classes.join(".");}
-	if (evt.shiftKey) Editor(scan);
-	SSC.select(spec,false,true);
-	addClass(document.body,"ssc__TOOLBAR");}
-    SSC.onclick=editor_click;
+	function editor_click(evt){
+	    evt=evt||event;
+	    var selection=window.getSelection();
+	    if ((selection)&&(!(evt.shiftKey))&&
+		((selection.anchorNode!==selection.focusNode)||
+		 (selection.anchorOffset!==selection.focusOffset))) {
+		if (selection.anchorNode===selection.focusNode) {
+		    Editor(selection);}
+		return;}
+	    var target=evt.target||evt.srcElement;
+	    var scan=target;
+	    while (scan) {
+		if (hasClass(scan,"sscapp")) return;
+		else if ((!(evt.ctrlKey))&&
+			 (((target.tagName==="A")&&(target.href))||
+			  (target.onclick)|| (target.tagName==='INPUT')))
+		    return;
+		else if (scan===document.body) break;
+		else scan=scan.parentNode;}
+	    if (!(scan)) return; else scan=target;
+	    while (scan.nodeType!==1) scan=scan.parentNode;
+	    if (!(scan)) return;
+	    if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
+	    var spec=scan.tagName;
+	    if (scan.className) {
+		var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
+		var classes=norm.split(/\s+/);
+		if (classes.length) spec=spec+"."+classes.join(".");}
+	    if (evt.shiftKey) Editor(scan);
+	    SSC.select(spec,false,true);
+	    addClass(document.body,"ssc__TOOLBAR");}
+	SSC.onclick=editor_click;
 
-    function editor_mouseup(evt){
-	evt=evt||event;
-	var sel=window.getSelection();
-	if ((sel)&&
-	    ((sel.anchorNode!==sel.focusNode)||
-	     (sel.anchorOffset!==sel.focusOffset))) {
-	    Editor(window.getSelection());
-	    cancel(evt);}}
+	function editor_mouseup(evt){
+	    evt=evt||event;
+	    var sel=window.getSelection();
+	    if ((sel)&&
+		((sel.anchorNode!==sel.focusNode)||
+		 (sel.anchorOffset!==sel.focusOffset))) {
+		Editor(window.getSelection());
+		cancel(evt);}}
 
-    function save_current(){
-	var content=false;
-	var html=document.querySelector('HTML');
-	var elts=SSC.Utils.tmpid_elts;
-	var saved_ids={}, apps=[], crumbs=[];
-	var matches=document.querySelectorAll('.sscapp');
+	function save_current(){
+	    var content=false;
+	    var html=document.querySelector('HTML');
+	    var elts=SSC.Utils.tmpid_elts;
+	    var saved_ids={}, apps=[], crumbs=[];
+	    var matches=document.querySelectorAll('.sscapp');
 	    var i=0, lim=matches.length; while (i<lim) {
 		apps.push(matches[i++]);}
 	    i=0; while (i<lim) {
@@ -722,59 +863,59 @@ SSC.Editor=(function(){
 		    saved_ids[id]=elt;
 		    elt.id=null;}}
 	    content="<html>\n"+html.innerHTML+"\n</html>";
-	/* Now reset things */
-	i=0, lim=apps.length; while (i<lim) {
-	    var app=apps[i], crumb=crumbs[i]; i++;
-	    crumb.parentNode.replaceChild(app,crumb);}
-	for (var tmpid in saved_ids) {
-	    if (saved_ids.hasOwnProperty(tmpid)) {
-		saved_ids[tmpid].id=tmpid;}}
-	/* Now open the save dialog */
-	if (content) {
-	    var dialog=SSC.Dialog(SSC.Templates.savedialog,
-				  {pubpoint: SSC.pubpoint},
-				  SSC.Inits.savedialog);
-	    var source=bySpec(dialog,"input[NAME='NEWSOURCE']");
-	    source.value=content;
-	    if (SSC.dialog) SSC.Dialog.close(SSC.dialog);
-	    SSC.dialog=dialog;
-	    document.body.appendChild(dialog);
-	    dialog.style.display='block';}}
+	    /* Now reset things */
+	    i=0, lim=apps.length; while (i<lim) {
+		var app=apps[i], crumb=crumbs[i]; i++;
+		crumb.parentNode.replaceChild(app,crumb);}
+	    for (var tmpid in saved_ids) {
+		if (saved_ids.hasOwnProperty(tmpid)) {
+		    saved_ids[tmpid].id=tmpid;}}
+	    /* Now open the save dialog */
+	    if (content) {
+		var dialog=SSC.Dialog(SSC.Templates.savedialog,
+				      {pubpoint: SSC.pubpoint},
+				      SSC.Inits.savedialog);
+		var source=bySpec(dialog,"input[NAME='NEWSOURCE']");
+		source.value=content;
+		if (SSC.dialog) SSC.Dialog.close(SSC.dialog);
+		SSC.dialog=dialog;
+		document.body.appendChild(dialog);
+		dialog.style.display='block';}}
 
-    function initpubpoint(){
-	var pubpoint=false;
-	var head=document.querySelector("HEAD");
-	var links=document.querySelectorAll("link");
-	var i=0, lim=links.length; while (i<lim) {
-	    var link=links[i++];
-	    if (((link.rel==="SSC.pubpoint")||
-		 (link.rel==="SBOOKS.pubpoint")||
-		 (link.rel==="x-pubpoint")||
-		 (link.rel==="pubpoint"))&&
-		(link.href))
-		pubpoint=link.href;}
-	if (pubpoint) SSC.pubpoint=pubpoint;}
-    SSC.prelaunch=initpubpoint;
-    function setupEditor(){
-	addListener(window,"mouseup",editor_mouseup);
-	if (!(SSC.pubpoint)) {
-	    var save_button=byID("SSCEDITSAVEBUTTON");
-	    if (save_button)
-		save_button.parentNode.removeChild(save_button);}}
-    SSC.postlaunch=setupEditor;
+	function initpubpoint(){
+	    var pubpoint=false;
+	    var head=document.querySelector("HEAD");
+	    var links=document.querySelectorAll("link");
+	    var i=0, lim=links.length; while (i<lim) {
+		var link=links[i++];
+		if (((link.rel==="SSC.pubpoint")||
+		     (link.rel==="SBOOKS.pubpoint")||
+		     (link.rel==="x-pubpoint")||
+		     (link.rel==="pubpoint"))&&
+		    (link.href))
+		    pubpoint=link.href;}
+	    if (pubpoint) SSC.pubpoint=pubpoint;}
+	SSC.prelaunch=initpubpoint;
+	function setupEditor(){
+	    addListener(window,"mouseup",editor_mouseup);
+	    if (!(SSC.pubpoint)) {
+		var save_button=byID("SSCEDITSAVEBUTTON");
+		if (save_button)
+		    save_button.parentNode.removeChild(save_button);}}
+	SSC.postlaunch=setupEditor;
 
-    SSC.Inits.toolbar[".reclass:click"]=reclass_selector;
-    SSC.Inits.toolbar[".save:click"]=save_current;
+	SSC.Inits.toolbar[".reclass:click"]=reclass_selector;
+	SSC.Inits.toolbar[".save:click"]=save_current;
 
-    function cancel_save(evt){
-	evt=evt||event;
-	var target=evt.target||evt.srcElement;
-	var dialog=getDialog(target);
-	SSC.Dialog.close(dialog);
-	cancel(evt);}
+	function cancel_save(evt){
+	    evt=evt||event;
+	    var target=evt.target||evt.srcElement;
+	    var dialog=getDialog(target);
+	    SSC.Dialog.close(dialog);
+	    cancel(evt);}
 
-    SSC.Inits.savedialog={
-	"button[VALUE='CANCEL']:click": cancel_save,
-	classname: "sscsavedialog"};
+	SSC.Inits.savedialog={
+	    "button[VALUE='CANCEL']:click": cancel_save,
+	    classname: "sscsavedialog"};
 
-    return Editor;})();
+	return Editor;})();
