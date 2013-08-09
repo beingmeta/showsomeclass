@@ -422,7 +422,7 @@ SSC.Editor=(function(){
     function make_selection_editor(range){
 	var startnode=range.startnode, endnode=range.endnode;
 	var template, inside, init;
-	if ((startnode===endnode)&&((range.endoff-range.startoff)<40)) {
+	if ((startnode===endnode)&&(range.normstring.length<80)) {
 	    inside=getHTML(range);
 	    template=SSC.Templates.textedit;
 	    init=SSC.Inits.textedit;}
@@ -481,13 +481,15 @@ SSC.Editor=(function(){
 	return (!((ws==='normal')||(ws==='nowrap')));}
 
     function safeRange(selection){
+	var normstring=selection.toString().replace(/\s+/g," ");
 	if ((selection.anchorNode===selection.focusNode)||
 	    ((selection.anchorNode.parentNode)===
 	     (selection.focusNode.parentNode)))
 	    return {startnode: selection.anchorNode,
 		    startoff: selection.anchorOffset,
 		    endnode: selection.focusNode,
-		    endoff: selection.focusOffset};
+		    endoff: selection.focusOffset,
+		    normstring: normstring};
 	else {
 	    var start=selection.anchorNode, end=selection.focusNode;
 	    var startoff=selection.anchorOffset, endoff=selection.focusOffset;
@@ -509,7 +511,8 @@ SSC.Editor=(function(){
 		start=end; startoff=endoff;
 		end=tmpnode; endoff=tmpoff;}
 	    return {startnode: start, startoff: startoff,
-		    endnode: end, endoff: endoff};}}
+		    endnode: end, endoff: endoff,
+		    normstring: normstring};}}
 
     /* This should get the HTML for a range, expanding the range if needed. */
     function getHTML(range){
