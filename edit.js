@@ -415,10 +415,22 @@ SSC.Editor=(function(){
 	    textarea.value=getHTML(range);}
 	return dialog;}
 
+    function preserveSpace(node){
+	while (node) {
+	    if (node.nodeType===1) break;
+	    else node=node.parentNode;}
+	if (!(node)) return true;
+	var style=window.getComputedStyle(node);
+	var ws=style.whiteSpace;
+	return (!((ws==='normal')||(ws==='nowrap')));}
+
     /* This should get the HTML for a range, expanding the range if needed. */
     function getHTML(range){
-	if (range.startnode===range.endnode)
-	    return range.startnode.nodeValue.slice(range.startoff,range.endoff);
+	if (range.startnode===range.endnode) {
+	    var text=range.startnode.nodeValue.slice(range.startoff,range.endoff);
+	    if (!(preserveSpace(range.startnode)))
+		return text.replace(/\s+/g,' ');
+	    else return text;}
 	/* Find the common parent and include all the nodes enclosing the selection. */
 	else return "";}
 
