@@ -1,7 +1,7 @@
 /* Edit element */
 
 div.ssceditelement, div.ssceditcontent {
-    right: 10%; bottom: 10%; left: auto; top: auto;
+    right: 10%; top: 20%; left: auto; max-height: 60%;
     padding-bottom: 1em;}
 div.ssceditelement {
     min-width: 30em; max-width: 75%;}
