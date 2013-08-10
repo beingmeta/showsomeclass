@@ -800,9 +800,12 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	    SSC.focus(scan);
 	    return;}
 	var spec=scan.tagName;
-	if (scan.className) {
+	if ((scan.className)&&(scan.className.length)) {
 	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
 	    var classes=norm.split(/\s+/);
+	    if ((classes.length===1)&&
+		(classes[0].length===0))
+		classes=[];
 	    if (classes.length) spec=spec+"."+classes.join(".");}
 	SSC.select(spec,true);}
     SSC.window_click=window_click;

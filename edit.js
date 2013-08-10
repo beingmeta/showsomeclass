@@ -60,6 +60,14 @@ SSC.Editor=(function(){
 	    return results;}
 	else return [];}
 
+    function close_editor(){
+	if (SSC.Editor.dialog) {
+	    SSC.Dialog.close(SSC.Editor.dialog);
+	    SSC.Editor.dialog=false;}
+	SSC.Editor.node=false;
+	SSC.Editor.base=false;
+	SSC.Editor.selection=false;}
+
     /* Adjusting nodes to match a new selector. */
 
     // Note that we don't do attributes yet 
@@ -201,7 +209,8 @@ SSC.Editor=(function(){
     function ee_specinput(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
-	if (kc===RETURN) {
+	if (kc===ESCAPE) {close_editor(); return;}
+	else if (kc===RETURN) {
 	    var target=evt.target||evt.srcElement;
 	    if ((target)&&(target.value)) {
 		var node=adjustNode(SSC.Editor.node,target.value);
@@ -229,7 +238,8 @@ SSC.Editor=(function(){
     function ee_styleinput(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
-	if (kc===RETURN) {
+	if (kc===ESCAPE) {close_editor(); return;}
+	else if (kc===RETURN) {
 	    var target=evt.target||evt.srcElement;
 	    if (!(target)) {cancel(evt); return;}
 	    var newstyle=target.value.trim();
@@ -290,7 +300,8 @@ SSC.Editor=(function(){
     function ee_attrib(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
-	if (kc===RETURN) {
+	if (kc===ESCAPE) {close_editor(); return;}
+	else if (kc===RETURN) {
 	    var target=evt.target||evt.srcElement;
 	    var node=SSC.Editor.node;
 	    var name=target.name;
@@ -409,7 +420,8 @@ SSC.Editor=(function(){
     function rc_keydown(evt){
 	evt=evt||event;
 	var kc=evt.keyCode;
-	if (kc===RETURN) {cancel(evt); rc_done(evt);}}
+	if (kc===ESCAPE) {close_editor(); return;}
+	else if (kc===RETURN) {cancel(evt); rc_done(evt);}}
 
     SSC.Inits.reclass={
 	classname: "sscreclass",
@@ -436,7 +448,6 @@ SSC.Editor=(function(){
 			       mergespec:(mergespec||"")},
 			      init);
 	if (startnode!==endnode) addClass(dialog,"sschtml");
-	
 	if (!(inside)) {
 	    addClass(dialog,"sscbigtext");
 	    var textarea=bySpec(dialog,'TEXTAREA');
@@ -566,12 +577,19 @@ SSC.Editor=(function(){
 
     function es_simple_replace(range,edited,tagname,classname){
 	var oldnode=range.startnode;
+	var parent=oldnode.parentNode;
 	var oldtext=oldnode.nodeValue;
-	var newtext=
-	    oldtext.slice(0,range.startoff)+textinput.value+
-	    oldtext.slice(range.endoff);
-	var newnode=((tagname)?(make(tagname,classname,edited)):make_text(edited));
-	oldnode.parentNode.replaceChild(newnode,oldnode);
+	var before=oldtext.slice(0,range.startoff);
+	var after=oldtext.slice(range.endoff);
+	if (tagname) {
+	    var frag=document.createDocumentFragment();
+	    frag.appendChild(make_text(before));
+	    frag.appendChild(make(tagname,classname,edited));
+	    frag.appendChild(make_text(after));
+	    parent.replaceChild(frag,oldnode);}
+	else {
+	    var newtext=make_text(before+edited+after);
+	    oldnode.parentNode.replaceChild(newtext,oldnode);}
 	SSC.Editor.selection=false;
 	SSC.Dialog.close(SSC.Editor.dialog);
 	SSC.Editor.dialog=false;}
@@ -720,7 +738,9 @@ SSC.Editor=(function(){
 	SSC.Dialog.close(dialog);}
 
 	function es_keydown(evt){
-	    var kc=evt.keyCode; if (kc===RETURN) return es_done(evt);}
+	    var kc=evt.keyCode;
+	    if (kc===ESCAPE) {close_editor(); return;}
+	    else if (kc===RETURN) return es_done(evt);}
 	function es_cancel(evt){
 	    evt=evt||event; var target=evt.target||evt.srcElement;
 	    var dialog=getDialog(target);
@@ -733,7 +753,7 @@ SSC.Editor=(function(){
 	    else if (hasClass(dialog,"sscwrap"))
 		dropClass(dialog,"sscwrap");
 	    else {
-		var input=bySpec(dialog,"input[name='WRAPPER']");
+		var input=bySpec(dialog,"input[name='WRAPSPEC']");
 		dropClass(dialog,"sscmerge");
 		addClass(dialog,"sscwrap");
 		if (input) input.focus();}
@@ -837,38 +857,41 @@ SSC.Editor=(function(){
 	// App state related fields
 	Editor.node=false; Editor.base=false; Editor.dialog=false;
 
-	function editor_click(evt){
-	    evt=evt||event;
-	    var selection=window.getSelection();
-	    if ((selection)&&(!(evt.shiftKey))&&
-		((selection.anchorNode!==selection.focusNode)||
-		 (selection.anchorOffset!==selection.focusOffset))) {
-		if (selection.anchorNode===selection.focusNode) {
-		    Editor(selection);}
-		return;}
-	    var target=evt.target||evt.srcElement;
-	    var scan=target;
-	    while (scan) {
-		if (hasClass(scan,"sscapp")) return;
-		else if ((!(evt.ctrlKey))&&
-			 (((target.tagName==="A")&&(target.href))||
-			  (target.onclick)|| (target.tagName==='INPUT')))
-		    return;
-		else if (scan===document.body) break;
-		else scan=scan.parentNode;}
-	    if (!(scan)) return; else scan=target;
-	    while (scan.nodeType!==1) scan=scan.parentNode;
-	    if (!(scan)) return;
-	    if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
-	    var spec=scan.tagName;
-	    if (scan.className) {
-		var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
-		var classes=norm.split(/\s+/);
-		if (classes.length) spec=spec+"."+classes.join(".");}
-	    if (evt.shiftKey) Editor(scan);
-	    SSC.select(spec,false,true);
-	    addClass(document.body,"ssc__TOOLBAR");}
-	SSC.onclick=editor_click;
+    function editor_click(evt){
+	evt=evt||event;
+	var selection=window.getSelection();
+	if ((selection)&&(!(evt.shiftKey))&&
+	    ((selection.anchorNode!==selection.focusNode)||
+	     (selection.anchorOffset!==selection.focusOffset))) {
+	    if (selection.anchorNode===selection.focusNode) {
+		Editor(selection);}
+	    return;}
+	var target=evt.target||evt.srcElement;
+	var scan=target;
+	while (scan) {
+	    if (hasClass(scan,"sscapp")) return;
+	    else if ((!(evt.ctrlKey))&&
+		     (((target.tagName==="A")&&(target.href))||
+		      (target.onclick)|| (target.tagName==='INPUT')))
+		return;
+	    else if (scan===document.body) break;
+	    else scan=scan.parentNode;}
+	if (!(scan)) return; else scan=target;
+	while (scan.nodeType!==1) scan=scan.parentNode;
+	if (!(scan)) return;
+	if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
+	var spec=scan.tagName;
+	if ((scan.className)&&(scan.className.length)) {
+	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
+	    var classes=norm.split(/\s+/);
+	    if ((classes.length===1)&&
+		(classes[0].length===0))
+		classes=[];
+	    if (classes.length) spec=spec+"."+classes.join(".");}
+	if (evt.shiftKey) Editor(scan);
+	SSC.select(spec,false,true);
+	addClass(document.body,"ssc__TOOLBAR");}
+    SSC.onclick=editor_click;
 
 	function editor_mouseup(evt){
 	    evt=evt||event;

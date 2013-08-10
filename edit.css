@@ -16,7 +16,7 @@ div.ssceditelement {
 div.ssceditelement .button.image, div.ssceditelement button.image {
     width: 1em; height: 1em; float: right;}
 
-div.ssceditelement div.sscsignature, div.ssceditelement div.buttons {
+div.ssceditelement div.sscsignature {
     margin-right: 2.2em; clear: left; width: auto;}
 
 div.ssceditelement .button.contract, div.ssceditelement button.contract {
