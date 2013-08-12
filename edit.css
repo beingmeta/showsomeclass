@@ -4,7 +4,7 @@ div.sscdialog div.sscsignature input[TYPE="TEXT"] {
 div.sscdialog div.row {
     font-size: 150%; height: 1.2em;}
 div.sscdialog div.buttons {
-    font-size: 150%; min-height: 1.2em;}
+    font-size: 150%; }
 
 /* Edit element */
 
@@ -79,7 +79,7 @@ div.ssceditcontent div.buttons .button {
 /* Reclass dialog */
 
 div.sscreclass {
-    min-width: 25em; max-width: 50%;
+    min-width: 20em; max-width: 80%;
     right: 10%; top: 15%;}
 div.sscreclass div.title {
     text-align: left; margin-right: 2em;}

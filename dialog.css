@@ -33,6 +33,7 @@ div.sscdialog > input[TYPE="TEXT"],  div.sscdialog select,
 div.sscdialog textarea, div.sscdialog div.buttons,
 div.sscdialog div.row {
     width: 100%; display: block; clear: both;}
+div.sscdialog div.buttons select { width: auto; clear: none;}
 div.sscdialog table { width: 100%; clear: both; color: ivory;}
 div.sscdialog table th { text-align: right;}
 div.sscdialog table td { text-align: left;}

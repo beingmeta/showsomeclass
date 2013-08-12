@@ -22,7 +22,7 @@
 
 var SSC=(function(){
 
-    var imgroot='https://static.sbooks.net/showsomeclass';
+    var imgroot="https://static.sbooks.net/showsomeclass/g";
     var Utils={};
 
     /* Event functions */
@@ -64,7 +64,10 @@ var SSC=(function(){
     var ESCAPE=Utils.ESCAPE=0x1b;
     var PLUS=Utils.PLUS=187;
     var MINUS=Utils.MINUS=189;
-    
+    var HKEY=Utils.HKEY=0x48;
+    var QMARK=Utils.QMARK=191;
+    var ASTERISK=Utils.ASTERISK=56;
+        
     /* DOM utilities */
 
     function byID(id){return document.getElementById(id);}
@@ -606,6 +609,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
     var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
     var RETURN=SSC.Utils.RETURN, ESCAPE=SSC.Utils.ESCAPE, TAB=SSC.Utils.TAB;
     var OPENBRACE=SSC.Utils.OPENBRACE, CLOSEBRACE=SSC.Utils.CLOSEBRACE;
+    var QMARK=SSC.Utils.QMARK;
+    var imgroot=SSC.imgroot;
 
     var $=SSC.$;
 
@@ -735,13 +740,15 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 
     /* Window event handlers */
 
-    var usekeys=[TAB,ESCAPE,RETURN,OPENBRACE];
+    var usekeys=[TAB,ESCAPE,RETURN,OPENBRACE,QMARK];
+    var commands=SSC.commands={};
 
     function window_keydown(evt){
 	evt=evt||event;
 	var key=evt.keyCode;
 	var target=evt.target||evt.srcElement;
-	if (usekeys.indexOf(key)<0) return;
+	if ((usekeys.indexOf(key)<0)&&(!(commands[key])))
+	    return;
 	if ((evt.ctrlKey)||(evt.metaKey)||(evt.altKey)||(evt.altGraphKey))
 	    return;
 	if ((target)&&
@@ -774,6 +781,9 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	    if (evt.shiftKey) {
 		var input=byID("SSCINPUT");
 		if (input) input.focus();}}
+	else if (key===QMARK) toggleHelp();
+	else if (commands[key]) {
+	    (commands[key])(evt);}
 	else return;
 	cancel(evt);}
     SSC.window_keydown=window_keydown;
@@ -810,16 +820,30 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	SSC.select(spec,true);}
     SSC.window_click=window_click;
     
+    function toggleHelp(){
+	if (hasClass(document.body,"ssc_SHOWHELP"))
+	    dropClass(document.body,"ssc_SHOWHELP");
+	else addClass(document.body,"ssc_SHOWHELP");}
+    SSC.toggleHelp=toggleHelp;
+
     SSC.Inits.toolbar={
 	id: "SSCTOOLBAR",
 	"input:keydown": sscinput_keydown,
 	"input:focus": sscinput_focus,
 	"input:blur": sscinput_blur,
 	"select:change": selector_selected,
+	".help:click": toggleHelp,
 	".hide:click": hideToolbar,
 	".showrules:click": toggleStyleInfo,
 	".scanup:click": scan_backward,
 	".scandown:click": scan_forward};
+
+    function setupHelp(){
+	var elt=make("div","sscapp sschelp",
+		     SSC.Templates.helptext||SSC.Templates.sschelp,
+		     {id: "SSCHELP",click: toggleHelp,
+		      imgroot: imgroot});
+	document.body.appendChild(elt);}
 
     // Referencing SSC.nodeclick let's it be overriden by apps using SSC
     function loadSSC(){
@@ -830,6 +854,7 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 		setTimeout(loadSSC,50);},50);
 	    return;}
 	setupToolbar();
+	setupHelp();
 	var hash=(location)&&(location.hash);
 	if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
 	if (SSC.hasOwnProperty("onclick"))
