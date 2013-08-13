@@ -6,6 +6,8 @@ body.haveSVG img.notsvg { display: none;}
 
 img.inline { max-height: 1em; width: auto; vertical-align: baseline; }
 
+img { max-width: 100%; height: auto;}
+
 /* Make spans more visible */
 
 body.cxSSC span:hover {text-decoration: overline;}
@@ -21,9 +23,9 @@ body.cxSSC button.image {
 
 /* Selective display of selected elements */
 
-body.cxSSC *, body.cxSSC > * {opacity: 0.50 !important;}
+body.cxSSC *, body.cxSSC > * {opacity: 0.75 !important;}
 body.cxSSC > .sscWRAPPER { opacity: 1.0 !important; }
-body.cxSSC .sscWRAPPER > * { opacity: 0.50 !important;}
+body.cxSSC .sscWRAPPER > * { opacity: 0.75 !important;}
 body.cxSSC .sscWRAPPER > .sscWRAPPER,
 body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
@@ -57,7 +59,7 @@ div#SSCTAPZONE {
     position: fixed; top: 0px; left: 0px; right: 0px; height: 2em;
     opacity: 0.0;}
 
-div.ssctoolbar img { max-height: 100%; width: auto;}
+div.ssctoolbar img { max-height: 1.5em; width: auto;}
 
 div.ssctoolbar button {
   border: 0px; padding: 0px; margin: 0px;}
@@ -76,10 +78,10 @@ div.ssctoolbar div.combobox select:focus { display: block;}
 div#SSCTOOLBAR #SSCTOOLBARBUTTONS { float: right; padding-right: 1ex;}
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     padding-left: 0.5ex; text-align: left; font-size: 90%;}
-div#SSCTOOLBAR button, div#SSCTOOLBAR .button { max-height: 100%;}
+div#SSCTOOLBAR button, div#SSCTOOLBAR .button { max-height: 1.5em;}
 div#SSCTOOLBAR button img, div#SSCTOOLBAR .button img {
     background-color: transparent;
-    height: 90%; width: auto; padding-top: 3px; padding-bottom: 1px;}
+    height: 1.4em; width: auto; padding-top: 3px; padding-bottom: 1px;}
 div#SSCTOOLBAR .button.scanup img,
 div#SSCTOOLBAR button.scanup img {
     padding-top: 1px; padding-bottom: 3px;}

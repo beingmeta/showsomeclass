@@ -66,7 +66,8 @@ SSC.Editor=(function(){
 	    SSC.Editor.dialog=false;}
 	SSC.Editor.node=false;
 	SSC.Editor.base=false;
-	SSC.Editor.selection=false;}
+	SSC.Editor.selection=false;
+	SSC.Editor.selected=false;}
 
     /* Adjusting nodes to match a new selector. */
 
@@ -594,6 +595,7 @@ SSC.Editor=(function(){
 	    var newtext=make_text(before+edited+after);
 	    oldnode.parentNode.replaceChild(newtext,oldnode);}
 	SSC.Editor.selection=false;
+	SSC.Editor.selected=false;
 	SSC.Dialog.close(SSC.Editor.dialog);
 	SSC.Editor.dialog=false;}
 
@@ -738,6 +740,7 @@ SSC.Editor=(function(){
 		(insert_after.nextSibling.nodeType===3))
 		text_merge(insert_after,insert_after.nextSibling,node);}
 	SSC.Editor.selection=false;
+	SSC.Editor.selected=false;
 	SSC.Dialog.close(dialog);}
 
     function es_keydown(evt){
@@ -827,6 +830,7 @@ SSC.Editor=(function(){
 	    return;}
 	set_editnode(false);
 	SSC.Editor.selection=false;
+	SSC.Editor.selected=false;
 	var current_dialog=SSC.Editor.dialog;
 	if (current_dialog) {
 	    SSC.Editor.dialog=false;
@@ -840,8 +844,11 @@ SSC.Editor=(function(){
 	    if (range.startnode===range.endnode)
 		SSC.Editor.node=range.startnode;
 	    else SSC.Editor.node=range.startnode.parentNode;
+	    SSC.Editor.selected=(new Date()).getTime();
 	    SSC.Editor.dialog=dialog=make_selection_editor(range);}
-	else SSC.Editor.selection=false;
+	else {
+	    SSC.Editor.selection=false;
+	    SSC.Editor.selected=false;}
 	if (!(dialog)) {
 	    if (node)
 		SSC.Editor.dialog=dialog=makeEditElementDialog(
@@ -862,8 +869,13 @@ SSC.Editor=(function(){
 
     function editor_click(evt){
 	evt=evt||event;
+	if ((SSC.Editor.selection)&&(SSC.Editor.selected)) {
+	    var now=(new Date()).getTime();
+	    if ((now-SSC.Editor.selected)<1000) {
+		cancel(evt);
+		return;}}
 	var selection=window.getSelection();
-	if ((selection)&&(!(evt.shiftKey))&&
+	if ((selection)&&
 	    ((selection.anchorNode!==selection.focusNode)||
 	     (selection.anchorOffset!==selection.focusOffset))) {
 	    if (selection.anchorNode===selection.focusNode) {
@@ -882,8 +894,10 @@ SSC.Editor=(function(){
 	if (!(scan)) return; else scan=target;
 	while (scan.nodeType!==1) scan=scan.parentNode;
 	if (!(scan)) return;
-	if (hasClass(scan,"sscSELECTED")) {
-	    SSC.focus(scan); Editor(scan);}
+	if (hasClass(scan,"sscFOCUS")) {
+	    addClass(document.body,"ssc__TOOLBAR");
+	    Editor(scan);
+	    return;}
 	var spec=scan.tagName;
 	if ((scan.className)&&(scan.className.length)) {
 	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();

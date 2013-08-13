@@ -23,15 +23,14 @@ div.ssceditelement .button.contract, div.ssceditelement button.contract {
     display: none;}
 
 div.ssceditelement div.buttons {
-    text-align: right; padding-bottom: 1ex;}
+    text-align: left; padding-bottom: 1ex;}
 div.ssceditelement div.buttons button {
-    font-size: 16px;
+    font-size: 16px; float: right;
     margin-left: 0.5ex; margin-right: 0px;
-    margin-bottom: 0.5ex;
-    float: right;}
+    margin-bottom: 0.5ex;}
 
 div.ssceditelement span.sscdomnav {
-    float: left; width: auto; white-space: nowrap;
+    width: auto; white-space: nowrap;
     vertical-align: middle;
     font-size: 50%;}
 div.ssceditelement span.sscdomnav select.sscrelated {
@@ -114,12 +113,12 @@ div.ssctextedit.sscbigtext {
     height: 50%; width: 70%;
     font-size: 150%;}
 
-div.ssctextedit div.sscselection { margin-right: 3.5em;}
+div.ssctextedit div.sscselection { margin-right: 4.5em;}
 div.ssctextedit div.sscselection { text-align: left; }
 div.ssctextedit div.sscselection input[TYPE='TEXT'] {
     font-size: 40%; width: 100%;}
 
-div.ssctextedit div.toprow { min-height: 1.2em;}
+div.ssctextedit div.toprow { min-height: 1.4em;}
 
 div.ssctextedit input[TYPE="TEXT"] { font-size: 50%;}
 div.sscdialog.ssctextedit textarea {
@@ -132,7 +131,7 @@ div.ssctextedit .button, div.ssctextedit button {
     float: right; vertical-align: top;
     padding-top: 0px;}
 div.ssctextedit .button.image, div.ssctextedit button.image {
-    width: 1em; height: 1em;}
+    width: 1.4em; height: 1.4em;}
 
 div.ssctextedit .ssctextwrap { display: none;}
 div.ssctextedit.sscwrap .ssctextwrap {
