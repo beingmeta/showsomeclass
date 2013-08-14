@@ -136,6 +136,30 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 .sscapp .button img, .sscapp button img {
     height: 90%; width: auto; vertical-align: top;}
 
+/* Marker classes */
+
+.sscmarker {
+    font-size: 50%; text-align: center;
+    background-color: light gray;
+    border: 0px;}
+.sscmarker.sscforcebreakbefore {
+    border-bottom: dashed green 3px; margin-top: 3px;}
+.sscmarker.sscforcebreakafter {
+    border-top: dashed green 3px; margin-bottom: 3px;}
+.sscmarker.sscavoidbreakbefore {
+    border-bottom: dashed red 3px; margin-top: 3px;}
+.sscmarker.sscavoidbreakafter {
+    border-top: dashed red 3px;  margin-bottom: 3px;}
+.sscmarker.sscavoidbreakinsidebefore {
+    border: dashed purple 3px; margin-top: 3px;
+    border-bottom: 0px;}
+.sscmarker.sscavoidbreakinsideafter {
+    border: dashed purple 3px; margin-bottom: 3px;
+    border-top: 0px;}
+
+.sbookfullpage {
+    border: solid gray 5px;}
+
 /* Help classes */
 
 .sschelp { }
@@ -176,4 +200,10 @@ div#SSCHELP p {
 
 body.ssc_SHOWHELP div#SSCHELP {
     display: block;}
+
+.forcebreakbefore:before {
+    display: block; width: 100%;
+    height: 2px; border-top: green dashed 4px;
+    content: "";}
+
 

@@ -559,6 +559,88 @@ SSC.getStyleInfo=(function(){
 
     return getStyleInfo;})();
 
+(function(){
+    var markers={};
+    var getID=SSC.Utils.getID;
+    var make=SSC.Utils.make;
+    var addListener=SSC.Utils.addListener;
+    
+    function addMarker(node,marker,after){
+	var id=getID(node);
+	var current=markers[id];
+	if (current) current.push(marker);
+	else markers[id]=[marker];
+	marker.setAttribute("forid",id);
+	marker.id=id+"_"+((after)?("AFTER"):("BEFORE"));
+	var parent=node.parentNode;
+	if (after) {
+	    if (node.nextSibling)
+		parent.insertBefore(marker,node.nextSibling);
+	    else parent.appendChild(marker);}
+	else parent.insertBefore(marker,node);}
+    
+    function clearMarkers(node){
+	var id=getID(node);
+	var current=markers[id];
+	if (current) {
+	    var i=0, lim=current.length;
+	    while (i<lim) {
+		var marker=current[i++];
+		var parent=marker.parentNode;
+		parent.removeChild(marker);}
+	    markers[id]=[];}}
+
+    function marker(classname,text){
+	var m=make("div","sscmarker "+classname,text);
+	m.title=text;
+	return m;}
+
+    function addMarkers(node){
+	clearMarkers(node);
+	var style=window.getComputedStyle(node);
+	if (style.pageBreakBefore==='always') {
+	    addMarker(node,marker("sscforcebreakbefore","force break before"));}
+	if (style.pageBreakBefore==='avoid') {
+	    addMarker(node,marker("sscavoidbreakbefore","avoid break before"));}
+	if (style.pageBreakAfter==='always') {
+	    addMarker(node,marker("sscforcebreakafter","force break after"),
+		     true);}
+	if ((style.pageBreakAfter==='avoid')||
+	    (node.tagName.search(/h\d$/i)===0)){
+	    addMarker(node,marker("sscavoidbreakafter","avoid break after"),
+		      true);}
+	if (style.pageBreakInside==='avoid') {
+	    addMarker(node,marker("sscavoidbreakinsideafter",
+				  "avoid break inside"),
+		      true);
+	    addMarker(node,marker("sscavoidbreakinsidebefore",
+				  "avoid break inside"));}}
+    SSC.addMarkers=addMarkers;
+    
+    function gatherAllElements(root,into){
+	if (root.nodeType!==1) return;
+	var classname=root.className;
+	if (classname.search(/(sscapp|sscmarker)/gi)>=0)
+	    return;
+	into.push(root);
+	if ((root.childNodes)&&(root.childNodes.length)) {
+	    var children=root.childNodes;
+	    var i=0, lim=children.length; while (i<lim) {
+		var child=children[i++];
+		if (child.nodeType===1) gatherAllElements(child,into);}}}
+
+    function addAllMarkers(){
+	var elements=[]; gatherAllElements(document.body,elements);
+	var i=0, lim=elements.length;
+	function step(){
+	    var started=(new Date()).getTime();
+	    while ((i<lim)&&((((new Date()).getTime())-started)<100)) 
+		addMarkers(elements[i++]);
+	    if (i<lim) setTimeout(step,50);}
+	step();}
+		
+    addListener(window,"load",addAllMarkers);})();
+
 SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
     <span class=\"button image scandown\" \
       title=\"Go to the next selected element\"> \
