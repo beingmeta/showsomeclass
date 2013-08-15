@@ -678,6 +678,11 @@ SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
     <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\" \
 	 alt=\"Markers\"/> \
   </button> \
+  <button class=\"image help\" id=\"SSCHELPBUTTON\" \
+	  title=\"Show help\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/help.svgz\" alt=\"Help\"/> \
+    <img class=\"notsvg\" src=\"{{imgroot}}/help100x100.png\" alt=\"Help\"/> \
+  </span> \
   <button class=\"image hide\"> \
     <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
 	 title=\"Hide this toolbar\" \
