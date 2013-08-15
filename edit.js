@@ -782,7 +782,8 @@ SSC.Editor=(function(){
 	"button.ok:click": es_done,
 	"button.wrap:click": es_wrap_click,
 	"button.close:click": SSC.Dialog.close,
-	"input[type='TEXT']:keydown": es_keydown};
+	"input[type='TEXT']:keydown": es_keydown,
+	"textarea:keydown": es_keydown};
     SSC.Inits.bigtextedit={
 	classname: "ssctextedit",
 	"button.ok:click": es_done,
