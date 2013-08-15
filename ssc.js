@@ -394,6 +394,14 @@ var SSC=(function(){
 	if (lim) SSC.focus(nodes[0]);
     	window.location.hash="#"+spec;}
 
+    function getOffsetTop(node){
+	var off=0; var scan=node;
+	while (scan) {
+	    if (scan.nodeType===1) {
+		off=off+scan.offsetTop;}
+	    scan=scan.offsetParent;}
+	return off;}
+
     /* The FOCUS is used for moving back and forth through the
        selected nodes. */
     function setFocus(node,index){
@@ -404,17 +412,18 @@ var SSC=(function(){
 	if (node) addClass(node,"sscFOCUS");
 	focus=node; focus_index=index;
 	if (!(focus)) {}
-	else if (focus.scrollIntoViewIfNeeded) {
-	    var offset=((window.innerHeight>400)?(-200):
-			(window.innerHeight>200)?(-100):(-50));
-	    var current=window.scrollY;
-	    focus.scrollIntoViewIfNeeded();}
-	else if (focus.scrollIntoView) {
-	    var offset=((window.innerHeight>400)?(-200):
-			(window.innerHeight>200)?(-100):(-50));
-	    focus.scrollIntoView();
-	    if (window.scrollBy) window.scrollBy(0,offset);}
-	else {}}
+	else {
+	    var node_top=getOffsetTop(focus);
+	    var node_height=focus.offsetHeight;
+	    var scroll_top=window.scrollY;
+	    var scroll_height=window.innerHeight;
+	    if ((node_top<(scroll_top+100))||
+		(node_top>(scroll_top+scroll_height)))
+		window.scrollTo(0,node_top-100);
+	    else if (((node_top+node_height)>(scroll_top+scroll_height))&&
+		     (node_height<(scroll_height-150))) 
+		window.scrollTo(0,(node_top-scroll_height+150)+node_height);
+	    else {}}}
     function focusfn(node){
 	var index=false;
 	if (typeof node === "undefined") return focus;
