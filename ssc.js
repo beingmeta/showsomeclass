@@ -650,47 +650,92 @@ SSC.getStyleInfo=(function(){
 		
     addListener(window,"load",addAllMarkers);})();
 
-SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
-    <span class=\"button image scandown\" \
-      title=\"Go to the next selected element\"> \
-      <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Rules\"/> \
-	<img class=\"notsvg\" \
-	  src=\"{{imgroot}}/downarrow_white100x100.png\" alt=\"Rules\"/> \
-    </span> \
-    <span class=\"button image scanup\" \
-      title=\"Go to the previous selected element\"> \
-      <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Rules\"/> \
-	<img class=\"notsvg\" \
-	  src=\"{{imgroot}}/uparrow_white100x100.png\" alt=\"Rules\"/> \
-    </span> \
-    <span class=\"button image showrules\"> \
-      <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\" \
-	title=\"Show some of the CSS style rules for this selector\" \
-	alt=\"Rules\"/> \
-	<img class=\"notsvg\" \
-	  src=\"{{imgroot}}/stylebraces100x100.png\" \
-	  title=\"Show some of the CSS style rules for this selector\" \
-	  alt=\"Rules\"/> \
-    </span> \
-    <span class=\"button image hide\"> \
-      <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
-	title=\"Hide this toolbar\" \
-	alt=\"Hide\"/> \
-	<img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" \
-	  alt=\"Hide\"/> \
-    </span> \
-  </div> \
-  <div class=\"combobox\"> \
-    <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\" \
-      placeholder=\"a CSS selector\"/> \
-      <select id=\"SSCDROPBOX\" class=\"dropbox\"></select> \
-  </div> \
-  <span class=\"text\" id=\"SSCMATCHPHRASE\"> \
-    <span id=\"SSCMATCHCOUNT\">some</span> \
-    matches, at \
-    #<span id=\"SSCMATCHINDEX\">#</span> \
+SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
+  <button class=\"image scanup\" \
+	title=\"Go to the previous selected element\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Rules\"/> \
+    <img class=\"notsvg\" \
+	 src=\"{{imgroot}}/uparrow_white100h.png\" alt=\"Rules\"/> \
   </span> \
-  <div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div> \
+  <button class=\"image scandown\" \
+	title=\"Go to the next selected element\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Rules\"/> \
+    <img class=\"notsvg\" \
+	 src=\"{{imgroot}}/downarrow_white100h.png\" alt=\"Rules\"/> \
+  </span> \
+  <button class=\"image showrules\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\" \
+	 title=\"Show some of the CSS style rules for this selector\" \
+	 alt=\"Rules\"/> \
+    <img class=\"notsvg\" \
+	 src=\"{{imgroot}}/stylebraces100x100.png\" \
+	 title=\"Show some of the CSS style rules for this selector\" \
+	 alt=\"Rules\"/> \
+  </span> \
+  <button class=\"image markers\" \
+	  title=\"Show/hide markup markers\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/eye_ondark.svgz\" alt=\"Markers\"/> \
+    <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\" \
+	 alt=\"Markers\"/> \
+  </button> \
+  <button class=\"image hide\"> \
+    <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
+	 title=\"Hide this toolbar\" \
+	 alt=\"Hide\"/> \
+    <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" \
+	 alt=\"Hide\"/> \
+  </span> \
+</div> \
+<div class=\"combobox\"> \
+  <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\" \
+	 placeholder=\"a CSS selector\"/> \
+  <select id=\"SSCDROPBOX\" class=\"dropbox\"></select> \
+</div> \
+<span class=\"text\" id=\"SSCMATCHPHRASE\"> \
+  <span id=\"SSCMATCHCOUNT\">some</span> \
+  matches, at \
+  #<span id=\"SSCMATCHINDEX\">#</span> \
+</span> \
+<div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div> \
+";
+
+SSC.Templates.sschelp="<button class=\"image close\"> \
+  <img src=\"{{imgroot}}/redx.svgz\" class=\"svg\"/> \
+  <img src=\"{{imgroot}}/redx100x100.png\" class=\"notsvg\"/> \
+</button> \
+<p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS \
+ classes are applied and used in a document.</p> \
+ \
+<p>The <dfn>current selector</dfn> is displayed (and can be changed) \
+  in the text input box on the left side of the toolbar at the top of \
+  the screen.</p> \
+<p><dfn>Matching elements</dfn> are highlighted and all surrounding \
+  text is faded.</p> \
+ \
+<p>The <dfn>selector</dfn> can be any CSS selector \
+  (e.g <samp>P.class</samp>), optionally followed by a regular \
+  expression (e.g. <samp>/pattern/</samp>) matched against element \
+  content.</p> \
+<p><strong>Open the toolbar</strong> with the <kbd>Enter</kbd> key \
+  or by clicking (tapping) at the top of the screen.</p> \
+<p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or \
+ the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/> \
+ <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/> \
+ icon.</p> \
+<p><strong>Move among matched elements</strong> with \
+  the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow ( \
+  <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/> \
+  <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/> \
+  <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/> \
+  <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext \
+  notsvg\"/>) icons.</p> \
+<p><strong>See <em>(some)</em> style rules</strong> with \
+  the <kbd>S</kbd> key or the <img src=\"{{imgroot}}/stylebraces.svgz\" \
+  class=\"intext svg\"/> <img src=\"{{imgroot}}/stylebraces100x100.png\" \
+  class=\"intext notsvg\"/> icon.</p> \
+<p><strong>Click an element on the screen</strong> to set the \
+  <em>current selector</em> from its tag and classes.</p> \
+ \
 ";
 
 (function(){
