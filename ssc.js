@@ -618,8 +618,7 @@ SSC.getStyleInfo=(function(){
 	    addMarkerBefore(node,"sscavoidbreakbefore","avoid break before");}
 	if (style.pageBreakAfter==='always') {
 	    addMarkerAfter(node,"sscforcebreakafter","force break after");}
-	if ((style.pageBreakAfter==='avoid')||
-	    (node.tagName.search(/h\d$/i)===0)) {
+	if (style.pageBreakAfter==='avoid') {
 	    addMarkerAfter(node,"sscavoidbreakafter","avoid break after");}
 	if (style.pageBreakInside==='avoid') {
 	    addMarkerAfter(node,"sscavoidbreakinsideafter","avoid break inside");
