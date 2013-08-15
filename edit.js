@@ -885,6 +885,7 @@ SSC.Editor=(function(){
 	var scan=target;
 	while (scan) {
 	    if (hasClass(scan,"sscapp")) return;
+	    else if (hasClass(scan,"sscmarker")) return;
 	    else if ((!(evt.ctrlKey))&&
 		     (((target.tagName==="A")&&(target.href))||
 		      (target.onclick)|| (target.tagName==='INPUT')))

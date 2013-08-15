@@ -940,6 +940,7 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
 	var scan=target;
 	while (scan) {
 	    if (hasClass(scan,"sscapp")) return;
+	    else if (hasClass(scan,"sscmarker")) return;
 	    else if ((target.tagName==="A")&&(target.href)) return;
 	    else if (scan===document.body) break;
 	    else scan=scan.parentNode;}
