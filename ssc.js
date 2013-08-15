@@ -366,7 +366,9 @@ var SSC=(function(){
 	if (count) count.innerHTML=""+nodes.length;
 	if (styleinfo) {
 	    var rules=SSC.getStyleInfo(spec);
-	    styleinfo.innerHTML="";
+	    if (rules.length===0)
+		styleinfo.innerHTML="No matching rules found";
+	    else styleinfo.innerHTML="";
 	    var r=0, n_rules=rules.length;
 	    while (r<n_rules) {
 		var rule=rules[r++]; var p=make("p"); var body=rule.indexOf('{');
@@ -564,6 +566,7 @@ SSC.getStyleInfo=(function(){
     var getID=SSC.Utils.getID;
     var make=SSC.Utils.make;
     var addListener=SSC.Utils.addListener;
+    var getSignature=SSC.Utils.getSignature;
     
     function addMarker(node,marker,after){
 	var id=getID(node);
@@ -590,31 +593,37 @@ SSC.getStyleInfo=(function(){
 		parent.removeChild(marker);}
 	    markers[id]=[];}}
 
-    function marker(classname,text){
+    function marker(classname,text,node){
+	var title=text;
+	if (node) {
+	    var sig=getSignature(node);
+	    text="<strong>"+text+"</strong>&nbsp;&nbsp;"+"<tt>"+sig+"</tt>";
+	    title=title+" "+sig;}
+	else text="<strong>"+text+"</strong>";
 	var m=make("div","sscmarker "+classname,text);
-	m.title=text;
+	m.title=title;
 	return m;}
+
+    function addMarkerAfter(node,classname,text){
+	addMarker(node,marker(classname,text,node),true);}
+    function addMarkerBefore(node,classname,text){
+	addMarker(node,marker(classname,text,node),false);}
 
     function addMarkers(node){
 	clearMarkers(node);
 	var style=window.getComputedStyle(node);
 	if (style.pageBreakBefore==='always') {
-	    addMarker(node,marker("sscforcebreakbefore","force break before"));}
+	    addMarkerBefore(node,"sscforcebreakbefore","force break before");}
 	if (style.pageBreakBefore==='avoid') {
-	    addMarker(node,marker("sscavoidbreakbefore","avoid break before"));}
+	    addMarkerBefore(node,"sscavoidbreakbefore","avoid break before");}
 	if (style.pageBreakAfter==='always') {
-	    addMarker(node,marker("sscforcebreakafter","force break after"),
-		     true);}
+	    addMarkerAfter(node,"sscforcebreakafter","force break after");}
 	if ((style.pageBreakAfter==='avoid')||
-	    (node.tagName.search(/h\d$/i)===0)){
-	    addMarker(node,marker("sscavoidbreakafter","avoid break after"),
-		      true);}
+	    (node.tagName.search(/h\d$/i)===0)) {
+	    addMarkerAfter(node,"sscavoidbreakafter","avoid break after");}
 	if (style.pageBreakInside==='avoid') {
-	    addMarker(node,marker("sscavoidbreakinsideafter",
-				  "avoid break inside"),
-		      true);
-	    addMarker(node,marker("sscavoidbreakinsidebefore",
-				  "avoid break inside"));}}
+	    addMarkerAfter(node,"sscavoidbreakinsideafter","avoid break inside");
+	    addMarkerBefore(node,"sscavoidbreakinsidebefore","avoid break inside");}}
     SSC.addMarkers=addMarkers;
     
     function gatherAllElements(root,into){
@@ -733,7 +742,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
     function toggleStyleInfo(){
 	if (hasClass("SSCTOOLBAR","showstyle"))
 	    dropClass("SSCTOOLBAR","showstyle");
-	else addClass("SSCTOOLBAR","showstyle");}
+	else if (SSC.selector())
+	    addClass("SSCTOOLBAR","showstyle");}
 
     function sscinput_focus(){
 	sscinput_complete();
@@ -906,7 +916,21 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	if (hasClass(document.body,"ssc_SHOWHELP"))
 	    dropClass(document.body,"ssc_SHOWHELP");
 	else addClass(document.body,"ssc_SHOWHELP");}
+    function hideHelp(evt){
+	if (hasClass(document.body,"ssc_SHOWHELP"))
+	    dropClass(document.body,"ssc_SHOWHELP");
+	cancel(evt);}
     SSC.toggleHelp=toggleHelp;
+    SSC.hideHelp=hideHelp;
+
+    function toggleMarkers(){
+	if (hasClass(document.body,"ssc_HIDEMARKERS"))
+	    dropClass(document.body,"ssc_HIDEMARKERS");
+	else addClass(document.body,"ssc_HIDEMARKERS");}
+    function hideMarkers(){
+	addClass(document.body,"ssc_HIDMARKERS");}
+    SSC.toggleMarkers=toggleMarkers;
+    SSC.hideMarkers=hideMarkers;
 
     SSC.Inits.toolbar={
 	id: "SSCTOOLBAR",
@@ -914,6 +938,7 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	"input:focus": sscinput_focus,
 	"input:blur": sscinput_blur,
 	"select:change": selector_selected,
+	".markers:click": toggleMarkers,
 	".help:click": toggleHelp,
 	".hide:click": hideToolbar,
 	".showrules:click": toggleStyleInfo,
@@ -924,6 +949,7 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	var elt=make("div","sscapp sschelp",
 		     SSC.Templates.helptext||SSC.Templates.sschelp,
 		     {id: "SSCHELP",click: toggleHelp,
+		      "button.help:click": hideHelp,
 		      imgroot: imgroot});
 	document.body.appendChild(elt);}
 
@@ -952,6 +978,8 @@ SSC.Templates.ssctoolbar="  <div id=\"SSCTOOLBARBUTTONS\"> \
 	    setTimeout(function(){
 		SSC.focus((SSC.selected())[0]);},
 		       200);
+	addClass(document.body,"cxSSC");
+	addClass(document.body,"ssc__TOOLBAR");
 	if (SSC.postlaunch) {
 	    var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
 	    setTimeout(postlaunch,50);}}

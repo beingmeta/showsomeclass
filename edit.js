@@ -907,6 +907,7 @@ SSC.Editor=(function(){
 		classes=[];
 	    if (classes.length) spec=spec+"."+classes.join(".");}
 	SSC.select(spec,false,true);
+	if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
 	addClass(document.body,"ssc__TOOLBAR");}
     SSC.onclick=editor_click;
 

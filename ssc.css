@@ -15,11 +15,14 @@ body.cxSSC .sscapp span:hover {text-decoration: inherit;}
 
 /* Reset button display */
 
-body.cxSSC button.image {
+body.cxSSC button.image, .sscapp button.image {
   border: 0px; padding: 0px; margin: 0px;
   border-color: transparent;
   vertical-align: top;
   font-size: 100%;}
+body.cxSSC button.image img, .sscapp button.image img {
+    padding: 2px; padding-top: 0px;}
+.ssctoolbar button.image { border-radius: 0px;}
 
 /* Selective display of selected elements */
 
@@ -108,6 +111,8 @@ div#SSCTOOLBAR div#SSCSTYLEINFO {
     display: none;}
 body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#SSCSTYLEINFO {
     display: block;}
+div#SSCTOOLBAR.showstyle button.showrules img {
+    background-color: silver;}
 
 div#SSCTOOLBAR .styleinfo p {
     margin-left: 1em; text-indent: -1em;}
@@ -141,7 +146,8 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 .sscmarker {
     font-size: 50%; text-align: center;
     background-color: light gray;
-    border: 0px;}
+    border: 0px;
+    display:none;}
 .sscmarker.sscforcebreakbefore {
     border-bottom: dashed green 3px; margin-top: 3px;}
 .sscmarker.sscforcebreakafter {
@@ -156,6 +162,13 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 .sscmarker.sscavoidbreakinsideafter {
     border: dashed purple 3px; margin-bottom: 3px;
     border-top: 0px;}
+
+body.cxSSC .sscmarker { display: block; }
+body.cxSSC.ssc_HIDEMARKERS .sscmarker { display: none; }
+div.sscapp#SSCTOOLBAR button.markers img {
+    background-color: silver;}
+body.ssc_HIDEMARKERS div.sscapp#SSCTOOLBAR button.markers img {
+    background-color: transparent;}
 
 .sbookfullpage {
     border: solid gray 5px;}
@@ -193,6 +206,7 @@ div#SSCHELP {
   border-radius: 1em;
   overflow: auto;
   display: none;}
+div#SSCHELP button.image.close { float: right;}
 
 div#SSCHELP p { 
   margin-left: 3em; max-width: 40em;
@@ -200,6 +214,8 @@ div#SSCHELP p {
 
 body.ssc_SHOWHELP div#SSCHELP {
     display: block;}
+body.ssc_SHOWHELP div#SSCTOOLBAR button.help img {
+    background-color: silver;}
 
 .forcebreakbefore:before {
     display: block; width: 100%;
