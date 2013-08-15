@@ -1,5 +1,7 @@
 /* Generic rules */
 
+body.cxSSC { margin-top: 4em; }
+
 img.svg { display: none;}
 body.haveSVG img.svg { display: inline;}
 body.haveSVG img.notsvg { display: none;}
