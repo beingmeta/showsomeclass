@@ -144,7 +144,7 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 /* Marker classes */
 
 .sscmarker {
-    font-size: 50%; text-align: center;
+    font-size: 75%; text-align: center;
     background-color: light gray;
     border: 0px;
     display:none;}
