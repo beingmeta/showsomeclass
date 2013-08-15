@@ -148,8 +148,8 @@ var SSC=(function(){
     var text=make_text;
     Utils.make_text=Utils.text=text;
 
-    var events_pat=/^(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
-    var spec_events_pat=/^([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend)$/;
+    var events_pat=/^(click|keydown|keypress|change|touchstart|touchmove|touchend|focus|blur)$/;
+    var spec_events_pat=/^([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend|focus|blur)$/;
 
     function setupListeners(node,opts){
 	var match=false, ex=false;
