@@ -130,7 +130,9 @@ div#SSCTOOLBAR .styleinfo p {
 div#SSCTOOLBAR .styleinfo p span.prop { white-space: nowrap; }
 
 div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
-div#SSCTOOLBAR #SSCMATCHCOUNT { color: wheat; }
+div#SSCTOOLBAR #SSCMATCHINDEX {
+    background-color: rgba(255,255,0,0.75); color: black;
+    padding-left: 1em;}
 
 /* Buttons */
 

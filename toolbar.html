@@ -1,23 +1,23 @@
 <div id="SSCTOOLBARBUTTONS">
   <button class="image reclass"
-	title="Change all instances matching the current selector">
+	title="Change all instances matching the current selector (shortcut: the '*' key)">
     <img src="{{imgroot}}/changemarkup_ondark.svgz" alt="Reclass" class="svg"/>
     <img src="{{imgroot}}/changemarkup_ondark100x100.png" alt="Reclass" class="notsvg"/>
   </button>
   <button class="image scanup"
-	title="Go to the previous selected element">
+	title="Go to the previous selected element (shortcut: Shift-Tab)">
     <img class="svg" src="{{imgroot}}/uparrow_white.svgz" alt="Prev"/>
     <img class="notsvg"
 	 src="{{imgroot}}/uparrow_white100h.png" alt="Prev"/>
   </span>
   <button class="image scandown"
-	title="Go to the next selected element">
+	title="Go to the next selected element (shortcut: Tab)">
     <img class="svg" src="{{imgroot}}/downarrow_white.svgz" alt="Next"/>
     <img class="notsvg"
 	 src="{{imgroot}}/downarrow_white100h.png" alt="Next"/>
   </span>
   <button class="image showrules"
-	  title="Show some of the CSS style rules for this selector">
+	  title="Show some of the CSS style rules for this selector (shortcut: the 'S' key)">
     <img class="svg" src="{{imgroot}}/stylebraces.svgz"
 	 alt="Rules"/>
     <img class="notsvg"
@@ -36,7 +36,7 @@
     <img class="notsvg" src="{{imgroot}}/cloudfloppy100x100.png" alt="Save"/>
   </span>
   <button class="image help" id="SSCHELPBUTTON"
-	  title="Show help">
+	  title="Show help (shortcut: the '?' key)">
     <img class="svg" src="{{imgroot}}/help.svgz" alt="Help"/>
     <img class="notsvg" src="{{imgroot}}/help100x100.png" alt="Help"/>
   </span>
@@ -51,7 +51,8 @@
 	 placeholder="a CSS selector"/>
   <select id="SSCDROPBOX" class="dropbox"></select>
 </div>
-<span class="text matchphrase" id="SSCMATCHPHRASE">
+<span class="text matchphrase" id="SSCMATCHPHRASE"
+      title="Tab/Shift-Tab to move among matches">
   <span id="SSCMATCHCOUNT">some</span>
   matches, at
   #<span id="SSCMATCHINDEX">#</span>
