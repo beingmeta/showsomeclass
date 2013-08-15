@@ -924,7 +924,7 @@ SSC.Editor=(function(){
 	var html=document.querySelector('HTML');
 	var elts=SSC.Utils.tmpid_elts;
 	var saved_ids={}, apps=[], crumbs=[];
-	var matches=document.querySelectorAll('.sscapp');
+	var matches=document.querySelectorAll('.sscapp,.sscmarker');
 	var i=0, lim=matches.length; while (i<lim) {
 	    apps.push(matches[i++]);}
 	i=0; while (i<lim) {
