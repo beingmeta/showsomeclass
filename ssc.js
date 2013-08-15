@@ -276,19 +276,21 @@ var SSC=(function(){
     /* Do a search, basically with a CSS selector combined with an
        (optional) text-matching regex. */
     function $(spec){
-	var match=hybrid_pattern.exec(spec);
+	var match=hybrid_pattern.exec(spec), sel=false, rx=false;
 	if (match) {
-	    var sel=match[1];
-	    var rx=new RegExp(match[2].replace(/\\\//g,"/"),match[3]||"mig");
-	    var candidates=document.querySelectorAll(sel);
-	    var output=[];
-	    var i=0, lim=candidates.length;
-	    while (i<lim) {
-		var node=candidates[i++];
-		if (hasText(node,rx)) output.push(node);}
-	    return output;}
-	else return copy(document.querySelectorAll(spec));}
-
+	    sel=match[1];
+	    rx=new RegExp(match[2].replace(/\\\//g,"/"),match[3]||"mig");}
+	else sel=spec;
+	var candidates=document.querySelectorAll(sel), output=[];
+	var i=0, lim=candidates.length;
+	while (i<lim) {
+	    var node=candidates[i++];
+	    if (getParent(node,"sscapp")) {}
+	    else if (getParent(node,"sscmarker")) {}
+	    else if (!(rx)) output.push(node);
+	    else if (hasText(node,rx)) output.push(node);}
+	return output;}
+    
     /* Stripping out the regex part of a hybrid pattern */
     function simplespec(spec){return spec.replace(/\/[^\/]+\//,"");}
     
@@ -321,8 +323,10 @@ var SSC=(function(){
 
     /* Clear all selective display classes */
     function clear(){
-	var wrappers=$(".sscWRAPPER");
-	var selected=$(".sscSELECTED");
+	var wrappers=copy(document.querySelectorAll(".sscWRAPPER"));
+	var selected=copy(document.querySelectorAll(".sscSELECTED"));
+	var toolbar=document.getElementById("SSCTOOLBAR");
+	if (toolbar) addClass(toolbar,"noinput");
 	dropClass(wrappers,"sscWRAPPER");
 	dropClass(selected,"sscSELECTED");
 	selector=false;
@@ -353,6 +357,8 @@ var SSC=(function(){
 	else if ((spec===selector)&&(!(force))) return;
 	else clear();
 	if (!(spec)) return;
+	var toolbar=document.getElementById("SSCTOOLBAR");
+	if (toolbar) dropClass(toolbar,"noinput");
 	var nodes=$(spec);
 	var i=0, lim=nodes.length;
 	enable(); addClass(document.body,"ssc__TOOLBAR");
@@ -361,7 +367,8 @@ var SSC=(function(){
 	var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
 	var styleinfo=byID("SSCSTYLEINFO");
 	if (input) {
-	    input.value=spec;
+	    input.value=spec; input.defaultValue=spec;
+	    if (toolbar) dropClass(toolbar,"modified");
 	    input.title="matches "+nodes.length+" elements";}
 	if (count) count.innerHTML=""+nodes.length;
 	if (styleinfo) {
@@ -695,10 +702,13 @@ SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
 	 placeholder=\"a CSS selector\"/> \
   <select id=\"SSCDROPBOX\" class=\"dropbox\"></select> \
 </div> \
-<span class=\"text\" id=\"SSCMATCHPHRASE\"> \
+<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"> \
   <span id=\"SSCMATCHCOUNT\">some</span> \
   matches, at \
   #<span id=\"SSCMATCHINDEX\">#</span> \
+</span> \
+<span class=\"text inputhelp\" id=\"SSCINPUTHELP\"> \
+  enter a CSS selector (like <samp>P.<em>class</em></samp>) \
 </span> \
 <div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div> \
 ";
@@ -744,7 +754,8 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
 
 (function(){
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin;
-    var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass, dropClass=SSC.Utils.dropClass;
+    var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass;
+    dropClass=SSC.Utils.dropClass, getParent=SSC.Utils.getParent;
     var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
     var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
     var RETURN=SSC.Utils.RETURN, ESCAPE=SSC.Utils.ESCAPE, TAB=SSC.Utils.TAB;
@@ -766,7 +777,7 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
     /* The application toolbar */
 
     function setupToolbar(){
-	var toolbar=make("div","sscapp ssctoolbar",
+	var toolbar=make("div","sscapp ssctoolbar noinput",
 			 SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
 			 {imgroot: SSC.imgroot},
 			 SSC.Inits.toolbar);
@@ -817,7 +828,14 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
     var selector_complete_string=false;
     function sscinput_complete(){
 	var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
+	var toolbar=((input)&&(getParent(input,"sscapp")));
 	var prefix=selector_prefix(input.value);
+	if (input.value===input.defaultValue) {
+	    if (toolbar) dropClass(toolbar,"modified");
+	    dropClass(input,"modified");}
+	else {
+	    if (toolbar) addClass(toolbar,"modified");
+	    addClass(input,"modified");}
 	if (prefix===selector_complete_string) return;
 	else selector_complete_string=prefix;
 	var selectors=SSC.selectors||
@@ -872,7 +890,7 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
 	if (max<0) {}
 	else if (typeof index === "number") {
 	    if (index<=0) {}
-	    else if (index>=max)
+	    else if (index>max)
 		SSC.focus(max);
 	    else SSC.focus(index-1);}
 	else SSC.focus(max);
@@ -1028,7 +1046,6 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
 	    setTimeout(function(){
 		SSC.focus((SSC.selected())[0]);},
 		       200);
-	addClass(document.body,"cxSSC");
 	addClass(document.body,"ssc__TOOLBAR");
 	if (SSC.postlaunch) {
 	    var postlaunch=SSC.postlaunch; SSC.postlaunch=false;

@@ -80,6 +80,12 @@ div.ssctoolbar div.combobox select {
 div.ssctoolbar.focused div.combobox select { display: block;}
 div.ssctoolbar div.combobox select:focus { display: block;}
 
+div.ssctoolbar span.inputhelp { display: none; }
+div.ssctoolbar.noinput span.inputhelp { display: inline; }
+div.ssctoolbar.noinput span.matchphrase { display: none; }
+div.ssctoolbar.modified span.inputhelp { display: inline; }
+div.ssctoolbar.modified span.matchphrase { display: none; }
+
 div#SSCTOOLBAR #SSCTOOLBARBUTTONS { float: right; padding-right: 1ex;}
 div#SSCTOOLBAR input[TYPE="TEXT"] {
     padding-left: 0.5ex; text-align: left; font-size: 90%;}
