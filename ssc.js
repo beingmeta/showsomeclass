@@ -671,13 +671,13 @@ SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
     <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Prev\"/> \
     <img class=\"notsvg\" \
 	 src=\"{{imgroot}}/uparrow_white100h.png\" alt=\"Prev\"/> \
-  </span> \
+  </button> \
   <button class=\"image scandown\" \
 	title=\"Go to the next selected element (shortcut: Tab)\"> \
     <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Next\"/> \
     <img class=\"notsvg\" \
 	 src=\"{{imgroot}}/downarrow_white100h.png\" alt=\"Next\"/> \
-  </span> \
+  </button> \
   <button class=\"image showrules\" \
 	  title=\"Show some of the CSS style rules for this selector (shortcut: the 'S' key)\"> \
     <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\" \
@@ -692,23 +692,18 @@ SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
     <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\" \
 	 alt=\"Markers\"/> \
   </button> \
-  <button class=\"image save\" id=\"SSCEDITSAVEBUTTON\" \
-	  title=\"Save this document\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/cloudfloppy.svgz\" alt=\"Save\"/> \
-    <img class=\"notsvg\" src=\"{{imgroot}}/cloudfloppy100x100.png\" alt=\"Save\"/> \
-  </span> \
   <button class=\"image help\" id=\"SSCHELPBUTTON\" \
 	  title=\"Show help (shortcut: the '?' key)\"> \
     <img class=\"svg\" src=\"{{imgroot}}/help.svgz\" alt=\"Help\"/> \
     <img class=\"notsvg\" src=\"{{imgroot}}/help100x100.png\" alt=\"Help\"/> \
-  </span> \
+  </button> \
   <button class=\"image hide\"> \
     <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
 	 title=\"Hide this toolbar\" \
 	 alt=\"Hide\"/> \
     <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" \
 	 alt=\"Hide\"/> \
-  </span> \
+  </button> \
 </div> \
 <div class=\"combobox\"> \
   <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\" \
@@ -717,9 +712,8 @@ SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
 </div> \
 <span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\" \
       title=\"Tab/Shift-Tab to move among matches\"> \
+  #<span id=\"SSCMATCHINDEX\">#</span> of \
   <span id=\"SSCMATCHCOUNT\">some</span> \
-  matches, at \
-  #<span id=\"SSCMATCHINDEX\">#</span> \
 </span> \
 <span class=\"text inputhelp\" id=\"SSCINPUTHELP\"> \
   enter a CSS selector (like <samp>P.<em>class</em></samp>) \

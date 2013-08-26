@@ -127,6 +127,48 @@ SSC.Editor=(function(){
 	else {}
 	return node;}
 
+    /* Select spec combo box */
+    function classinput_keydown(evt){
+ 	evt=evt||event;
+	var kc=evt.keyCode;
+	var target=evt.target||evt.srcElement;
+	if (kc===RETURN) {}
+	else if (kc===ESCAPE) {
+	    target.blur(); cancel(evt);}
+	else {
+	    var box=getParent(target,"classcombobox");
+	    setTimeout(classinput_complete,50,box);}}
+    
+    function classinput_complete(box){
+	var input=box.querySelector("INPUT"), dropbox=box.querySelector("SELECT");
+	var prefix=selector_prefix(input.value);
+	var current_prefix=box.getAttribute("data-completed")||"";
+	if (prefix===current_prefix) return;
+	else box.getAttribute("data-completed",prefix);
+	var favorites=SSC.favorites;
+	var frag=document.createDocumentFragment();
+	var i=0, lim=options.length, matches=0;
+	if (prefix.length===0) while (i<lim) {
+	    frag.appendChild(favorites[i++].cloneNode(true));}
+	else while (i<lim) {
+	    var fave=favorites[i++];
+	    var value=fave.value;
+	    if (value.search(prefix)===0) {
+		frag.appendChild(fave.cloneNode(););
+		matches++;}}
+	dropbox.innerHTML="";
+	if (matches>7) dropbox.size=7; else dropbox.size=matches+1;
+	dropbox.appendChild(frag);}
+
+    function classinput_selected(evt){
+	evt=evt||event;
+	var target=evt.target||evt.srcElement;
+	var box=getParent(target,"classcombobox");
+	var input=box.querySelector("INPUT");
+	if (target.value) {
+	    input.value=target.value;
+	    classinput_complete(box);}}
+
     /* Edit Element dialog */
     
     function makeEditElementDialog(node,base){
