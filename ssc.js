@@ -148,8 +148,9 @@ var SSC=(function(){
     var text=make_text;
     Utils.make_text=Utils.text=text;
 
-    var events_pat=/^(click|keydown|keypress|change|touchstart|touchmove|touchend|focus|blur)$/;
-    var spec_events_pat=/^([^:]+):(click|keydown|keypress|change|touchstart|touchmove|touchend|focus|blur)$/;
+    var events_pat=/^(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur)$/;
+    var spec_events_pat=
+        /^([^:]+):(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur)$/;
 
     function setupListeners(node,opts){
 	var match=false, ex=false;
@@ -157,9 +158,8 @@ var SSC=(function(){
 	    if (events_pat.exec(key))
 		addListener(node,key,opts[key]);
 	    else if (match=spec_events_pat.exec(key)) {
-		var elts=
-		addListener(node.querySelectorAll(match[1]),match[2],
-			    opts[key]);}
+		var elts=node.querySelectorAll(match[1]);
+		addListener(elts,match[2],opts[key]);}
 	    else {}}
 	return node;}
     Utils.setupListeners=setupListeners;
