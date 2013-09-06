@@ -28,27 +28,27 @@ var SSC=(function(){
     /* Event functions */
 
     function addListener(node,evtype,handler){
-	if (!(node)) return;
-	else if (typeof node==="string")
-	    node=document.getELementById(node);
-	else if (node.nodeType) {}
-	else if (node.length) {
-	    var copy=[]; var i=0, lim=node.length;
-	    while (i<lim) copy.push(node[i++]);
-	    i=0; while (i<lim) addListener(copy[i++],evtype,handler);
-	    return;}
-	if (!(node)) return;
-	else if (node.addEventListener)
-	    node.addEventListener(evtype,handler,false);
-	else if (node.attachEvent)
-	    node.attachEvent("on"+evtype,handler);
-	else return;}
+        if (!(node)) return;
+        else if (typeof node==="string")
+            node=document.getELementById(node);
+        else if (node.nodeType) {}
+        else if (node.length) {
+            var copy=[]; var i=0, lim=node.length;
+            while (i<lim) copy.push(node[i++]);
+            i=0; while (i<lim) addListener(copy[i++],evtype,handler);
+            return;}
+        if (!(node)) return;
+        else if (node.addEventListener)
+            node.addEventListener(evtype,handler,false);
+        else if (node.attachEvent)
+            node.attachEvent("on"+evtype,handler);
+        else return;}
     Utils.addListener=addListener;
 
     function cancel(evt){
-	if (evt.preventDefault) evt.preventDefault();
-	else evt.returnValue=false;
-	evt.cancelBubble=true;}
+        if (evt.preventDefault) evt.preventDefault();
+        else evt.returnValue=false;
+        evt.cancelBubble=true;}
     Utils.cancel=cancel;
 
     /* Key codes */
@@ -64,7 +64,6 @@ var SSC=(function(){
     var ESCAPE=Utils.ESCAPE=0x1b;
     var PLUS=Utils.PLUS=187;
     var MINUS=Utils.MINUS=189;
-    var HKEY=Utils.HKEY=0x48;
     var QMARK=Utils.QMARK=191;
     var ASTERISK=Utils.ASTERISK=56;
         
@@ -74,9 +73,9 @@ var SSC=(function(){
     Utils.byID=byID;
 
     function bySpec(elt,spec,all){
-	if (all)
-	    return elt.querySelectorAll(spec);
-	else return elt.querySelector(spec);}
+        if (all)
+            return elt.querySelectorAll(spec);
+        else return elt.querySelector(spec);}
     Utils.bySpec=bySpec;
 
     /* Assigning temporary IDs */
@@ -86,65 +85,65 @@ var SSC=(function(){
     var tmpid_elts=[];
 
     function getID(node){
-	if (node.id) return node.id;
-	var newid="sscTMP"+(tmpid_count++);
-	// This is very unlikely, but let's be obsessive
-	while (byID(newid)) newid="sscTMP"+(tmpid_count++);
-	node.id=newid;
-	tmpid_elts.push(node);
-	return node.id;}
+        if (node.id) return node.id;
+        var newid="sscTMP"+(tmpid_count++);
+        // This is very unlikely, but let's be obsessive
+        while (byID(newid)) newid="sscTMP"+(tmpid_count++);
+        node.id=newid;
+        tmpid_elts.push(node);
+        return node.id;}
     Utils.getID=getID;
     Utils.tmpid_elts=tmpid_elts;
 
     /* Fillin in text templates */
 
     function fillin(data,text){ /* Filling in templates */
-	if (typeof data === "string") {
-	    var tmp=data; data=text; text=tmp;}
-	if ((!(text))&&(data)&&(data.template)) text=data.template;
-	// Maybe a warning?
-	if (typeof text !== "string") return;
-	var substs=text.match(/{{\w+}}/gm);
-	if (substs) {
-	    var i=0, n=substs.length; while (i<n) {
-		var match=substs[i++];
-		var prop=match.slice(2,-2);
-		var val=((data.hasOwnProperty(prop))&&(data[prop]));
-		if (val) text=
-		    text.replace(new RegExp(match,"g"),val.toString());}}
-	return text;}
+        if (typeof data === "string") {
+            var tmp=data; data=text; text=tmp;}
+        if ((!(text))&&(data)&&(data.template)) text=data.template;
+        // Maybe a warning?
+        if (typeof text !== "string") return;
+        var substs=text.match(/{{\w+}}/gm);
+        if (substs) {
+            var i=0, n=substs.length; while (i<n) {
+                var match=substs[i++];
+                var prop=match.slice(2,-2);
+                var val=((data.hasOwnProperty(prop))&&(data[prop]));
+                if (val) text=
+                    text.replace(new RegExp(match,"g"),val.toString());}}
+        return text;}
     Utils.fillin=fillin;
 
     /* Making DOM nodes */
 
     function make(tag,classname,content,data,opts){
-	var elt=document.createElement(tag);
-	if (!(opts)) opts=data;
-	if (classname) elt.className=classname;
-	if (!(content)) {}
-	else if ((typeof content === "string")&&(opts))
-	    elt.innerHTML=fillin(content,data);
-	else if (typeof content === "string")
-	    elt.innerHTML=content;
-	else if (content.nodeType)
-	    elt.appendChild(content);
-	else elt.innerHTML=fillin(content);
-	if (opts) {
-	    var match=false, ex;
-	    if (opts.id) elt.id=opts.id;
-	    if (opts.title) elt.title=opts.title;
-	    if (opts.href) elt.href=opts.href;
-	    if (opts.name) elt.name=opts.name;
-	    if (opts.src) elt.src=opts.src;
-	    if (opts.alt) elt.alt=opts.alt;
-	    setupListeners(elt,opts);}
-	return elt;}
+        var elt=document.createElement(tag);
+        if (!(opts)) opts=data;
+        if (classname) elt.className=classname;
+        if (!(content)) {}
+        else if ((typeof content === "string")&&(opts))
+            elt.innerHTML=fillin(content,data);
+        else if (typeof content === "string")
+            elt.innerHTML=content;
+        else if (content.nodeType)
+            elt.appendChild(content);
+        else elt.innerHTML=fillin(content);
+        if (opts) {
+            var match=false, ex;
+            if (opts.id) elt.id=opts.id;
+            if (opts.title) elt.title=opts.title;
+            if (opts.href) elt.href=opts.href;
+            if (opts.name) elt.name=opts.name;
+            if (opts.src) elt.src=opts.src;
+            if (opts.alt) elt.alt=opts.alt;
+            setupListeners(elt,opts);}
+        return elt;}
     Utils.make=make;
 
     function make_text(input){
-	if (typeof input === "string")
-	    return document.createTextNode(input);
-	else return document.createTextNode(fillin(input));}
+        if (typeof input === "string")
+            return document.createTextNode(input);
+        else return document.createTextNode(fillin(input));}
     var text=make_text;
     Utils.make_text=Utils.text=text;
 
@@ -153,15 +152,15 @@ var SSC=(function(){
         /^([^:]+):(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur)$/;
 
     function setupListeners(node,opts){
-	var match=false, ex=false;
-	for (var key in opts) if (opts.hasOwnProperty(key)) {
-	    if (events_pat.exec(key))
-		addListener(node,key,opts[key]);
-	    else if (match=spec_events_pat.exec(key)) {
-		var elts=node.querySelectorAll(match[1]);
-		addListener(elts,match[2],opts[key]);}
-	    else {}}
-	return node;}
+        var match=false, ex=false;
+        for (var key in opts) if (opts.hasOwnProperty(key)) {
+            if (events_pat.exec(key))
+                addListener(node,key,opts[key]);
+            else if ((match=spec_events_pat.exec(key))) {
+                var elts=node.querySelectorAll(match[1]);
+                addListener(elts,match[2],opts[key]);}
+            else {}}
+        return node;}
     Utils.setupListeners=setupListeners;
 
     /* Manipulating node classes */
@@ -171,59 +170,59 @@ var SSC=(function(){
     var classpats={};
     /* Returns a Regex for matching a delimited class name */
     function classPat(name){
-	var rx=new RegExp("\\b"+name+"\\b","g");
-	classpats[name]=rx;
-	return rx;}
+        var rx=new RegExp("\\b"+name+"\\b","g");
+        classpats[name]=rx;
+        return rx;}
     Utils.classPat=classPat;
     function addClass(elt,classname){
-	if (typeof elt === "string") elt=byID(elt);
-	if (!(elt)) return;
-	if (Array.isArray(elt)) {
-	    var i=0, lim=elt.length;
-	    while (i<lim) addClass(elt[i++],classname);}
-	else {
-	    var current=elt.className, pat=classPat(classname);
-	    if (!(current)) elt.className=classname;
-	    else if (current===classname) {}
-	    else if (current.search(pat)>=0) {}
-	    else elt.className=((current+" "+classname).
-				replace(whitespace_pat," ").
-				replace(trimspace_pat,""));}}
+        if (typeof elt === "string") elt=byID(elt);
+        if (!(elt)) return;
+        if (Array.isArray(elt)) {
+            var i=0, lim=elt.length;
+            while (i<lim) addClass(elt[i++],classname);}
+        else {
+            var current=elt.className, pat=classPat(classname);
+            if (!(current)) elt.className=classname;
+            else if (current===classname) {}
+            else if (current.search(pat)>=0) {}
+            else elt.className=((current+" "+classname).
+                                replace(whitespace_pat," ").
+                                replace(trimspace_pat,""));}}
     function dropClass(elt,classname){
-	if (typeof elt === "string") elt=byID(elt);
-	if (!(elt)) return;
-	if (Array.isArray(elt)) {
-	    var i=0, lim=elt.length;
-	    while (i<lim) dropClass(elt[i++],classname);}
-	else {
-	    var current=elt.className, pat=classPat(classname);
-	    if (!(current)) elt.className=classname;
-	    else if (current===classname) elt.className=null;
-	    else if (current.search(pat)>=0)
-		elt.className=((current.replace(pat,"")).
-			       replace(whitespace_pat," ").
-			       replace(trimspace_pat,""));
-	    else {}}}
+        if (typeof elt === "string") elt=byID(elt);
+        if (!(elt)) return;
+        if (Array.isArray(elt)) {
+            var i=0, lim=elt.length;
+            while (i<lim) dropClass(elt[i++],classname);}
+        else {
+            var current=elt.className, pat=classPat(classname);
+            if (!(current)) elt.className=classname;
+            else if (current===classname) elt.className=null;
+            else if (current.search(pat)>=0)
+                elt.className=((current.replace(pat,"")).
+                               replace(whitespace_pat," ").
+                               replace(trimspace_pat,""));
+            else {}}}
     function hasClass(elt,classname){
-	if (typeof elt === "string") elt=byID(elt);
-	if (!(elt)) return;
-	var current=elt.className, pat=classPat(classname);
-	if (!(current)) return false;
-	else if (current===classname) return true;
-	else if (current.search(pat)>=0) return true;
-	else return false;}
+        if (typeof elt === "string") elt=byID(elt);
+        if (!(elt)) return;
+        var current=elt.className, pat=classPat(classname);
+        if (!(current)) return false;
+        else if (current===classname) return true;
+        else if (current.search(pat)>=0) return true;
+        else return false;}
 
     function getParent(elt,classname){
-	var body=document.body;
-	if (typeof elt === "string") elt=byID(elt);
-	if (!(elt)) return false;
-	else if (!(elt.nodeType)) return false;
-	else while (elt) {
-	    if (elt===body) return false;
-	    else if ((elt.nodeType===1)&&(hasClass(elt,classname)))
-		break;
-	    else elt=elt.parentNode;}
-	return elt||false;}
+        var body=document.body;
+        if (typeof elt === "string") elt=byID(elt);
+        if (!(elt)) return false;
+        else if (!(elt.nodeType)) return false;
+        else while (elt) {
+            if (elt===body) return false;
+            else if ((elt.nodeType===1)&&(hasClass(elt,classname)))
+                break;
+            else elt=elt.parentNode;}
+        return elt||false;}
 
     Utils.addClass=addClass; Utils.dropClass=dropClass;
     Utils.hasClass=hasClass; Utils.getParent=getParent;
@@ -231,65 +230,65 @@ var SSC=(function(){
     /* Getting node signatures */
 
     function getSignature(node,attribs){
-	var classname=node.className.replace(/\bssc\w+/g,"").trim();
-	var id=node.id, tag=node.tagName;
-	if (id.search("sscTMP")===0) id=false;
-	var sig=tag+
-	    ((classname)?("."):(""))+
-	    ((classname)?((classname.split(/\s+/)).join(".")):(""))+
-	    (((attribs)&&(id))?("#"+id):(""));
-	if (attribs) {
-	    if (node.name) sig=sig+"[NAME='"+node.name+"']";
-	    if (typeof attribs === "string") {
-		var val=node.getAttribute(attribs);
-		if (val) sig=sig+"["+attrib+"'"+val.replace("'","\\'")+"']";}}
-	// We could interpret other attribs args (arrays, regexes, etc)
-	else {}
-	return sig;}
+        var classname=node.className.replace(/\bssc\w+/g,"").trim();
+        var id=node.id, tag=node.tagName;
+        if (id.search("sscTMP")===0) id=false;
+        var sig=tag+
+            ((classname)?("."):(""))+
+            ((classname)?((classname.split(/\s+/)).join(".")):(""))+
+            (((attribs)&&(id))?("#"+id):(""));
+        if (attribs) {
+            if (node.name) sig=sig+"[NAME='"+node.name+"']";
+            if (typeof attribs === "string") {
+                var val=node.getAttribute(attribs);
+                if (val) sig=sig+"["+attrib+"'"+val.replace("'","\\'")+"']";}}
+        // We could interpret other attribs args (arrays, regexes, etc)
+        else {}
+        return sig;}
     Utils.getSignature=getSignature;
 
     /* Copying an array (or array-like object, such as a NodeList) into a new array. */
 
     function copy(input){
-	var output=new Array(input.length);
-	var i=0, lim=input.length;
-	while (i<lim) {output[i]=input[i]; i++;}
-	return output;}
+        var output=new Array(input.length);
+        var i=0, lim=input.length;
+        while (i<lim) {output[i]=input[i]; i++;}
+        return output;}
 
     /* Determining if a node's text contains anything matching a
      * given regular expression. Note that this won't handle cases
      * where the matched text is split across elements. */
     function hasText(node,rx){
-	if (!(node.childNodes)) return false;
-	var children=node.childNodes;
-	var i=0, lim=children.length;
-	while (i<lim) {
-	    var child=children[i++];
-	    if (child.nodeType===3) {
-		if (child.nodeValue.search(rx)>=0) return true;}
-	    else if (child.nodeType===1) {
-		if (hasText(child,rx)) return true;}}
-	return false;}
+        if (!(node.childNodes)) return false;
+        var children=node.childNodes;
+        var i=0, lim=children.length;
+        while (i<lim) {
+            var child=children[i++];
+            if (child.nodeType===3) {
+                if (child.nodeValue.search(rx)>=0) return true;}
+            else if (child.nodeType===1) {
+                if (hasText(child,rx)) return true;}}
+        return false;}
 
     var hybrid_pattern=/[ ]*([^\/]+)\/([^\/]+)\/([mig]*)[ ]*/;
     
     /* Do a search, basically with a CSS selector combined with an
        (optional) text-matching regex. */
     function $(spec){
-	var match=hybrid_pattern.exec(spec), sel=false, rx=false;
-	if (match) {
-	    sel=match[1];
-	    rx=new RegExp(match[2].replace(/\\\//g,"/"),match[3]||"mig");}
-	else sel=spec;
-	var candidates=document.querySelectorAll(sel), output=[];
-	var i=0, lim=candidates.length;
-	while (i<lim) {
-	    var node=candidates[i++];
-	    if (getParent(node,"sscapp")) {}
-	    else if (getParent(node,"sscmarker")) {}
-	    else if (!(rx)) output.push(node);
-	    else if (hasText(node,rx)) output.push(node);}
-	return output;}
+        var match=hybrid_pattern.exec(spec), sel=false, rx=false;
+        if (match) {
+            sel=match[1];
+            rx=new RegExp(match[2].replace(/\\\//g,"/"),match[3]||"mig");}
+        else sel=spec;
+        var candidates=document.querySelectorAll(sel), output=[];
+        var i=0, lim=candidates.length;
+        while (i<lim) {
+            var node=candidates[i++];
+            if (getParent(node,"sscapp")) {}
+            else if (getParent(node,"sscmarker")) {}
+            else if (!(rx)) output.push(node);
+            else if (hasText(node,rx)) output.push(node);}
+        return output;}
     
     /* Stripping out the regex part of a hybrid pattern */
     function simplespec(spec){return spec.replace(/\/[^\/]+\//,"");}
@@ -315,37 +314,37 @@ var SSC=(function(){
     function enable(){addClass(document.body,"cxSSC");}
     function disable(){dropClass(document.body,"cxSSC");}
     function toggle(){
-	if (hasClass(document.body,"cxSSC"))
-	    dropClass(document.body,"cxSSC");
-	else addClass(document.body,"cxSSC");}
+        if (hasClass(document.body,"cxSSC"))
+            dropClass(document.body,"cxSSC");
+        else addClass(document.body,"cxSSC");}
     
     /* Selective display */
 
     /* Clear all selective display classes */
     function clear(){
-	var wrappers=copy(document.querySelectorAll(".sscWRAPPER"));
-	var selected=copy(document.querySelectorAll(".sscSELECTED"));
-	var toolbar=document.getElementById("SSCTOOLBAR");
-	if (toolbar) addClass(toolbar,"noinput");
-	dropClass(wrappers,"sscWRAPPER");
-	dropClass(selected,"sscSELECTED");
-	selector=false;
-	if (SSC.display) SSC.display.innerHTML="";
-	selected=[];
-	if ((!(real_title))&&(document.title))
-	    real_title=document.title||"";
-	document.title="(showsomeclass) "+real_title;}
+        var wrappers=copy(document.querySelectorAll(".sscWRAPPER"));
+        var selected=copy(document.querySelectorAll(".sscSELECTED"));
+        var toolbar=document.getElementById("SSCTOOLBAR");
+        if (toolbar) addClass(toolbar,"noinput");
+        dropClass(wrappers,"sscWRAPPER");
+        dropClass(selected,"sscSELECTED");
+        selector=false;
+        if (SSC.display) SSC.display.innerHTML="";
+        selected=[];
+        if ((!(real_title))&&(document.title))
+            real_title=document.title||"";
+        document.title="(showsomeclass) "+real_title;}
 
     /* Selectively display a particular node */
     function show(node){
-	if (hasClass(node,"sscSELECTED")) return;
-	addClass(node,"sscSELECTED");
-	var scan=node.parentNode, body=document.body;
-	while ((scan)&&(scan!==body)) {
-	    if (hasClass(scan,"sscWRAPPER")) break;
-	    else {
-		addClass(scan,"sscWRAPPER");
-		scan=scan.parentNode;}}}
+        if (hasClass(node,"sscSELECTED")) return;
+        addClass(node,"sscSELECTED");
+        var scan=node.parentNode, body=document.body;
+        while ((scan)&&(scan!==body)) {
+            if (hasClass(scan,"sscWRAPPER")) break;
+            else {
+                addClass(scan,"sscWRAPPER");
+                scan=scan.parentNode;}}}
 
     /* Selectively display all the nodes matching a spec, update the
        state variables and properties for the app.  The *force*
@@ -353,103 +352,103 @@ var SSC=(function(){
        selector.
     */
     function select(spec,force){
-	if (!(spec)) clear();
-	else if ((spec===selector)&&(!(force))) return;
-	else clear();
-	if (!(spec)) return;
-	var toolbar=document.getElementById("SSCTOOLBAR");
-	if (toolbar) dropClass(toolbar,"noinput");
-	var nodes=$(spec);
-	var i=0, lim=nodes.length;
-	enable(); addClass(document.body,"ssc__TOOLBAR");
-	while (i<lim) show(nodes[i++]);
-	document.title=spec+" (x"+nodes.length+") "+real_title;
-	var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
-	var styleinfo=byID("SSCSTYLEINFO");
-	if (input) {
-	    input.value=spec; input.defaultValue=spec;
-	    if (toolbar) dropClass(toolbar,"modified");
-	    input.title="matches "+nodes.length+" elements";}
-	if (count) count.innerHTML=""+nodes.length;
-	if (styleinfo) {
-	    var rules=SSC.getStyleInfo(spec);
-	    if (rules.length===0)
-		styleinfo.innerHTML="No matching rules found";
-	    else styleinfo.innerHTML="";
-	    var r=0, n_rules=rules.length;
-	    while (r<n_rules) {
-		var rule=rules[r++]; var p=make("p"); var body=rule.indexOf('{');
-		p.appendChild(make("strong",false,rule.slice(0,body).trim()));
-		p.appendChild(text(" { "));
-		var clauses=rule.slice(body+1), semi=clauses.indexOf(';');
-		while (semi>0) {
-		    p.appendChild(make("span","prop",(clauses.slice(0,semi)).trim()+";"));
-		    p.appendChild(text(" "));
-		    clauses=clauses.slice(semi+1);
-		    semi=clauses.indexOf(';');}
-		p.appendChild(text(clauses));
-		styleinfo.appendChild(p);}}
-	selector=spec;
-	selected=nodes;
-	if (lim) SSC.focus(nodes[0]);
-    	window.location.hash="#"+spec;}
+        if (!(spec)) clear();
+        else if ((spec===selector)&&(!(force))) return;
+        else clear();
+        if (!(spec)) return;
+        var toolbar=document.getElementById("SSCTOOLBAR");
+        if (toolbar) dropClass(toolbar,"noinput");
+        var nodes=$(spec);
+        var i=0, lim=nodes.length;
+        enable(); addClass(document.body,"ssc__TOOLBAR");
+        while (i<lim) show(nodes[i++]);
+        document.title=spec+" (x"+nodes.length+") "+real_title;
+        var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
+        var styleinfo=byID("SSCSTYLEINFO");
+        if (input) {
+            input.value=spec; input.defaultValue=spec;
+            if (toolbar) dropClass(toolbar,"modified");
+            input.title="matches "+nodes.length+" elements";}
+        if (count) count.innerHTML=""+nodes.length;
+        if (styleinfo) {
+            var rules=SSC.getStyleInfo(spec);
+            if (rules.length===0)
+                styleinfo.innerHTML="No matching rules found";
+            else styleinfo.innerHTML="";
+            var r=0, n_rules=rules.length;
+            while (r<n_rules) {
+                var rule=rules[r++]; var p=make("p"); var body=rule.indexOf('{');
+                p.appendChild(make("strong",false,rule.slice(0,body).trim()));
+                p.appendChild(text(" { "));
+                var clauses=rule.slice(body+1), semi=clauses.indexOf(';');
+                while (semi>0) {
+                    p.appendChild(make("span","prop",(clauses.slice(0,semi)).trim()+";"));
+                    p.appendChild(text(" "));
+                    clauses=clauses.slice(semi+1);
+                    semi=clauses.indexOf(';');}
+                p.appendChild(text(clauses));
+                styleinfo.appendChild(p);}}
+        selector=spec;
+        selected=nodes;
+        if (lim) SSC.focus(nodes[0]);
+        window.location.hash="#"+spec;}
 
     function getOffsetTop(node){
-	var off=0; var scan=node;
-	while (scan) {
-	    if (scan.nodeType===1) {
-		off=off+scan.offsetTop;}
-	    scan=scan.offsetParent;}
-	return off;}
+        var off=0; var scan=node;
+        while (scan) {
+            if (scan.nodeType===1) {
+                off=off+scan.offsetTop;}
+            scan=scan.offsetParent;}
+        return off;}
 
     /* The FOCUS is used for moving back and forth through the
        selected nodes. */
     function setFocus(node,index){
-	if ((node)&&(typeof index!=="number"))
-	    index=selected.indexOf(node);
-	if (byID("SSCMATCHINDEX")) byID("SSCMATCHINDEX").innerHTML=""+(index+1);
-	if (focus) dropClass(focus,"sscFOCUS");
-	if (node) addClass(node,"sscFOCUS");
-	focus=node; focus_index=index;
-	if (!(focus)) {}
-	else {
-	    var node_top=getOffsetTop(focus);
-	    var node_height=focus.offsetHeight;
-	    var scroll_top=window.scrollY;
-	    var scroll_height=window.innerHeight;
-	    if ((node_top<(scroll_top+100))||
-		(node_top>(scroll_top+scroll_height)))
-		window.scrollTo(0,node_top-100);
-	    else if (((node_top+node_height)>(scroll_top+scroll_height))&&
-		     (node_height<(scroll_height-150))) 
-		window.scrollTo(0,(node_top-scroll_height+150)+node_height);
-	    else {}}}
+        if ((node)&&(typeof index!=="number"))
+            index=selected.indexOf(node);
+        if (byID("SSCMATCHINDEX")) byID("SSCMATCHINDEX").innerHTML=""+(index+1);
+        if (focus) dropClass(focus,"sscFOCUS");
+        if (node) addClass(node,"sscFOCUS");
+        focus=node; focus_index=index;
+        if (!(focus)) {}
+        else {
+            var node_top=getOffsetTop(focus);
+            var node_height=focus.offsetHeight;
+            var scroll_top=window.scrollY;
+            var scroll_height=window.innerHeight;
+            if ((node_top<(scroll_top+100))||
+                (node_top>(scroll_top+scroll_height)))
+                window.scrollTo(0,node_top-100);
+            else if (((node_top+node_height)>(scroll_top+scroll_height))&&
+                     (node_height<(scroll_height-150))) 
+                window.scrollTo(0,(node_top-scroll_height+150)+node_height);
+            else {}}}
     function focusfn(node){
-	var index=false;
-	if (typeof node === "undefined") return focus;
-	else if (typeof node === "number") {
-	    if (selected[node]) {
-		index=node; node=selected[index];}
-	    else node=false;}
-	else if (node.nodeType!==1) node=false;
-	else {}
-	if (!(node)) setFocus(false,false);
-	else setFocus(node,index);
-	return node;}
+        var index=false;
+        if (typeof node === "undefined") return focus;
+        else if (typeof node === "number") {
+            if (selected[node]) {
+                index=node; node=selected[index];}
+            else node=false;}
+        else if (node.nodeType!==1) node=false;
+        else {}
+        if (!(node)) setFocus(false,false);
+        else setFocus(node,index);
+        return node;}
 
     /* Finally, return the object */
 
     return {
-	isenabled: isenabled,enable: enable,disable: disable,toggle: toggle,
-	select: select, clear: clear, setFocus: setFocus, focus: focusfn, 
-	selector: function getselector(){ return selector;},
-	selected: function getselected(){ return selected;},
-	refresh: function refresh(){select(selector,true);},
-	focusIndex: function focusIndex(){ return focus_index;},
-	getFocus: function(){return focus;},
-	$: $, simplespec: simplespec,
-	Templates: {}, Handlers: {}, Inits: {},
-	Utils: Utils, imgroot: imgroot};})();
+        isenabled: isenabled,enable: enable,disable: disable,toggle: toggle,
+        select: select, clear: clear, setFocus: setFocus, focus: focusfn, 
+        selector: function getselector(){ return selector;},
+        selected: function getselected(){ return selected;},
+        refresh: function refresh(){select(selector,true);},
+        focusIndex: function focusIndex(){ return focus_index;},
+        getFocus: function(){return focus;},
+        $: $, simplespec: simplespec,
+        Templates: {}, Handlers: {}, Inits: {},
+        Utils: Utils, imgroot: imgroot};})();
 
 SSC.updateSelectors=(function(){
     
@@ -457,121 +456,121 @@ SSC.updateSelectors=(function(){
     var addListener=SSC.Utils.addListener, byID=SSC.Utils.byID;
     
     function countSelectors(root){
-	var counts={}, all=[];
-	if (!(root)) root=document.body;
-	// Gather all selectors, with frequency counts
-	scandom(root,counts,all);
-	// Sort by frequency, then length
-	all.sort(function(x,y){
-	    var cx=counts[x], cy=counts[y];
-	    if (cx===cy) {
-		if (x.search(y)>=0) return 1;
-		else if (y.search(x)>=0) return -1;
-		else return y.length-x.length;}
-	    else return cy-cx;});
-	if (all.length>1) {
-	    // Remove some redundant entries
-	    var i=1, lim=all.length;
-	    var cur=all[0], reduced=[cur];
-	    var curcount=counts[cur];
-	    while (i<lim) {
-		var sel=all[i++], count=counts[sel];
-		if ((count!==curcount)||
-		    (cur.search(new RegExp(sel.replace(".","\\.")+"\\b"))<0))
-		    reduced.push(sel); cur=sel; curcount=count;}
-	    counts._all=reduced;}
-	else counts._all=all;
-	return counts;}
+        var counts={}, all=[];
+        if (!(root)) root=document.body;
+        // Gather all selectors, with frequency counts
+        scandom(root,counts,all);
+        // Sort by frequency, then length
+        all.sort(function(x,y){
+            var cx=counts[x], cy=counts[y];
+            if (cx===cy) {
+                if (x.search(y)>=0) return 1;
+                else if (y.search(x)>=0) return -1;
+                else return y.length-x.length;}
+            else return cy-cx;});
+        if (all.length>1) {
+            // Remove some redundant entries
+            var i=1, lim=all.length;
+            var cur=all[0], reduced=[cur];
+            var curcount=counts[cur];
+            while (i<lim) {
+                var sel=all[i++], count=counts[sel];
+                if ((count!==curcount)||
+                    (cur.search(new RegExp(sel.replace(".","\\.")+"\\b"))<0))
+                    reduced.push(sel); cur=sel; curcount=count;}
+            counts._all=reduced;}
+        else counts._all=all;
+        return counts;}
     SSC.countSelectors=countSelectors;
 
     function possibleSelectors(tag,classes){
-	var selectors=[];
-	if (!(tag)) tag=false;
-	if (tag!==false) selectors.push(tag);
-	classes.sort();
-	var i=0, lim=classes.length;
-	while (i<lim) {
-	    selectors.push("."+classes[i]);
-	    if (tag!==false) selectors.push(tag+"."+classes[i]);
-	    var j=i+2;
-	    while (j<lim) {
-		var compound=classes.slice(i,j).join(".");
-		selectors.push("."+compound);
-		if (tag!==false)
-		    selectors.push(tag+"."+compound);
-		j++;}
-	    i++;}
-	return selectors;}
+        var selectors=[];
+        if (!(tag)) tag=false;
+        if (tag!==false) selectors.push(tag);
+        classes.sort();
+        var i=0, lim=classes.length;
+        while (i<lim) {
+            selectors.push("."+classes[i]);
+            if (tag!==false) selectors.push(tag+"."+classes[i]);
+            var j=i+2;
+            while (j<lim) {
+                var compound=classes.slice(i,j).join(".");
+                selectors.push("."+compound);
+                if (tag!==false)
+                    selectors.push(tag+"."+compound);
+                j++;}
+            i++;}
+        return selectors;}
     SSC.possibleSelectors=possibleSelectors;
 
     function scandom(node,counts,all){
-	var tag=node.tagName; var classname=node.className;
-	// Ignore yourself
-	if (classname.search(/\bsscapp\b/)>=0) return;
-	classname=classname.replace(/\bssc\w+/g,"");
-	// Split up classnames
-	var classes=((classname)?(classname.split(/\s+/)):[]);
-	// Generate applicable selectors
-	var selectors=possibleSelectors(tag,classes);
-	// Increase the counts for applicable selectors
-	var k=0, klim=selectors.length;
-	while (k<klim) {
-	    var sel=selectors[k++];
-	    if (counts.hasOwnProperty(sel)) counts[sel]++;
-	    else {counts[sel]=1; all.push(sel);}}
-	// Descend the DOM
-	if (node.childNodes) {
-	    var children=node.childNodes;
-	    var c=0, clim=children.length; while (c<clim) {
-		var child=children[c++];
-		if (child.nodeType===1) scandom(child,counts,all);}}}
+        var tag=node.tagName; var classname=node.className;
+        // Ignore yourself
+        if (classname.search(/\bsscapp\b/)>=0) return;
+        classname=classname.replace(/\bssc\w+/g,"");
+        // Split up classnames
+        var classes=((classname)?(classname.split(/\s+/)):[]);
+        // Generate applicable selectors
+        var selectors=possibleSelectors(tag,classes);
+        // Increase the counts for applicable selectors
+        var k=0, klim=selectors.length;
+        while (k<klim) {
+            var sel=selectors[k++];
+            if (counts.hasOwnProperty(sel)) counts[sel]++;
+            else {counts[sel]=1; all.push(sel);}}
+        // Descend the DOM
+        if (node.childNodes) {
+            var children=node.childNodes;
+            var c=0, clim=children.length; while (c<clim) {
+                var child=children[c++];
+                if (child.nodeType===1) scandom(child,counts,all);}}}
 
     function updateSelectors(counts,dropbox){
-	if (!(counts)) counts=SSC.countSelectors(document.body);
-	var all=counts._all; var options=[];
-	if (dropbox) dropbox.innerHTML="";
-	var i=0, lim=all.length; while (i<lim) {
-	    var sel=all[i++]; var count=counts[sel];
-	    var label=((count===1)?(" (one element)"):(" ("+count+" elements)"));
-	    var option=make("OPTION",false,sel+label);
-	    option.value=sel; options.push(option);
-	    if (dropbox) dropbox.appendChild(option);}
-	counts._options=options;
-	return counts;}
+        if (!(counts)) counts=SSC.countSelectors(document.body);
+        var all=counts._all; var options=[];
+        if (dropbox) dropbox.innerHTML="";
+        var i=0, lim=all.length; while (i<lim) {
+            var sel=all[i++]; var count=counts[sel];
+            var label=((count===1)?(" (one element)"):(" ("+count+" elements)"));
+            var option=make("OPTION",false,sel+label);
+            option.value=sel; options.push(option);
+            if (dropbox) dropbox.appendChild(option);}
+        counts._options=options;
+        return counts;}
 
     return updateSelectors;})();
 
 SSC.getStyleInfo=(function(){
 
     function getRules(sel,results,seen){
-	var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
-	var pat=((sel.indexOf('.')>=0)?
-		 (new RegExp(sel.replace(".","\\.")+"\\b","gi")):
-		 (new RegExp(sel+"[ ,\n]","gi")));
-	if (!(results)) results=[];
-	while (i<n_sheets) {
-	    var sheet=sheets[i++];
-	    if (!(sheet.rules)) continue;
-	    var rules=sheet.rules; var j=0, n_rules=rules.length;
-	    while (j<n_rules) {
-		var rule=rules[j++], text=rule.cssText;
-		if (text.search(pat)>=0) {
-		    var norm=text.replace(/\s+/g," ");
-		    if (seen[norm]) continue; else seen[norm]=norm;
-		    results.push(text);}}}
-	return results;}
+        var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
+        var pat=((sel.indexOf('.')>=0)?
+                 (new RegExp(sel.replace(".","\\.")+"\\b","gi")):
+                 (new RegExp(sel+"[ ,\n]","gi")));
+        if (!(results)) results=[];
+        while (i<n_sheets) {
+            var sheet=sheets[i++];
+            if (!(sheet.rules)) continue;
+            var rules=sheet.rules; var j=0, n_rules=rules.length;
+            while (j<n_rules) {
+                var rule=rules[j++], text=rule.cssText;
+                if (text.search(pat)>=0) {
+                    var norm=text.replace(/\s+/g," ");
+                    if (seen[norm]) continue; else seen[norm]=norm;
+                    results.push(text);}}}
+        return results;}
 
     function getStyleInfo(selector){
-	if (selector.indexOf('/')>=0)
-	    selector=selector.slice(0,selector.indexOf('/'));
-	var parsed=selector.split(".");
-	var selectors=SSC.possibleSelectors(
-	    ((parsed[0]!=="")&&(parsed[0])),parsed.slice(1));
-	selectors.sort(function(x,y){return x.length-y.length;});
-	var results=[], seen={};
-	var i=0, lim=selectors.length;
-	while (i<lim) getRules(selectors[i++],results,seen);
-	return results;}
+        if (selector.indexOf('/')>=0)
+            selector=selector.slice(0,selector.indexOf('/'));
+        var parsed=selector.split(".");
+        var selectors=SSC.possibleSelectors(
+            ((parsed[0]!=="")&&(parsed[0])),parsed.slice(1));
+        selectors.sort(function(x,y){return x.length-y.length;});
+        var results=[], seen={};
+        var i=0, lim=selectors.length;
+        while (i<lim) getRules(selectors[i++],results,seen);
+        return results;}
 
     getStyleInfo.getRules=getRules;
 
@@ -585,180 +584,191 @@ SSC.getStyleInfo=(function(){
     var getSignature=SSC.Utils.getSignature;
     
     function addMarker(node,marker,after){
-	var id=getID(node);
-	var current=markers[id];
-	if (current) current.push(marker);
-	else markers[id]=[marker];
-	marker.setAttribute("forid",id);
-	marker.id=id+"_"+((after)?("AFTER"):("BEFORE"));
-	var parent=node.parentNode;
-	if (after) {
-	    if (node.nextSibling)
-		parent.insertBefore(marker,node.nextSibling);
-	    else parent.appendChild(marker);}
-	else parent.insertBefore(marker,node);}
+        var id=getID(node);
+        var current=markers[id];
+        if (current) current.push(marker);
+        else markers[id]=[marker];
+        marker.setAttribute("forid",id);
+        marker.id=id+"_"+((after)?("AFTER"):("BEFORE"));
+        var parent=node.parentNode;
+        if (after) {
+            if (node.nextSibling)
+                parent.insertBefore(marker,node.nextSibling);
+            else parent.appendChild(marker);}
+        else parent.insertBefore(marker,node);}
     
     function clearMarkers(node){
-	var id=getID(node);
-	var current=markers[id];
-	if (current) {
-	    var i=0, lim=current.length;
-	    while (i<lim) {
-		var marker=current[i++];
-		var parent=marker.parentNode;
-		parent.removeChild(marker);}
-	    markers[id]=[];}}
+        var id=getID(node);
+        var current=markers[id];
+        if (current) {
+            var i=0, lim=current.length;
+            while (i<lim) {
+                var marker=current[i++];
+                var parent=marker.parentNode;
+                parent.removeChild(marker);}
+            markers[id]=[];}}
 
     function marker(classname,text,node){
-	var title=text;
-	if (node) {
-	    var sig=getSignature(node);
-	    text="<strong>"+text+"</strong>&nbsp;&nbsp;"+"<tt>"+sig+"</tt>";
-	    title=title+" "+sig;}
-	else text="<strong>"+text+"</strong>";
-	var m=make("div","sscmarker "+classname,text);
-	m.title=title;
-	return m;}
+        var title=text;
+        if (node) {
+            var sig=getSignature(node);
+            text="<strong>"+text+"</strong>&nbsp;&nbsp;"+"<tt>"+sig+"</tt>";
+            title=title+" "+sig;}
+        else text="<strong>"+text+"</strong>";
+        var m=make("div","sscmarker "+classname,text);
+        m.title=title;
+        return m;}
 
     function addMarkerAfter(node,classname,text){
-	addMarker(node,marker(classname,text,node),true);}
+        addMarker(node,marker(classname,text,node),true);}
     function addMarkerBefore(node,classname,text){
-	addMarker(node,marker(classname,text,node),false);}
+        addMarker(node,marker(classname,text,node),false);}
 
     function addMarkers(node){
-	clearMarkers(node);
-	var style=window.getComputedStyle(node);
-	if (style.pageBreakBefore==='always') {
-	    addMarkerBefore(node,"sscforcebreakbefore","force break before");}
-	if (style.pageBreakBefore==='avoid') {
-	    addMarkerBefore(node,"sscavoidbreakbefore","avoid break before");}
-	if (style.pageBreakAfter==='always') {
-	    addMarkerAfter(node,"sscforcebreakafter","force break after");}
-	if (style.pageBreakAfter==='avoid') {
-	    addMarkerAfter(node,"sscavoidbreakafter","avoid break after");}
-	if (style.pageBreakInside==='avoid') {
-	    addMarkerAfter(node,"sscavoidbreakinsideafter","avoid break inside");
-	    addMarkerBefore(node,"sscavoidbreakinsidebefore","avoid break inside");}}
+        clearMarkers(node);
+        var style=window.getComputedStyle(node);
+        if (style.pageBreakBefore==='always') {
+            addMarkerBefore(node,"sscforcebreakbefore","force break before");}
+        if (style.pageBreakBefore==='avoid') {
+            addMarkerBefore(node,"sscavoidbreakbefore","avoid break before");}
+        if (style.pageBreakAfter==='always') {
+            addMarkerAfter(node,"sscforcebreakafter","force break after");}
+        if (style.pageBreakAfter==='avoid') {
+            addMarkerAfter(node,"sscavoidbreakafter","avoid break after");}
+        if (style.pageBreakInside==='avoid') {
+            addMarkerAfter(node,"sscavoidbreakinsideafter","avoid break inside");
+            addMarkerBefore(node,"sscavoidbreakinsidebefore","avoid break inside");}}
     SSC.addMarkers=addMarkers;
     
     function gatherAllElements(root,into){
-	if (root.nodeType!==1) return;
-	var classname=root.className;
-	if (classname.search(/(sscapp|sscmarker)/gi)>=0)
-	    return;
-	into.push(root);
-	if ((root.childNodes)&&(root.childNodes.length)) {
-	    var children=root.childNodes;
-	    var i=0, lim=children.length; while (i<lim) {
-		var child=children[i++];
-		if (child.nodeType===1) gatherAllElements(child,into);}}}
+        if (root.nodeType!==1) return;
+        var classname=root.className;
+        if (classname.search(/(sscapp|sscmarker)/gi)>=0)
+            return;
+        into.push(root);
+        if ((root.childNodes)&&(root.childNodes.length)) {
+            var children=root.childNodes;
+            var i=0, lim=children.length; while (i<lim) {
+                var child=children[i++];
+                if (child.nodeType===1) gatherAllElements(child,into);}}}
 
     function addAllMarkers(){
-	var elements=[]; gatherAllElements(document.body,elements);
-	var i=0, lim=elements.length;
-	function step(){
-	    var started=(new Date()).getTime();
-	    while ((i<lim)&&((((new Date()).getTime())-started)<100)) 
-		addMarkers(elements[i++]);
-	    if (i<lim) setTimeout(step,50);}
-	step();}
-		
+        var elements=[]; gatherAllElements(document.body,elements);
+        var i=0, lim=elements.length;
+        function step(){
+            var started=(new Date()).getTime();
+            while ((i<lim)&&((((new Date()).getTime())-started)<100)) 
+                addMarkers(elements[i++]);
+            if (i<lim) setTimeout(step,50);}
+        step();}
+                
     addListener(window,"load",addAllMarkers);})();
 
-SSC.Templates.ssctoolbar="<div id=\"SSCTOOLBARBUTTONS\"> \
-  <button class=\"image scanup\" \
-	title=\"Go to the previous selected element (shortcut: Shift-Tab)\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Prev\"/> \
-    <img class=\"notsvg\" \
-	 src=\"{{imgroot}}/uparrow_white100h.png\" alt=\"Prev\"/> \
-  </button> \
-  <button class=\"image scandown\" \
-	title=\"Go to the next selected element (shortcut: Tab)\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Next\"/> \
-    <img class=\"notsvg\" \
-	 src=\"{{imgroot}}/downarrow_white100h.png\" alt=\"Next\"/> \
-  </button> \
-  <button class=\"image showrules\" \
-	  title=\"Show some of the CSS style rules for this selector (shortcut: the 'S' key)\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\" \
-	 alt=\"Rules\"/> \
-    <img class=\"notsvg\" \
-	 src=\"{{imgroot}}/stylebraces100x100.png\" \
-	 alt=\"Rules\"/> \
-  </button> \
-  <button class=\"image markers\" \
-	  title=\"Show/hide markup markers\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/eye_ondark.svgz\" alt=\"Markers\"/> \
-    <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\" \
-	 alt=\"Markers\"/> \
-  </button> \
-  <button class=\"image help\" id=\"SSCHELPBUTTON\" \
-	  title=\"Show help (shortcut: the '?' key)\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/help.svgz\" alt=\"Help\"/> \
-    <img class=\"notsvg\" src=\"{{imgroot}}/help100x100.png\" alt=\"Help\"/> \
-  </button> \
-  <button class=\"image hide\"> \
-    <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" \
-	 title=\"Hide this toolbar\" \
-	 alt=\"Hide\"/> \
-    <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" \
-	 alt=\"Hide\"/> \
-  </button> \
-</div> \
-<div class=\"combobox\"> \
-  <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\" \
-	 placeholder=\"a CSS selector\"/> \
-  <select id=\"SSCDROPBOX\" class=\"dropbox\"></select> \
-</div> \
-<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\" \
-      title=\"Tab/Shift-Tab to move among matches\"> \
-  #<span id=\"SSCMATCHINDEX\">#</span> of \
-  <span id=\"SSCMATCHCOUNT\">some</span> \
-</span> \
-<span class=\"text inputhelp\" id=\"SSCINPUTHELP\"> \
-  enter a CSS selector (like <samp>P.<em>class</em></samp>) \
-</span> \
-<div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div> \
-";
+SSC.Templates.toolbar=
+    "<div id=\"SSCTOOLBARBUTTONS\">\n"+
+    "  <button class=\"image reclass\"\n"+
+    "        title=\"Change all instances matching the current selector (shortcut: the '*' key)\">\n"+
+    "    <img src=\"{{imgroot}}/changemarkup_ondark.svgz\" alt=\"Reclass\" class=\"svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/changemarkup_ondark100x100.png\" alt=\"Reclass\" class=\"notsvg\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image scanup\"\n"+
+    "        title=\"Go to the previous selected element (shortcut: Shift-Tab)\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Prev\"/>\n"+
+    "    <img class=\"notsvg\"\n"+
+    "         src=\"{{imgroot}}/uparrow_white100h.png\" alt=\"Prev\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image scandown\"\n"+
+    "        title=\"Go to the next selected element (shortcut: Tab)\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Next\"/>\n"+
+    "    <img class=\"notsvg\"\n"+
+    "         src=\"{{imgroot}}/downarrow_white100h.png\" alt=\"Next\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image showrules\"\n"+
+    "          title=\"Show some of the CSS style rules for this selector (shortcut: the 'S' key)\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/stylebraces.svgz\"\n"+
+    "         alt=\"Rules\"/>\n"+
+    "    <img class=\"notsvg\"\n"+
+    "         src=\"{{imgroot}}/stylebraces100x100.png\"\n"+
+    "         alt=\"Rules\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image markers\"\n"+
+    "          title=\"Show/hide markup markers\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/eye_ondark.svgz\" alt=\"Markers\"/>\n"+
+    "    <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\"\n"+
+    "         alt=\"Markers\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image save\" id=\"SSCEDITSAVEBUTTON\"\n"+
+    "          title=\"Save this document\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/cloudfloppy.svgz\" alt=\"Save\"/>\n"+
+    "    <img class=\"notsvg\" src=\"{{imgroot}}/cloudfloppy100x100.png\" alt=\"Save\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image help\" id=\"SSCHELPBUTTON\"\n"+
+    "          title=\"Show help (shortcut: the '?' key)\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/help.svgz\" alt=\"Help\"/>\n"+
+    "    <img class=\"notsvg\" src=\"{{imgroot}}/help100x100.png\" alt=\"Help\"/>\n"+
+    "  </button>\n"+
+    "  <button class=\"image hide\"\n"+
+    "          title=\"Close the toolbar\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" alt=\"Hide\"/>\n"+
+    "    <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" alt=\"Hide\"/>\n"+
+    "  </button>\n"+
+    "</div>\n"+
+    "<div class=\"combobox\">\n"+
+    "  <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\"\n"+
+    "         placeholder=\"a CSS selector\"/>\n"+
+    "  <select id=\"SSCDROPBOX\" class=\"dropbox\"></select>\n"+
+    "</div>\n"+
+    "<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"\n"+
+    "      title=\"Tab/Shift-Tab to move among matches\">\n"+
+    "<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"\n"+
+    "      title=\"Tab/Shift-Tab to move among matches\">\n"+
+    "      #<span id=\"SSCMATCHINDEX\">#</span> of\n"+
+    "      <span id=\"SSCMATCHCOUNT\">some</span>\n"+
+    "    </span>\n"+
+    "    <span class=\"text inputhelp\" id=\"SSCINPUTHELP\">\n"+
+    "      enter a CSS selector (like <samp>P.<em>class</em></samp>)\n"+
+    "    </span>\n"+
+    "<div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div>\n"+
+    "";
 
-SSC.Templates.sschelp="<button class=\"image close\"> \
-  <img src=\"{{imgroot}}/redx.svgz\" class=\"svg\"/> \
-  <img src=\"{{imgroot}}/redx100x100.png\" class=\"notsvg\"/> \
-</button> \
-<p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS \
- classes are applied and used in a document.</p> \
- \
-<p>The <dfn>current selector</dfn> is displayed (and can be changed) \
-  in the text input box on the left side of the toolbar at the top of \
-  the screen.</p> \
-<p><dfn>Matching elements</dfn> are highlighted and all surrounding \
-  text is faded.</p> \
- \
-<p>The <dfn>selector</dfn> can be any CSS selector \
-  (e.g <samp>P.class</samp>), optionally followed by a regular \
-  expression (e.g. <samp>/pattern/</samp>) matched against element \
-  content.</p> \
-<p><strong>Open the toolbar</strong> with the <kbd>Enter</kbd> key \
-  or by clicking (tapping) at the top of the screen.</p> \
-<p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or \
- the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/> \
- <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/> \
- icon.</p> \
-<p><strong>Move among matched elements</strong> with \
-  the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow ( \
-  <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/> \
-  <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/> \
-  <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/> \
-  <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext \
-  notsvg\"/>) icons.</p> \
-<p><strong>See <em>(some)</em> style rules</strong> with \
-  the <kbd>S</kbd> key or the <img src=\"{{imgroot}}/stylebraces.svgz\" \
-  class=\"intext svg\"/> <img src=\"{{imgroot}}/stylebraces100x100.png\" \
-  class=\"intext notsvg\"/> icon.</p> \
-<p><strong>Click an element on the screen</strong> to set the \
-  <em>current selector</em> from its tag and classes.</p> \
- \
-";
+SSC.Templates.sschelp=
+    "<button class=\"image close\">\n"+
+    "  <img src=\"{{imgroot}}/redx.svgz\" class=\"svg\"/>\n"+
+    "  <img src=\"{{imgroot}}/redx100x100.png\" class=\"notsvg\"/>\n"+
+    "</button>\n"+
+    "<p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS\n"+
+    " classes are applied and used in a document.</p>\n"+
+    "\n"+
+    "<p>The <dfn>current selector</dfn> is displayed (and can be changed)\n"+
+    "  in the text input box on the left side of the toolbar at the top of\n"+
+    "  the screen.</p>\n"+
+    "<p><dfn>Matching elements</dfn> are highlighted and all surrounding\n"+
+    "  text is faded.</p>\n"+
+    "\n"+
+    "<p>The <dfn>selector</dfn> can be any CSS selector\n"+
+    "  (e.g <samp>P.class</samp>), optionally followed by a regular\n"+
+    "  expression (e.g. <samp>/pattern/</samp>) matched against element\n"+
+    "  content.</p>\n"+
+    "<p><strong>Open the toolbar</strong> with the <kbd>Enter</kbd> key\n"+
+    "  or by clicking (tapping) at the top of the screen.</p>\n"+
+    "<p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or\n"+
+    " the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/>\n"+
+    " <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/>\n"+
+    " icon.</p>\n"+
+    "<p><strong>Move among matched elements</strong> with\n"+
+    "  the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow (\n"+
+    "  <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/>\n"+
+    "  <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/>\n"+
+    "  <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/>\n"+
+    "  <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext\n"+
+    "  notsvg\"/>) icons.</p>\n"+
+    "<p><strong>See <em>(some)</em> style rules</strong> with\n"+
+    "  the <kbd>S</kbd> key or the <img src=\"{{imgroot}}/stylebraces.svgz\"\n"+
+    "  class=\"intext svg\"/> <img src=\"{{imgroot}}/stylebraces100x100.png\"\n"+
+    "  class=\"intext notsvg\"/> icon.</p>\n"+
+    "<p><strong>Click an element on the screen</strong> to set the\n"+
+    "  <em>current selector</em> from its tag and classes.</p>\n"+
+    "";
 
 (function(){
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin;
@@ -776,133 +786,133 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
     /* Using the URL hash as a selector */
 
     function selectHash() {
-	var hash=(location)&&(location.hash);
-	if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
-	SSC.select(hash);}
+        var hash=(location)&&(location.hash);
+        if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
+        SSC.select(hash);}
 
     addListener(window,"hashchange",selectHash);
 
     /* The application toolbar */
 
     function setupToolbar(){
-	var toolbar=make("div","sscapp ssctoolbar noinput",
-			 SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
-			 {imgroot: SSC.imgroot},
-			 SSC.Inits.toolbar);
-	var dropbox=bySpec(toolbar,"SELECT"); {
-	    SSC.selectors=SSC.updateSelectors(false,dropbox);}
-	var tapzone=make("div",false,false,
-			 {id: "SSCTAPZONE",click: showToolbar});
-	document.body.appendChild(toolbar);
-	document.body.appendChild(tapzone);}
+        var toolbar=make("div","sscapp ssctoolbar noinput",
+                         SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
+                         {imgroot: SSC.imgroot},
+                         SSC.Inits.toolbar);
+        var dropbox=bySpec(toolbar,"SELECT"); {
+            SSC.selectors=SSC.updateSelectors(false,dropbox);}
+        var tapzone=make("div",false,false,
+                         {id: "SSCTAPZONE",click: showToolbar});
+        document.body.appendChild(toolbar);
+        document.body.appendChild(tapzone);}
 
     function showToolbar(evt){
-	evt=evt||event;
-	addClass(document.body,"ssc__TOOLBAR");
-	cancel(evt);}
+        evt=evt||event;
+        addClass(document.body,"ssc__TOOLBAR");
+        cancel(evt);}
     function hideToolbar(){
-	dropClass("SSCTOOLBAR","showstyle");
-	dropClass(document.body,"ssc__TOOLBAR");}
+        dropClass("SSCTOOLBAR","showstyle");
+        dropClass(document.body,"ssc__TOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
     /* Toolbar event handlers */
 
     function toggleStyleInfo(){
-	if (hasClass("SSCTOOLBAR","showstyle"))
-	    dropClass("SSCTOOLBAR","showstyle");
-	else if (SSC.selector())
-	    addClass("SSCTOOLBAR","showstyle");}
+        if (hasClass("SSCTOOLBAR","showstyle"))
+            dropClass("SSCTOOLBAR","showstyle");
+        else if (SSC.selector())
+            addClass("SSCTOOLBAR","showstyle");}
 
     function sscinput_focus(){
-	sscinput_complete();
-	dropClass("SSCTOOLBAR","showstyle");
-	addClass("SSCTOOLBAR","focused");}
+        sscinput_complete();
+        dropClass("SSCTOOLBAR","showstyle");
+        addClass("SSCTOOLBAR","focused");}
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
 
     function sscinput_keydown(evt){
- 	evt=evt||event;
-	var kc=evt.keyCode;
-	var target=evt.target||evt.srcElement;
-	if (kc===RETURN) {
-	    var spec=target.value;
-	    SSC.select(spec,true);
-	    target.blur();
-	    cancel(evt);}
-	else if (kc===ESCAPE) {
-	    target.blur(); cancel(evt);}
-	else {
-	    setTimeout(sscinput_complete,50);}}
+        evt=evt||event;
+        var kc=evt.keyCode;
+        var target=evt.target||evt.srcElement;
+        if (kc===RETURN) {
+            var spec=target.value;
+            SSC.select(spec,true);
+            target.blur();
+            cancel(evt);}
+        else if (kc===ESCAPE) {
+            target.blur(); cancel(evt);}
+        else {
+            setTimeout(sscinput_complete,50);}}
     
     var selector_complete_string=false;
     function sscinput_complete(){
-	var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
-	var toolbar=((input)&&(getParent(input,"sscapp")));
-	var prefix=selector_prefix(input.value);
-	if (input.value===input.defaultValue) {
-	    if (toolbar) dropClass(toolbar,"modified");
-	    dropClass(input,"modified");}
-	else {
-	    if (toolbar) addClass(toolbar,"modified");
-	    addClass(input,"modified");}
-	if (prefix===selector_complete_string) return;
-	else selector_complete_string=prefix;
-	var selectors=SSC.selectors||
-	    (SSC.selectors=SSC.updateSelectors());
-	var all=selectors._all, options=selectors._options;
-	var frag=document.createDocumentFragment();
-	var i=0, lim=options.length, matches=0;
-	if (prefix.length===0) while (i<lim) {
-	    frag.appendChild(options[i++]);}
-	else while (i<lim) {
-	    var sel=all[i];
-	    if ((prefix[0]==='.')?
-		(sel.search(prefix)>=0):
-		(sel.search(prefix)===0)) {
-		frag.appendChild(options[i]); matches++;}
-	    i++;}
-	dropbox.innerHTML="";
-	if (matches>7) dropbox.size=7; else dropbox.size=matches+1;
-	dropbox.appendChild(frag);}
+        var input=byID("SSCINPUT"), dropbox=byID("SSCDROPBOX");
+        var toolbar=((input)&&(getParent(input,"sscapp")));
+        var prefix=selector_prefix(input.value);
+        if (input.value===input.defaultValue) {
+            if (toolbar) dropClass(toolbar,"modified");
+            dropClass(input,"modified");}
+        else {
+            if (toolbar) addClass(toolbar,"modified");
+            addClass(input,"modified");}
+        if (prefix===selector_complete_string) return;
+        else selector_complete_string=prefix;
+        var selectors=SSC.selectors||
+            (SSC.selectors=SSC.updateSelectors());
+        var all=selectors._all, options=selectors._options;
+        var frag=document.createDocumentFragment();
+        var i=0, lim=options.length, matches=0;
+        if (prefix.length===0) while (i<lim) {
+            frag.appendChild(options[i++]);}
+        else while (i<lim) {
+            var sel=all[i];
+            if ((prefix[0]==='.')?
+                (sel.search(prefix)>=0):
+                (sel.search(prefix)===0)) {
+                frag.appendChild(options[i]); matches++;}
+            i++;}
+        dropbox.innerHTML="";
+        if (matches>7) dropbox.size=7; else dropbox.size=matches+1;
+        dropbox.appendChild(frag);}
 
     function selector_selected(evt){
-	evt=evt||event;
-	var target=evt.target||evt.srcElement;
-	var input=byID("SSCINPUT");
-	if (target.value) {
-	    var text=input.value.trim();
-	    var comma=text.lastIndexOf(',');
-	    if (comma<0) SSC.select(target.value);
-	    else SSC.select(text.slice(0,comma)+','+target.value);
-	    input.blur();}}
+        evt=evt||event;
+        var target=evt.target||evt.srcElement;
+        var input=byID("SSCINPUT");
+        if (target.value) {
+            var text=input.value.trim();
+            var comma=text.lastIndexOf(',');
+            if (comma<0) SSC.select(target.value);
+            else SSC.select(text.slice(0,comma)+','+target.value);
+            input.blur();}}
     function selector_prefix(string){
-	string=string.trim();
-	var comma=string.lastIndexOf(',');
-	if (comma<0) return string;
-	else return string.slice(comma+1);}
+        string=string.trim();
+        var comma=string.lastIndexOf(',');
+        if (comma<0) return string;
+        else return string.slice(comma+1);}
 
     function scan_forward(evt) {
-	var index=SSC.focusIndex();
-	var max=SSC.selected().length-1;
-	if (max<0) {}
-	else if (typeof index === "number") {
-	    if (index>=max) {}
-	    else if (index<0) SSC.focus(0);
-	    else SSC.focus(index+1);}
-	else SSC.focus(0);
-	if (evt) cancel(evt);}
+        var index=SSC.focusIndex();
+        var max=SSC.selected().length-1;
+        if (max<0) {}
+        else if (typeof index === "number") {
+            if (index>=max) {}
+            else if (index<0) SSC.focus(0);
+            else SSC.focus(index+1);}
+        else SSC.focus(0);
+        if (evt) cancel(evt);}
     SSC.Handlers.scan_forward=scan_forward;
 
     function scan_backward(evt) {
-	var index=SSC.focusIndex();
-	var max=SSC.selected().length-1;
-	if (max<0) {}
-	else if (typeof index === "number") {
-	    if (index<=0) {}
-	    else if (index>max)
-		SSC.focus(max);
-	    else SSC.focus(index-1);}
-	else SSC.focus(max);
-	if (evt) cancel(evt);}
+        var index=SSC.focusIndex();
+        var max=SSC.selected().length-1;
+        if (max<0) {}
+        else if (typeof index === "number") {
+            if (index<=0) {}
+            else if (index>max)
+                SSC.focus(max);
+            else SSC.focus(index-1);}
+        else SSC.focus(max);
+        if (evt) cancel(evt);}
     SSC.Handlers.scan_backward=scan_backward;
 
     /* Window event handlers */
@@ -911,153 +921,158 @@ SSC.Templates.sschelp="<button class=\"image close\"> \
     var commands=SSC.commands={};
 
     function window_keydown(evt){
-	evt=evt||event;
-	var key=evt.keyCode;
-	var target=evt.target||evt.srcElement;
-	if ((usekeys.indexOf(key)<0)&&(!(commands[key])))
-	    return;
-	if ((evt.ctrlKey)||(evt.metaKey)||(evt.altKey)||(evt.altGraphKey))
-	    return;
-	if ((target)&&
-	    ((target.tagName==='INPUT')||(target.tagName==='TEXTAREA')))
-	    return;
-	if (key===OPENBRACE) {
-	    if (hasClass(document.body,"ssc__TOOLBAR")) {
-		if (hasClass("SSCTOOLBAR","showstyle"))
-		    dropClass("SSCTOOLBAR","showstyle");
-		else addClass("SSCTOOLBAR","showstyle");}
-	    else {
-		addClass("SSCTOOLBAR","showstyle");
-		addClass(document.body,"ssc__TOOLBAR");}}
-	else if (key===ESCAPE) {
-	    var changed=false;
-	    // Close any windows which are up
-	    dropClass("SSCTOOLBAR","showstyle");
-	    dropClass(document.body,"ssc__TOOLBAR");
-	    if (!(SSC.isenabled())) SSC.enable();
-	    else {
-		if (SSC.focus()) {SSC.focus(false); changed=true;}
-		if (!(changed)) {
-		    SSC.select(false);
-		    SSC.disable();}}}
-	else if (key===TAB) {
-	    if (evt.shiftKey) scan_backward(evt);
-	    else scan_forward(evt);}
-	else if (key===RETURN) {
-	    addClass(document.body,"ssc__TOOLBAR");
-	    if (evt.shiftKey) {
-		var input=byID("SSCINPUT");
-		if (input) input.focus();}}
-	else if (key===QMARK) toggleHelp();
-	else if (commands[key]) {
-	    (commands[key])(evt);}
-	else return;
-	cancel(evt);}
+        evt=evt||event;
+        var key=evt.keyCode;
+        var target=evt.target||evt.srcElement;
+        if ((usekeys.indexOf(key)<0)&&(!(commands[key])))
+            return;
+        if ((evt.ctrlKey)||(evt.metaKey)||(evt.altKey)||(evt.altGraphKey))
+            return;
+        if ((target)&&
+            ((target.tagName==='INPUT')||(target.tagName==='TEXTAREA')))
+            return;
+        if (key===OPENBRACE) {
+            if (hasClass(document.body,"ssc__TOOLBAR")) {
+                if (hasClass("SSCTOOLBAR","showstyle"))
+                    dropClass("SSCTOOLBAR","showstyle");
+                else addClass("SSCTOOLBAR","showstyle");}
+            else {
+                addClass("SSCTOOLBAR","showstyle");
+                addClass(document.body,"ssc__TOOLBAR");}}
+        else if (key===ESCAPE) {
+            var changed=false;
+            // Close any windows which are up
+            dropClass("SSCTOOLBAR","showstyle");
+            dropClass(document.body,"ssc__TOOLBAR");
+            if (!(SSC.isenabled())) SSC.enable();
+            else {
+                if (SSC.focus()) {SSC.focus(false); changed=true;}
+                if (!(changed)) {
+                    SSC.select(false);
+                    SSC.disable();}}}
+        else if (key===TAB) {
+            if (evt.shiftKey) scan_backward(evt);
+            else scan_forward(evt);}
+        else if (key===RETURN) {
+            addClass(document.body,"ssc__TOOLBAR");
+            if (evt.shiftKey) {
+                var input=byID("SSCINPUT");
+                if (input) input.focus();}}
+        else if (key===QMARK) toggleHelp();
+        else if (commands[key]) {
+            (commands[key])(evt);}
+        else return;
+        cancel(evt);}
     SSC.window_keydown=window_keydown;
 
     function window_click(evt){
-	evt=evt||event;
-	var selection=window.getSelection();
-	if ((selection)&&
-	    ((selection.anchorNode!==selection.focusNode)||
-	     (selection.anchorOffset!==selection.focusOffset)))
-	    return;
-	var target=evt.target||evt.srcElement;
-	var scan=target;
-	while (scan) {
-	    if (hasClass(scan,"sscapp")) return;
-	    else if (hasClass(scan,"sscmarker")) return;
-	    else if ((target.tagName==="A")&&(target.href)) return;
-	    else if (scan===document.body) break;
-	    else scan=scan.parentNode;}
-	if (!(scan)) return; else scan=target;
-	while (scan.nodeType!==1) scan=scan.parentNode;
-	if (!(scan)) return;
-	if ((evt.shiftKey)&&(scan.parentNode)) scan=scan.parentNode;
-	if (hasClass(scan,"sscSELECTED")) {
-	    SSC.focus(scan);
-	    return;}
-	var spec=scan.tagName;
-	if ((scan.className)&&(scan.className.length)) {
-	    var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
-	    var classes=norm.split(/\s+/);
-	    if ((classes.length===1)&&
-		(classes[0].length===0))
-		classes=[];
-	    if (classes.length) spec=spec+"."+classes.join(".");}
-	SSC.select(spec,true);}
+        evt=evt||event;
+        var selection=window.getSelection();
+        if ((selection)&&
+            ((selection.anchorNode!==selection.focusNode)||
+             (selection.anchorOffset!==selection.focusOffset)))
+            return;
+        var target=evt.target||evt.srcElement;
+        var scan=target;
+        while (scan) {
+            if (hasClass(scan,"sscapp")) return;
+            else if (hasClass(scan,"sscmarker")) return;
+            else if ((target.tagName==="A")&&(target.href)) return;
+            else if (scan===document.body) break;
+            else scan=scan.parentNode;}
+        if (!(scan)) return; else scan=target;
+        while (scan.nodeType!==1) scan=scan.parentNode;
+        if (!(scan)) return;
+        if ((evt.shiftKey)&&(scan.parentNode)) scan=scan.parentNode;
+        if (hasClass(scan,"sscSELECTED")) {
+            SSC.focus(scan);
+            return;}
+        var spec=scan.tagName;
+        if ((scan.className)&&(scan.className.length)) {
+            var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
+            var classes=norm.split(/\s+/);
+            if ((classes.length===1)&&
+                (classes[0].length===0))
+                classes=[];
+            if (classes.length) spec=spec+"."+classes.join(".");}
+        SSC.select(spec,true);}
     SSC.window_click=window_click;
     
     function toggleHelp(){
-	if (hasClass(document.body,"ssc_SHOWHELP"))
-	    dropClass(document.body,"ssc_SHOWHELP");
-	else addClass(document.body,"ssc_SHOWHELP");}
+        if (hasClass(document.body,"ssc_SHOWHELP"))
+            dropClass(document.body,"ssc_SHOWHELP");
+        else addClass(document.body,"ssc_SHOWHELP");}
     function hideHelp(evt){
-	if (hasClass(document.body,"ssc_SHOWHELP"))
-	    dropClass(document.body,"ssc_SHOWHELP");
-	cancel(evt);}
+        if (hasClass(document.body,"ssc_SHOWHELP"))
+            dropClass(document.body,"ssc_SHOWHELP");
+        cancel(evt);}
     SSC.toggleHelp=toggleHelp;
     SSC.hideHelp=hideHelp;
 
     function toggleMarkers(){
-	if (hasClass(document.body,"ssc_HIDEMARKERS"))
-	    dropClass(document.body,"ssc_HIDEMARKERS");
-	else addClass(document.body,"ssc_HIDEMARKERS");}
+        if (hasClass(document.body,"ssc_HIDEMARKERS"))
+            dropClass(document.body,"ssc_HIDEMARKERS");
+        else addClass(document.body,"ssc_HIDEMARKERS");}
     function hideMarkers(){
-	addClass(document.body,"ssc_HIDMARKERS");}
+        addClass(document.body,"ssc_HIDMARKERS");}
     SSC.toggleMarkers=toggleMarkers;
     SSC.hideMarkers=hideMarkers;
 
     SSC.Inits.toolbar={
-	id: "SSCTOOLBAR",
-	"input:keydown": sscinput_keydown,
-	"input:focus": sscinput_focus,
-	"input:blur": sscinput_blur,
-	"select:change": selector_selected,
-	".markers:click": toggleMarkers,
-	".help:click": toggleHelp,
-	".hide:click": hideToolbar,
-	".showrules:click": toggleStyleInfo,
-	".scanup:click": scan_backward,
-	".scandown:click": scan_forward};
+        id: "SSCTOOLBAR",
+        "input:keydown": sscinput_keydown,
+        "input:focus": sscinput_focus,
+        "input:blur": sscinput_blur,
+        "select:change": selector_selected,
+        ".markers:click": toggleMarkers,
+        ".help:click": toggleHelp,
+        ".hide:click": hideToolbar,
+        ".showrules:click": toggleStyleInfo,
+        ".scanup:click": scan_backward,
+        ".scandown:click": scan_forward};
 
     function setupHelp(){
-	var elt=make("div","sscapp sschelp",
-		     SSC.Templates.helptext||SSC.Templates.sschelp,
-		     {id: "SSCHELP",click: toggleHelp,
-		      "button.help:click": hideHelp,
-		      imgroot: imgroot});
-	document.body.appendChild(elt);}
+        var elt=make("div","sscapp sschelp",
+                     SSC.Templates.helptext||SSC.Templates.sschelp,
+                     {id: "SSCHELP",click: toggleHelp,
+                      "button.help:click": hideHelp,
+                      imgroot: imgroot});
+        document.body.appendChild(elt);}
 
     // Referencing SSC.nodeclick let's it be overriden by apps using SSC
     function loadSSC(){
-	if (SSC.prelaunch) {
-	    var prelaunchfn=SSC.prelaunch; SSC.prelaunch=false;
-	    setTimeout(function(){
-		prelaunchfn(); SSC.prelaunch=false;
-		setTimeout(loadSSC,50);},50);
-	    return;}
-	setupToolbar();
-	setupHelp();
-	var hash=(location)&&(location.hash);
-	if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
-	if (SSC.hasOwnProperty("onclick"))
-	    addListener(window,"click",SSC.onclick);
-	else addListener(window,"click",window_click);
-	if (SSC.hasOwnProperty("onselect"))
-	    addListener(window,"select",SSC.select);
-    	if (SSC.hasOwnProperty("onkey"))
-	    addListener(window,"keydown",SSC.onkey);
-	else addListener(window,"keydown",window_keydown);
-	if ((hash)&&($(hash).length)) {SSC.enable(); SSC.select(hash);}
-	if (SSC.selected().length)
-	    setTimeout(function(){
-		SSC.focus((SSC.selected())[0]);},
-		       200);
-	addClass(document.body,"ssc__TOOLBAR");
-	if (SSC.postlaunch) {
-	    var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
-	    setTimeout(postlaunch,50);}}
+        if (SSC.prelaunch) {
+            var prelaunchfn=SSC.prelaunch; SSC.prelaunch=false;
+            setTimeout(function(){
+                prelaunchfn(); SSC.prelaunch=false;
+                setTimeout(loadSSC,50);},50);
+            return;}
+        setupToolbar();
+        setupHelp();
+        var hash=(location)&&(location.hash);
+        if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
+        if (SSC.hasOwnProperty("onclick"))
+            addListener(window,"click",SSC.onclick);
+        else addListener(window,"click",window_click);
+        if (SSC.hasOwnProperty("onselect"))
+            addListener(window,"select",SSC.select);
+        if (SSC.hasOwnProperty("onkey"))
+            addListener(window,"keydown",SSC.onkey);
+        else addListener(window,"keydown",window_keydown);
+        if ((hash)&&($(hash).length)) {SSC.enable(); SSC.select(hash);}
+        if (SSC.selected().length)
+            setTimeout(function(){
+                SSC.focus((SSC.selected())[0]);},
+                       200);
+        addClass(document.body,"ssc__TOOLBAR");
+        if (SSC.postlaunch) {
+            var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
+            setTimeout(postlaunch,50);}}
     
     addListener(window,"load",loadSSC);})();
 
+/* Emacs local variables
+   ;;;  Local variables: ***
+   ;;;  indent-tabs-mode: nil ***
+   ;;;  End: ***
+*/
