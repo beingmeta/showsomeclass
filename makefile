@@ -6,6 +6,8 @@
 default: app.js app.css templates.js hints TAGS
 
 JAVASCRIPT_SOURCES=ssc.js dialog.js edit.js
+HINTS=ssc.hint dialog.hint edit.hint
+
 CSS_SOURCES=ssc.css dialog.css edit.css
 HTML_SOURCES=editcontent.html editselection.html textedit.html \
 	editelement.html reclass.html toolbar.html bigtextedit.html \
@@ -24,7 +26,8 @@ app.css: ssc.css dialog.css edit.css
 	cat ssc.css dialog.css edit.css > app.css
 templates.js: ${TEMPLATES}
 	cat ${TEMPLATES} > templates.js
-hints: ssc.hint dialog.hint edit.hint
+hints: ${HINTS}
+	cat ${HINTS} > hints
 
 clean:
 	rm -f *.hint ${TEMPLATES}
