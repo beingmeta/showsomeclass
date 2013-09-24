@@ -1,7 +1,7 @@
 /* Dialogs */
 
 div.sscdialog {
-    font-family: sans,sans-serif; font-size: 200%;
+    font-family: sans,sans-serif; font-size: 150%;
     border-radius: 1ex; -webkit-border-radius: 1ex;
     -moz-border-radius: 1ex; -o-border-radius: 1ex;
     position: fixed; top: auto; bottom: auto; left: auto; right: auto;
@@ -10,7 +10,7 @@ div.sscdialog {
     text-align: center;}
 
 div.sscdialog h1 {
-    font-size: 150%; margin-bottom: 0.5em;}
+    font-size: 150%; margin-bottom: 1ex; margin-top: 0.5ex;}
 
 div.sscdialog .button.keep {float: left; color: green;}
 div.sscdialog .button.close {float: right; color: red;}
@@ -35,6 +35,7 @@ div.sscdialog div.row {
     width: 100%; display: block; clear: both;}
 div.sscdialog div.buttons select { width: auto; clear: none;}
 div.sscdialog table { width: 100%; clear: both; color: ivory;}
+div.sscdialog table th, div.sscdialog table td { vertical-align: top;}
 div.sscdialog table th { text-align: right;}
 div.sscdialog table td { text-align: left;}
 div.sscdialog table input[TYPE="TEXT"] { width: 100%;}

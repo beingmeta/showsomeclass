@@ -76,7 +76,7 @@ div.ssctoolbar div.combobox {
     text-align: left; margin-left: 0.25em;}
 div.ssctoolbar div.combobox input[TYPE="TEXT"],
 div.ssctoolbar div.combobox select {
-    width: 96%; clear: left;}
+    font-size: 75%; width: 96%; clear: left;}
 div.ssctoolbar div.combobox select {
     overflow: auto;
     display: none;}
@@ -116,9 +116,11 @@ body.ssc__TOOLBAR div#SSCTAPZONE { display: none; }
 
 div#SSCTOOLBAR div#SSCSTYLEINFO {
     position: absolute; top: 1.7em; 
-    background-color: inherit; padding: 1em;
+    background-color: black; padding: 1em;
     /* left: 10em; max-width: 50%; */
     left: 10%; max-width: 80%;
+    border-bottom-left-radius: 1em;
+    border-bottom-right-radius: 1em;
     display: none;}
 body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#SSCSTYLEINFO {
     display: block;}
@@ -218,13 +220,24 @@ div#SSCHELP {
   padding: 0.5em; border: solid black 1ex;
   font-size: 20px; line-height: 140%;
   border-radius: 1em;
-  overflow: auto;
   display: none;}
-div#SSCHELP button.image.close { float: right;}
+div#SSCHELP div.helpcontent {
+    position: absolute; 
+    top: 1%; bottom: 1%; height: 98%;
+    left: 1%; right: 1%; width: 98%;    
+    overflow: auto;}
+
+div#SSCHELP button.image.close {
+    position: absolute;
+    left: 0px; top: 0px;
+    width: 2em; height: 2em;}
 
 div#SSCHELP p { 
-  margin-left: 3em; max-width: 40em;
-  margin-bottom: 0.5ex;}
+  margin-left: 4em; max-width: 40em;
+  margin-top: 0.5ex; margin-bottom: 0.5ex;}
+
+div#SSCHELP span.nobreak {
+    white-space: nowrap;}
 
 body.ssc_SHOWHELP div#SSCHELP {
     display: block;}

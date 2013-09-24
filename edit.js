@@ -88,13 +88,13 @@ SSC.Editor=(function(){
             SSC.Message("It doesn't make sense to set the signature and edit "+
                         "it in the same specification.");
             return false;}
+        var classname=((absolute.length)?(absolute.join(" ")):(false));
         // Change the tag if needed
         if ((tag)&&(node.tagName.toLowerCase()!==tag.toLowerCase())) {
             // Some implementations don't let you set .tagName,
             //  so we make a new element and do a replace
             var fresh=document.createElement(tag);
-            if (!(classname)) fresh.className=node.className;
-            else fresh.className=classname;
+            if (node.className) fresh.className=node.className;
             if (node.id) fresh.id=node.id;
             if (node.title) fresh.title=node.title;
             if ((node.style)&&(node.style.cssText))
@@ -109,7 +109,7 @@ SSC.Editor=(function(){
             var j=0, n_children=children.length;
             while (j<n_children) fresh.appendChild(children[j++]);
             node.parentNode.replaceChild(fresh,node);
-            return fresh;}
+            node=fresh;}
         if (absolute.length)
             node.className=absolute.join(" ").trim();
         else if ((adds.length)||(drops.length)) {
@@ -820,14 +820,14 @@ SSC.Editor=(function(){
         cancel(evt);}
 
     SSC.Inits.textedit={
-        classname: "ssctextedit",
+        classname: "sscapp ssctextedit",
         "button.ok:click": es_done,
         "button.wrap:click": es_wrap_click,
         "button.close:click": SSC.Dialog.close,
         "input[type='TEXT']:keydown": es_keydown,
         "textarea:keydown": es_keydown};
     SSC.Inits.bigtextedit={
-        classname: "ssctextedit",
+        classname: "sscapp ssctextedit",
         "button.ok:click": es_done,
         "button.wrap:click": es_wrap_click,
         "button.merge:click": es_merge_click,
@@ -968,6 +968,7 @@ SSC.Editor=(function(){
         var content=false;
         var html=document.querySelector('HTML');
         var elts=SSC.Utils.tmpid_elts;
+        var cursel=SSC.selector();
         var saved_ids={}, apps=[], crumbs=[];
         var matches=document.querySelectorAll('.sscapp,.sscmarker');
 	var app, crumb;
@@ -984,8 +985,10 @@ SSC.Editor=(function(){
             if ((id)&&(id.search("sscTMP")===0)) {
                 saved_ids[id]=elt;
                 elt.id=null;}}
+        SSC.clear();
         content="<html>\n"+html.innerHTML+"\n</html>";
         /* Now reset things */
+        SSC.select(cursel,true);
         i=0, lim=apps.length; while (i<lim) {
             app=apps[i]; crumb=crumbs[i]; i++;
             crumb.parentNode.replaceChild(app,crumb);}
@@ -1016,9 +1019,12 @@ SSC.Editor=(function(){
                  (link.rel==="pubpoint"))&&
                 (link.href))
                 pubpoint=link.href;}
-        if (pubpoint) SSC.pubpoint=pubpoint;}
+        if (pubpoint) SSC.pubpoint=pubpoint;
+        // We provide our own help interaction
+        SSC.donthelp=true;}
     SSC.prelaunch=initpubpoint;
     function setupEditor(){
+        addClass(document.body,"ssc_SHOWHELP");
         addListener(window,"mouseup",editor_mouseup);
         SSC.commands[SSC.Utils.ASTERISK]=reclass_selector;
         if (!(SSC.pubpoint)) {

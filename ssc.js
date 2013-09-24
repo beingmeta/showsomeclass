@@ -355,7 +355,7 @@ var SSC=(function(){
         if (!(spec)) clear();
         else if ((spec===selector)&&(!(force))) return;
         else clear();
-        if (!(spec)) return;
+        if (!(spec)) {disable(); return;}
         var toolbar=document.getElementById("SSCTOOLBAR");
         if (toolbar) dropClass(toolbar,"noinput");
         var nodes=$(spec);
@@ -506,10 +506,13 @@ SSC.updateSelectors=(function(){
     function scandom(node,counts,all){
         var tag=node.tagName; var classname=node.className;
         // Ignore yourself
-        if (classname.search(/\bsscapp\b/)>=0) return;
+        if (classname.search(/\bsscapp\b/g)>=0) return;
         classname=classname.replace(/\bssc\w+/g,"");
+        classname=classname.replace(/\bsbookauto\w*/g,"");
+        classname=classname.trim();
         // Split up classnames
-        var classes=((classname)?(classname.split(/\s+/)):[]);
+        var classes=(((classname)&&(classname.length))?
+                     (classname.split(/\s+/)):[]);
         // Generate applicable selectors
         var selectors=possibleSelectors(tag,classes);
         // Increase the counts for applicable selectors
@@ -554,6 +557,7 @@ SSC.getStyleInfo=(function(){
             var rules=sheet.rules; var j=0, n_rules=rules.length;
             while (j<n_rules) {
                 var rule=rules[j++], text=rule.cssText;
+                if (text.search(/.ssc\w+/g)>=0) continue;
                 if (text.search(pat)>=0) {
                     var norm=text.replace(/\s+/g," ");
                     if (seen[norm]) continue; else seen[norm]=norm;
@@ -664,21 +668,20 @@ SSC.getStyleInfo=(function(){
                 
     addListener(window,"load",addAllMarkers);})();
 
-SSC.Templates.toolbar=
+/* These two templates (for the toolbar and help text) are cut and pasted
+   from ssctoolbar.js and sschelp.js, which are automatically generated
+   from the corresponding HTML files.  */
+
+SSC.Templates.ssctoolbar=
     "<div id=\"SSCTOOLBARBUTTONS\">\n"+
-    "  <button class=\"image reclass\"\n"+
-    "        title=\"Change all instances matching the current selector (shortcut: the '*' key)\">\n"+
-    "    <img src=\"{{imgroot}}/changemarkup_ondark.svgz\" alt=\"Reclass\" class=\"svg\"/>\n"+
-    "    <img src=\"{{imgroot}}/changemarkup_ondark100x100.png\" alt=\"Reclass\" class=\"notsvg\"/>\n"+
-    "  </button>\n"+
     "  <button class=\"image scanup\"\n"+
-    "        title=\"Go to the previous selected element (shortcut: Shift-Tab)\">\n"+
+    "          title=\"Go to the previous selected element (shortcut: Shift-Tab)\">\n"+
     "    <img class=\"svg\" src=\"{{imgroot}}/uparrow_white.svgz\" alt=\"Prev\"/>\n"+
     "    <img class=\"notsvg\"\n"+
     "         src=\"{{imgroot}}/uparrow_white100h.png\" alt=\"Prev\"/>\n"+
     "  </button>\n"+
     "  <button class=\"image scandown\"\n"+
-    "        title=\"Go to the next selected element (shortcut: Tab)\">\n"+
+    "          title=\"Go to the next selected element (shortcut: Tab)\">\n"+
     "    <img class=\"svg\" src=\"{{imgroot}}/downarrow_white.svgz\" alt=\"Next\"/>\n"+
     "    <img class=\"notsvg\"\n"+
     "         src=\"{{imgroot}}/downarrow_white100h.png\" alt=\"Next\"/>\n"+
@@ -697,20 +700,17 @@ SSC.Templates.toolbar=
     "    <img class=\"notsvg\" src=\"{{imgroot}}/eye_ondark100x100.png\"\n"+
     "         alt=\"Markers\"/>\n"+
     "  </button>\n"+
-    "  <button class=\"image save\" id=\"SSCEDITSAVEBUTTON\"\n"+
-    "          title=\"Save this document\">\n"+
-    "    <img class=\"svg\" src=\"{{imgroot}}/cloudfloppy.svgz\" alt=\"Save\"/>\n"+
-    "    <img class=\"notsvg\" src=\"{{imgroot}}/cloudfloppy100x100.png\" alt=\"Save\"/>\n"+
-    "  </button>\n"+
     "  <button class=\"image help\" id=\"SSCHELPBUTTON\"\n"+
     "          title=\"Show help (shortcut: the '?' key)\">\n"+
     "    <img class=\"svg\" src=\"{{imgroot}}/help.svgz\" alt=\"Help\"/>\n"+
     "    <img class=\"notsvg\" src=\"{{imgroot}}/help100x100.png\" alt=\"Help\"/>\n"+
     "  </button>\n"+
-    "  <button class=\"image hide\"\n"+
-    "          title=\"Close the toolbar\">\n"+
-    "    <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\" alt=\"Hide\"/>\n"+
-    "    <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\" alt=\"Hide\"/>\n"+
+    "  <button class=\"image hide\">\n"+
+    "    <img class=\"svg\" src=\"{{imgroot}}/redx.svgz\"\n"+
+    "         title=\"Hide this toolbar\"\n"+
+    "         alt=\"Hide\"/>\n"+
+    "    <img class=\"notsvg\" src=\"{{imgroot}}/redx100x100.png\"\n"+
+    "         alt=\"Hide\"/>\n"+
     "  </button>\n"+
     "</div>\n"+
     "<div class=\"combobox\">\n"+
@@ -720,15 +720,20 @@ SSC.Templates.toolbar=
     "</div>\n"+
     "<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"\n"+
     "      title=\"Tab/Shift-Tab to move among matches\">\n"+
-    "<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"\n"+
-    "      title=\"Tab/Shift-Tab to move among matches\">\n"+
-    "      #<span id=\"SSCMATCHINDEX\">#</span> of\n"+
-    "      <span id=\"SSCMATCHCOUNT\">some</span>\n"+
-    "    </span>\n"+
-    "    <span class=\"text inputhelp\" id=\"SSCINPUTHELP\">\n"+
-    "      enter a CSS selector (like <samp>P.<em>class</em></samp>)\n"+
-    "    </span>\n"+
+    "  match#<span id=\"SSCMATCHINDEX\">#</span> of\n"+
+    "  <span id=\"SSCMATCHCOUNT\">some</span>\n"+
+    "</span>\n"+
+    "<span class=\"text inputhelp\" id=\"SSCINPUTHELP\">\n"+
+    "  enter a CSS selector (like <samp>P.<em>class</em></samp>)\n"+
+    "</span>\n"+
     "<div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div>\n"+
+    "<!--\n"+
+    "    /* Emacs local variables\n"+
+    "    ;;;  Local variables: ***\n"+
+    "    ;;;  indent-tabs-mode: nil ***\n"+
+    "    ;;;  End: ***\n"+
+    "    */\n"+
+    "  -->\n"+
     "";
 
 SSC.Templates.sschelp=
@@ -736,38 +741,47 @@ SSC.Templates.sschelp=
     "  <img src=\"{{imgroot}}/redx.svgz\" class=\"svg\"/>\n"+
     "  <img src=\"{{imgroot}}/redx100x100.png\" class=\"notsvg\"/>\n"+
     "</button>\n"+
-    "<p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS\n"+
-    " classes are applied and used in a document.</p>\n"+
+    "<div class=\"helpcontent\">\n"+
+    "  <p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS\n"+
+    "    classes are applied to a document.</p>\n"+
+    "  <p>The <dfn>current selector</dfn> is displayed and changed in the\n"+
+    "    text box in the upper left corner.</p>\n"+
+    "  <p><dfn>Matching elements</dfn> are highlighted; surrounding\n"+
+    "    elements are faded.</p>\n"+
+    "  <p>The <dfn>selector</dfn> can be any CSS selector\n"+
+    "    (e.g <samp>P.class</samp>), optionally followed by a regular\n"+
+    "    expression (e.g. <samp>/pattern/</samp>) matched against element\n"+
+    "    content.</p>\n"+
+    "  <p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or\n"+
+    "    the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/>\n"+
+    "    icon.</p>\n"+
+    "  <p><strong>Get it back</strong> with the <kbd>Enter</kbd> key\n"+
+    "    or by “clicking” the top of the screen.</p>\n"+
+    "  <p><strong>Move among matches</strong> with\n"+
+    "    the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow (\n"+
+    "    <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/>\n"+
+    "    <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext\n"+
+    "                                                          notsvg\"/>) icons.</p>\n"+
+    "  <p><strong>See <em>(some)</em> style rules</strong> for the current\n"+
+    "    selector with the <kbd>S</kbd> key or the\n"+
+    "    <img src=\"{{imgroot}}/stylebraces.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/stylebraces100x100.png\" class=\"intext\n"+
+    "    notsvg\"/> icon.</p>\n"+
+    "  <p><strong>Click an element</strong> to set the\n"+
+    "    <em>current selector</em> from its tag and classes.</p>\n"+
+    "</div>\n"+
+    "<!--\n"+
+    "    /* Emacs local variables\n"+
+    "    ;;;  Local variables: ***\n"+
+    "    ;;;  indent-tabs-mode: nil ***\n"+
+    "    ;;;  End: ***\n"+
+    "    */\n"+
+    "  -->\n"+
     "\n"+
-    "<p>The <dfn>current selector</dfn> is displayed (and can be changed)\n"+
-    "  in the text input box on the left side of the toolbar at the top of\n"+
-    "  the screen.</p>\n"+
-    "<p><dfn>Matching elements</dfn> are highlighted and all surrounding\n"+
-    "  text is faded.</p>\n"+
     "\n"+
-    "<p>The <dfn>selector</dfn> can be any CSS selector\n"+
-    "  (e.g <samp>P.class</samp>), optionally followed by a regular\n"+
-    "  expression (e.g. <samp>/pattern/</samp>) matched against element\n"+
-    "  content.</p>\n"+
-    "<p><strong>Open the toolbar</strong> with the <kbd>Enter</kbd> key\n"+
-    "  or by clicking (tapping) at the top of the screen.</p>\n"+
-    "<p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or\n"+
-    " the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/>\n"+
-    " <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/>\n"+
-    " icon.</p>\n"+
-    "<p><strong>Move among matched elements</strong> with\n"+
-    "  the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow (\n"+
-    "  <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/>\n"+
-    "  <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/>\n"+
-    "  <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/>\n"+
-    "  <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext\n"+
-    "  notsvg\"/>) icons.</p>\n"+
-    "<p><strong>See <em>(some)</em> style rules</strong> with\n"+
-    "  the <kbd>S</kbd> key or the <img src=\"{{imgroot}}/stylebraces.svgz\"\n"+
-    "  class=\"intext svg\"/> <img src=\"{{imgroot}}/stylebraces100x100.png\"\n"+
-    "  class=\"intext notsvg\"/> icon.</p>\n"+
-    "<p><strong>Click an element on the screen</strong> to set the\n"+
-    "  <em>current selector</em> from its tag and classes.</p>\n"+
     "";
 
 (function(){
@@ -801,7 +815,7 @@ SSC.Templates.sschelp=
                          SSC.Inits.toolbar);
         var dropbox=bySpec(toolbar,"SELECT"); {
             SSC.selectors=SSC.updateSelectors(false,dropbox);}
-        var tapzone=make("div",false,false,
+        var tapzone=make("div","sscapp",false,
                          {id: "SSCTAPZONE",click: showToolbar});
         document.body.appendChild(toolbar);
         document.body.appendChild(tapzone);}
@@ -861,10 +875,11 @@ SSC.Templates.sschelp=
         var all=selectors._all, options=selectors._options;
         var frag=document.createDocumentFragment();
         var i=0, lim=options.length, matches=0;
+        prefix=prefix.toLowerCase();
         if (prefix.length===0) while (i<lim) {
             frag.appendChild(options[i++]);}
         else while (i<lim) {
-            var sel=all[i];
+            var sel=all[i].toLowerCase();
             if ((prefix[0]==='.')?
                 (sel.search(prefix)>=0):
                 (sel.search(prefix)===0)) {
@@ -1065,6 +1080,8 @@ SSC.Templates.sschelp=
                 SSC.focus((SSC.selected())[0]);},
                        200);
         addClass(document.body,"ssc__TOOLBAR");
+        if (!(SSC.donthelp))
+            addClass(document.body,"ssc_SHOWHELP");
         if (SSC.postlaunch) {
             var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
             setTimeout(postlaunch,50);}}
