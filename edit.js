@@ -680,7 +680,7 @@ SSC.Editor=(function(){
                                 continue;}
                             else {node.appendChild(grandchild); textnode=grandchild;}}
                         else {
-                            node.appendChild(granchild);
+                            node.appendChild(grandchild);
                             textnode=false;}}}
                 else node.appendChild(child);}}
         return node;}

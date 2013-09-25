@@ -30,12 +30,14 @@ div.ssceditelement div.buttons button {
     margin-bottom: 0.5ex;}
 
 div.ssceditelement span.sscdomnav {
-    width: auto; white-space: nowrap;
-    vertical-align: middle;
+    width: auto; margin-top: 4px;
+    float: left; font-variant: small-caps;
+    white-space: nowrap; vertical-align: top;
     font-size: 50%;}
 div.ssceditelement span.sscdomnav select.sscrelated {
     font-size: 75%; max-width: 15em;
-    display: inline; vertical-align: middle;}
+    display: inline; vertical-align: top;
+    font-variant: none;}
 
 div.ssceditelement table.sscattribs {
     margin-top: 0.25ex;
@@ -186,7 +188,7 @@ div:hover, p:hover, li:hover, dt:hover, dd:hover,
 h1:hover, h2:hover, h3:hover, h4:hover, h5:hover,
 h6:hover, h7:hover, blockquote:hover, aside:hover,
 detail:hover {
-    outline: dotted blue 2px;}
+    outline: dotted yellow 2px;}
 
 .sscapp div:hover, .sscapp p:hover,
 .sscapp li:hover, .sscapp dt:hover,

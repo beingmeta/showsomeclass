@@ -744,7 +744,7 @@ SSC.Templates.sschelp=
     "<div class=\"helpcontent\">\n"+
     "  <p><dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) exposes how CSS\n"+
     "    classes are applied to a document.</p>\n"+
-    "  <p>The <dfn>current selector</dfn> is displayed and changed in the\n"+
+    "  <p>The <dfn>current selector</dfn> is displayed and changed using the\n"+
     "    text box in the upper left corner.</p>\n"+
     "  <p><dfn>Matching elements</dfn> are highlighted; surrounding\n"+
     "    elements are faded.</p>\n"+
@@ -752,26 +752,27 @@ SSC.Templates.sschelp=
     "    (e.g <samp>P.class</samp>), optionally followed by a regular\n"+
     "    expression (e.g. <samp>/pattern/</samp>) matched against element\n"+
     "    content.</p>\n"+
+    "  <p><strong>Move among matches</strong> with the <kbd>Tab</kbd>\n"+
+    "    and <kbd>Shift-Tab</kbd> keys or the <span class=\"nowrap\">arrow (\n"+
+    "    <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext\n"+
+    "    notsvg\"/> <img src=\"{{imgroot}}/downarrow_white.svgz\"\n"+
+    "    class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext\n"+
+    "    notsvg\"/>) icons.</span></p>\n"+
+    "  <p><strong>See <em>(some)</em> style rules</strong> for the current\n"+
+    "    selector with <span class=\"nowrap\">the <kbd>S</kbd> key</span> or <span class=\"nowrap\">the\n"+
+    "    <img src=\"{{imgroot}}/stylebraces.svgz\" class=\"intext svg\"/>\n"+
+    "    <img src=\"{{imgroot}}/stylebraces100x100.png\" class=\"intext\n"+
+    "    notsvg\"/> icon.</span></p>\n"+
+    "  <p><strong>Click an element</strong> to set the\n"+
+    "    <em>current selector</em> from its tag and classes.</p>\n"+
     "  <p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key or\n"+
     "    the <img src=\"{{imgroot}}/redx.svgz\" class=\"intext svg\"/>\n"+
     "    <img src=\"{{imgroot}}/redx100x100.png\" class=\"intext notsvg\"/>\n"+
     "    icon.</p>\n"+
     "  <p><strong>Get it back</strong> with the <kbd>Enter</kbd> key\n"+
     "    or by “clicking” the top of the screen.</p>\n"+
-    "  <p><strong>Move among matches</strong> with\n"+
-    "    the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys or the arrow (\n"+
-    "    <img src=\"{{imgroot}}/uparrow_white.svgz\" class=\"intext svg\"/>\n"+
-    "    <img src=\"{{imgroot}}/uparrow_white100h.png\" class=\"intext notsvg\"/>\n"+
-    "    <img src=\"{{imgroot}}/downarrow_white.svgz\" class=\"intext svg\"/>\n"+
-    "    <img src=\"{{imgroot}}/downarrow_white100h.png\" class=\"intext\n"+
-    "                                                          notsvg\"/>) icons.</p>\n"+
-    "  <p><strong>See <em>(some)</em> style rules</strong> for the current\n"+
-    "    selector with the <kbd>S</kbd> key or the\n"+
-    "    <img src=\"{{imgroot}}/stylebraces.svgz\" class=\"intext svg\"/>\n"+
-    "    <img src=\"{{imgroot}}/stylebraces100x100.png\" class=\"intext\n"+
-    "    notsvg\"/> icon.</p>\n"+
-    "  <p><strong>Click an element</strong> to set the\n"+
-    "    <em>current selector</em> from its tag and classes.</p>\n"+
     "</div>\n"+
     "<!--\n"+
     "    /* Emacs local variables\n"+
