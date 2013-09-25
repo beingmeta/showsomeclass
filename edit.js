@@ -769,18 +769,18 @@ SSC.Editor=(function(){
             else if (dowrap) {}
             else newnode=es_extract_children(newnode);
             var insert_before=removeRange(range);
-            var insert_after=((insert_before)?(insert_before.prevSibling):(node.lastChild));
+            var insert_after=((insert_before)?(insert_before.prevSibling):(parent.lastChild));
             // Now, insert the new node
             if (insert_before) parent.insertBefore(newnode,insert_before);
             else parent.appendChild(newnode);
             if ((insert_before)&&(insert_before.nodeType===3)&&
                 (insert_before.prevSibling)&&
                 (insert_before.prevSibling.nodeType===3))
-                text_merge(insert_before.prevSibling,insert_before,node);
+                text_merge(insert_before.prevSibling,insert_before,parent);
             if ((insert_after)&&(insert_after.nodeType===3)&&
                 (insert_after.nextSibling)&&
                 (insert_after.nextSibling.nodeType===3))
-                text_merge(insert_after,insert_after.nextSibling,node);}
+                text_merge(insert_after,insert_after.nextSibling,parent);}
         SSC.Editor.selection=false;
         SSC.Editor.selected=false;
         SSC.Dialog.close(dialog);}
@@ -938,10 +938,6 @@ SSC.Editor=(function(){
         if (!(scan)) return; else scan=target;
         while (scan.nodeType!==1) scan=scan.parentNode;
         if (!(scan)) return;
-        if (hasClass(scan,"sscFOCUS")) {
-            addClass(document.body,"ssc__TOOLBAR");
-            Editor(scan);
-            return;}
         var spec=scan.tagName;
         if ((scan.className)&&(scan.className.length)) {
             var norm=(scan.className.replace(/\bssc\w+\b/g,"")).trim();
@@ -951,6 +947,7 @@ SSC.Editor=(function(){
                 classes=[];
             if (classes.length) spec=spec+"."+classes.join(".");}
         SSC.select(spec,false,true);
+        Editor(scan);
         if (hasClass(scan,"sscSELECTED")) SSC.focus(scan);
         addClass(document.body,"ssc__TOOLBAR");}
     SSC.onclick=editor_click;
