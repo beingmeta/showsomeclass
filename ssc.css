@@ -1,6 +1,9 @@
 /* Generic rules */
 
 body.cxSSC { margin-top: 4em; }
+body > * { margin-left: 15px; margin-right: 15px;}
+body > *.sscapp { margin-left: 0px; margin-right: 0px;}
+body > *.sscmarker { margin-left: 5px; margin-right: 5px;}
 
 img.svg { display: none;}
 body.haveSVG img.svg { display: inline;}
@@ -12,8 +15,35 @@ img { max-width: 100%; height: auto;}
 
 /* Make spans more visible */
 
-body.cxSSC span:hover {text-decoration: overline;}
-body.cxSSC .sscapp span:hover {text-decoration: inherit;}
+body.cxSSC span:hover, body.cxSSC cite:hover,
+body.cxSSC strong:hover, body.cxSSC em:hover,
+body.cxSSC tt:hover, body.cxSSC kbd:hover,
+body.cxSSC b:hover, body.cxSSC i:hover,
+body.cxSSC samp:hover {
+    text-decoration: overline;}
+body.cxSSC .sscapp span:hover, body.cxSSC .sscapp cite:hover,
+body.cxSSC .sscapp strong:hover, body.cxSSC .sscapp em:hover,
+body.cxSSC .sscapp tt:hover, body.cxSSC .sscapp kbd:hover,
+body.cxSSC .sscapp b:hover, body.cxSSC .sscapp i:hover,
+body.cxSSC .sscapp samp:hover {
+    text-decoration: inherit;}
+body.cxSSC .sscmarker span:hover, body.cxSSC .sscmarker cite:hover,
+body.cxSSC .sscmarker strong:hover, body.cxSSC .sscmarker em:hover,
+body.cxSSC .sscmarker tt:hover, body.cxSSC .sscmarker kbd:hover,
+body.cxSSC .sscmarker b:hover, body.cxSSC .sscmarker i:hover,
+body.cxSSC .sscmarker samp:hover {
+    text-decoration: inherit;}
+
+body.cxSSC a:hover {
+    text-decoration: overline underline;}
+body.cxSSC .sscapp a:hover, body.cxSSC .sscmarker a:hover {
+    text-decoration: underline;}
+
+body.cxSSC span:hover {
+    background-color: lightblue;}
+body.cxSSC .sscapp span:hover, body.cxSSC .sscmarker span:hover {
+    background-color: inherit;}
+
 
 /* Reset button display */
 
@@ -33,6 +63,7 @@ body.cxSSC > .sscWRAPPER { opacity: 1.0 !important; }
 body.cxSSC .sscWRAPPER > * { opacity: 0.75 !important;}
 body.cxSSC .sscWRAPPER > .sscWRAPPER,
 body.cxSSC .sscWRAPPER > .sscSELECTED { opacity: 1.0 !important;}
+body.cxSSC .sscWRAPPER.sscSELECTED { opacity: 1.0 !important;}
 body.cxSSC .sscSELECTED * {opacity: 1.0 !important;}
 
 body.cxSSC .sscSELECTED {
@@ -61,7 +92,7 @@ div#SSCTOOLBAR {
     font-size: 20px; padding-left: 0.5ex;
     border-bottom: solid purple 0.2em;
     text-align: left;}
-div#SSCTOOLBAR { opacity: 0.85 !important; }
+div#SSCTOOLBAR { opacity: 0.95 !important; }
 
 div#SSCTAPZONE {
     position: fixed; top: 0px; left: 0px; right: 0px; height: 2em;
@@ -248,5 +279,4 @@ body.ssc_SHOWHELP div#SSCTOOLBAR button.help img {
     display: block; width: 100%;
     height: 2px; border-top: green dashed 4px;
     content: "";}
-
 
