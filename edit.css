@@ -182,3 +182,7 @@ div.sscsavedialog table td tt { font-size: 75%;}
 div.sscsavedialog table td textarea {
     font-size: 16px; min-height: 8em;}
 
+@media (max-width: 700px) {
+    div.sscsavedialog table  {
+	margin-left: 2px; margin-right: 2px;}
+}

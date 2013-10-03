@@ -32,13 +32,14 @@ div.sscdialog p.sschelp tt, div.sscdialog p.sschelp kbd {
 div.sscdialog > input[TYPE="TEXT"],  div.sscdialog select,
 div.sscdialog textarea, div.sscdialog div.buttons,
 div.sscdialog div.row {
-    width: 100%; display: block; clear: both;}
+    width:  90%; margin-left: 5%; margin-right: 5%;
+    display: block; clear: both;}
 div.sscdialog div.buttons select { width: auto; clear: none;}
 div.sscdialog table { width: 100%; clear: both; color: ivory;}
 div.sscdialog table th, div.sscdialog table td { vertical-align: top;}
 div.sscdialog table th { text-align: right;}
 div.sscdialog table td { text-align: left;}
-div.sscdialog table input[TYPE="TEXT"] { width: 100%;}
+div.sscdialog table input[TYPE="TEXT"] { width: 90%;}
 div.sscdialog table th input[TYPE="TEXT"] { text-align: right;}
 div.sscdialog table td input[TYPE="TEXT"] { text-align: left;}
 
@@ -47,5 +48,7 @@ div.sscdialog textarea { text-align: left; }
 div.sscdialog div.buttons button, div.sscdialog div.buttons .button {
     margin-left: 1ex; margin-right: 1ex;}
 
-
-
+@media (max-width: 700px) {
+    div.sscdialog table th { display: none;}
+    div.sscdialog table td { font-size: 80%:}
+}
