@@ -182,21 +182,3 @@ div.sscsavedialog table td tt { font-size: 75%;}
 div.sscsavedialog table td textarea {
     font-size: 16px; min-height: 8em;}
 
-/* Show markup blocks */
-
-div:hover, p:hover, li:hover, dt:hover, dd:hover,
-h1:hover, h2:hover, h3:hover, h4:hover, h5:hover,
-h6:hover, h7:hover, blockquote:hover, aside:hover,
-detail:hover {
-    outline: dotted yellow 2px;}
-
-.sscapp div:hover, .sscapp p:hover,
-.sscapp li:hover, .sscapp dt:hover,
-.sscapp dd:hover, .sscapp h1:hover,
-.sscapp h2:hover, .sscapp h3:hover {
-    outline: none;}
-div.sscmarker:hover, div.sscapp:hover { outline: none;}
-.sscmarker div:hover, .sscmarker p:hover,
-.sscmarker li:hover, .sscmarker dt:hover,
-.sscmarker  dd:hover {
-    outline: none;}

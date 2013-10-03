@@ -24,12 +24,14 @@
          src="{{imgroot}}/stylebraces100x100.png"
          alt="Rules"/>
   </button>
+  <!--
   <button class="image markers"
           title="Show/hide markup markers">
     <img class="svg" src="{{imgroot}}/eye_ondark.svgz" alt="Markers"/>
     <img class="notsvg" src="{{imgroot}}/eye_ondark100x100.png"
          alt="Markers"/>
   </button>
+  -->
   <button class="image save" id="SSCEDITSAVEBUTTON"
           title="Save this document">
     <img class="svg" src="{{imgroot}}/cloudfloppy.svgz" alt="Save"/>
@@ -53,19 +55,17 @@
 </div>
 <span class="text matchphrase" id="SSCMATCHPHRASE"
       title="Tab/Shift-Tab to move among matches">
-  <span class="text matchphrase" id="SSCMATCHPHRASE"
-        title="Tab/Shift-Tab to move among matches">
-    match#<span id="SSCMATCHINDEX">#</span> of
-    <span id="SSCMATCHCOUNT">some</span>
-  </span>
-  <span class="text inputhelp" id="SSCINPUTHELP">
-    enter a CSS selector (like <samp>P.<em>class</em></samp>)
-  </span>
-  <div class="styleinfo" id="SSCSTYLEINFO"></div>
-  <!--
-      /* Emacs local variables
-      ;;;  Local variables: ***
-      ;;;  indent-tabs-mode: nil ***
-      ;;;  End: ***
-      */
-    -->
+  <span id="SSCMATCHCOUNT">some</span> matches
+  <span class="sscmatchindex">(@#<span id="SSCMATCHINDEX">#</span>)</span>
+</span>
+<span class="text inputhelp" id="SSCINPUTHELP">
+  enter a CSS selector (like <samp>P.<em>class</em></samp>)
+</span>
+<div class="styleinfo" id="SSCSTYLEINFO"></div>
+<!--
+    /* Emacs local variables
+    ;;;  Local variables: ***
+    ;;;  indent-tabs-mode: nil ***
+    ;;;  End: ***
+    */
+  -->

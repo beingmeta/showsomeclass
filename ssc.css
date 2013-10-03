@@ -44,6 +44,24 @@ body.cxSSC span:hover {
 body.cxSSC .sscapp span:hover, body.cxSSC .sscmarker span:hover {
     background-color: inherit;}
 
+/* Show markup blocks */
+
+div:hover, p:hover, li:hover, dt:hover, dd:hover,
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover,
+h6:hover, h7:hover, blockquote:hover, aside:hover,
+detail:hover {
+    outline: dotted blue 2px;}
+
+.sscapp div:hover, .sscapp p:hover,
+.sscapp li:hover, .sscapp dt:hover,
+.sscapp dd:hover, .sscapp h1:hover,
+.sscapp h2:hover, .sscapp h3:hover {
+    outline: none;}
+div.sscmarker:hover, div.sscapp:hover { outline: none;}
+.sscmarker div:hover, .sscmarker p:hover,
+.sscmarker li:hover, .sscmarker dt:hover,
+.sscmarker  dd:hover {
+    outline: none;}
 
 /* Reset button display */
 
@@ -70,7 +88,8 @@ body.cxSSC .sscSELECTED {
     border-right: solid wheat 5px;}
 
 body.cxSSC .sscSELECTED.sscFOCUS {
-  background-color: rgba(255,255,0,0.25) !important;}
+    background-color: rgba(255,255,0,0.25) !important;
+    outline: dotted red 2px;}
 
 body.cxSSC .sscapp {
     font-family: sans,sans-serif;}
@@ -136,9 +155,11 @@ div#SSCTOOLBAR button.hide, div#SSCTOOLBAR .button.hide {
     font-weight: bold; color: red;}
 div#SSCTOOLBAR button.showrules, div#SSCTOOLBAR .button.showrules {}
 
+/*
 div#SSCTOOLBAR button:before, div#SSCTOOLBAR .button:before {
     content: "·"; color: silver; vertical-align: middle;
     padding-left: 1px; padding-right: 1px;}
+*/
 div#SSCTOOLBAR button:first-child:before, div#SSCTOOLBAR .button:first-child:before {
     display: none;}
 
@@ -163,6 +184,7 @@ div#SSCTOOLBAR .styleinfo p {
 div#SSCTOOLBAR .styleinfo p span.prop { white-space: nowrap; }
 
 div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
+div#SSCTOOLBAR #SSCMATCHPHRASE .sscmatchindex { font-size: 70%;}
 div#SSCTOOLBAR #SSCMATCHINDEX {
     background-color: rgba(255,255,0,0.75); color: black;
     padding-left: 1em;}
@@ -260,14 +282,18 @@ div#SSCHELP div.helpcontent {
 
 div#SSCHELP button.image.close {
     position: absolute;
-    right: 0px; top: 0px;
+    left: 0px; top: 0px;
     width: 2em; height: 2em;}
 
 div#SSCHELP p { 
-  margin-left: 3em; max-width: 40em;
+  margin-left: 4em; max-width: 40em;
   margin-top: 0.5ex; margin-bottom: 0.5ex;}
 div#SSCHELP p.bigger {
-    margin-left: 2em; font-size: 120%; }
+    margin-left: 3em; margin-right: 1em;
+    font-size: 120%; line-height: 120%;
+    margin-top: 1em;}
+div#SSCHELP p.bigger:first-child {
+    margin-top: 0.25em;}
 
 div#SSCHELP span.nobreak {
     white-space: nowrap;}
@@ -282,3 +308,8 @@ body.ssc_SHOWHELP div#SSCTOOLBAR button.help img {
     height: 2px; border-top: green dashed 4px;
     content: "";}
 
+@media (max-width: 700px) {
+    div#SSCTOOLBAR { font-size: 18px; }
+    div#SSCTOOLBAR button { max-height: 1.2em; }
+    div#SSCTOOLBAR button img { height: 1em; }
+    }
