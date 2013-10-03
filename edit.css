@@ -31,7 +31,7 @@ div.ssceditelement div.buttons button {
 
 div.ssceditelement span.sscdomnav {
     width: auto; margin-top: 4px;
-    float: left; font-variant: small-caps;
+    float: right; font-variant: small-caps;
     white-space: nowrap; vertical-align: top;
     font-size: 50%;}
 div.ssceditelement span.sscdomnav select.sscrelated {

@@ -32,7 +32,7 @@ div.sscdialog p.sschelp tt, div.sscdialog p.sschelp kbd {
 div.sscdialog > input[TYPE="TEXT"],  div.sscdialog select,
 div.sscdialog textarea, div.sscdialog div.buttons,
 div.sscdialog div.row {
-    width:  90%; margin-left: 5%; margin-right: 5%;
+    width:  100%; margin-left: 0px; margin-right: 0px;
     display: block; clear: both;}
 div.sscdialog div.buttons select { width: auto; clear: none;}
 div.sscdialog table { width: 100%; clear: both; color: ivory;}
