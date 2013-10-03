@@ -222,7 +222,7 @@ SSC.Editor=(function(){
                         continue;
                     var tr=make_attrib_row(name,attrib.value);
                     attribtable.appendChild(tr);
-                    shownn_attribs++;}}
+                    shown_attribs++;}}
             if ((shown_attribs>0)&&(shown_attribs<4))
                 addClass(dialog,"ssceditattrib");
             attribtable.appendChild(make_attrib_row(false,false));}
