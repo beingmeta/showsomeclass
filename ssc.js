@@ -823,6 +823,7 @@ SSC.Templates.sschelp=
 
     function showToolbar(evt){
         evt=evt||event;
+        SSC.enable();
         addClass(document.body,"ssc__TOOLBAR");
         cancel(evt);}
     function hideToolbar(){
