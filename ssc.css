@@ -249,7 +249,7 @@ div#SSCHELP {
   position: fixed; top: 10%; bottom: 5%; left: 8%; right: 8%;
   background-color: rgba(0,0,0,0.9); color: wheat;
   padding: 0.5em; border: solid black 1ex;
-  font-size: 20px; line-height: 140%;
+  font-size: 16px; line-height: 120%; font-family: sans-serif;
   border-radius: 1em;
   display: none;}
 div#SSCHELP div.helpcontent {
@@ -260,12 +260,14 @@ div#SSCHELP div.helpcontent {
 
 div#SSCHELP button.image.close {
     position: absolute;
-    left: 0px; top: 0px;
+    right: 0px; top: 0px;
     width: 2em; height: 2em;}
 
 div#SSCHELP p { 
-  margin-left: 4em; max-width: 40em;
+  margin-left: 3em; max-width: 40em;
   margin-top: 0.5ex; margin-bottom: 0.5ex;}
+div#SSCHELP p.bigger {
+    margin-left: 2em; font-size: 120%; }
 
 div#SSCHELP span.nobreak {
     white-space: nowrap;}
