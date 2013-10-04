@@ -452,15 +452,24 @@ SSC.Editor=(function(){
         var dialog=getDialog(target);
         var input=dialog.querySelector('INPUT');
         var newspec=input.value.trim();
+        var selector=SSC.selector();
         var selected=SSC.selected();
+        var classrx=false;
+        if ((selector[0])===".") {
+            var classes=selector.slice(1).split(".");
+            classrx=new RegExp("\\b("+classes.join("|")+")\\b","gi");}
         var i=0, n_selected=selected.length;
         while (i<n_selected) {
             var sel=selected[i++];
-            if (newspec.length===0) {
+            if ((newspec.length===0)&&(classrx)) 
+                sel.className=sel.className.replace(classrx,"").
+                    replace("\s+"," ").trim();
+            else if (newspec.length===0) {
                 var crumb=make_text("");
-                sel.parentNode.replaceChild(crump,sel);}
+                sel.parentNode.replaceChild(crumb,sel);}
             else adjustNode(sel,newspec);}
-        setTimeout(function(){SSC.select(newspec,true);},100);
+        if (newspec.length)
+            setTimeout(function(){SSC.select(newspec,true);},100);
         SSC.Dialog.close(dialog);}
 
     function rc_keydown(evt){
