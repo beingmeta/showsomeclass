@@ -470,6 +470,7 @@ SSC.Editor=(function(){
             else adjustNode(sel,newspec);}
         if (newspec.length)
             setTimeout(function(){SSC.select(newspec,true);},100);
+        else setTimeout(function(){SSC.select(selector,true);},100);
         SSC.Dialog.close(dialog);}
 
     function rc_keydown(evt){
