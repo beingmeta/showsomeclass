@@ -6,26 +6,36 @@
   <div class="title">Change {{count}} element(s)</div>
 </div>
 <table class="sscreclass">
-  <tr><th>matching</th><td>{{spec}}</td></tr>
+  <tr><th>matching</th><td>{{spec}}</td>
+    <td><button class="close" value="UNWRAP"
+                title="Unwrap the matching elements, removing the element and replacing it with its contents">
+        Unwrap</button></td></tr>
   <tr>
     <th>to match</th>
     <td><input class="sscnewspec" TYPE="TEXT" NAME="NEWSPEC"
                VALUE="{{simplespec}}"/></td>
-  </tr>
+    <td class="buttons">
+      <button class="close" value="CHANGE"
+              title="Change the signature (tag and class) of all the matching elements">
+        Change</button></td></tr>
 </table>
-<div class="buttons">
-  <button class="close" value="CHANGE">Change</button>
-  <p>Specifying regular class selectors (e.g. <tt>.cite</tt>) will
-  strip all existing classes and replace them with the specified
-  classes.</p>
-  <p>Use <em>plus</em> and <em>minus</em> (<kbd>+</kbd>/<kbd>-</kbd>)
-    to add or delete classes, for example <tt>.+citation.-ms339</tt>
-    will add the class <tt>citation</tt> and drop the
-    class <tt>ms339</tt> from all the matching
-    elements, <em>without</em> affecting any other classes.</p>
-  <p>This can also be used to change the element tag itself, to
-  convert (for example) some classes of <tt>div</tt>s to <tt>p</tt>s
-  or a particular kind of <tt>span</tt> to a <tt>strong</tt>.</p>
+<div class="instructions">
+  <p>Specifying a new signature will modify <strong>all
+    elements</strong> matching the current selector (<tt></tt>).
+    This includes elements which specify additional classes.</p>
+  <p>When you specify a new signature with regular classnames,
+    e.g. <tt class="markup">P.quotation.avoidbreakinside</tt>), each
+    element will lose its current classes and be adjusted to exactly
+    match the new signature.</p>
+  <p>Alternatively, you can use <em>plus</em> and <em>minus</em>
+    (<kbd>+</kbd>/<kbd>-</kbd>) to add or delete particular classes,
+    for example: <tt>.+citation.-ms339</tt> to add the
+    class <tt>citation</tt> and drop the class <tt>ms339</tt> from all
+    the matching elements, <em>without</em> affecting any of their
+    other classes.</p>
+  <p>This dialog can also be used to change the element tag itself,
+    for example, changing <tt class="markup">span.italic</tt> to
+    just <tt class="markup">em<tt>.</p>
 </div>
 <!--
     /* Emacs local variables

@@ -473,6 +473,22 @@ SSC.Editor=(function(){
             setTimeout(function(){SSC.select(newspec,true);},100);
         else setTimeout(function(){SSC.select(selector,true);},100);
         SSC.Dialog.close(dialog);}
+    function rc_unwrap(evt){
+        var target=((evt.nodeType)?(evt):
+                    ((evt.target)||(evt.srcElement)));
+        var dialog=getDialog(target);
+        var selector=SSC.selector();
+        var selected=SSC.selected();
+        var i=0, n_selected=selected.length;
+        while (i<n_selected) {
+            var sel=selected[i++];
+            var frag=document.createDocumentFragment();
+            var children=[].concat(sel.childNodes);
+            var j=0, n=children.length;
+            while (j<n) frag.appendChild(children[j++]);
+            sel.parentNode.replaceChild(frag,sel);}
+        setTimeout(function(){SSC.select(selector,true);},100);
+        SSC.Dialog.close(dialog);}
 
     function rc_keydown(evt){
         evt=evt||event;
@@ -484,6 +500,7 @@ SSC.Editor=(function(){
         classname: "sscreclass",
         ".sscnewspec:keydown": rc_keydown,
         "button.close:click": SSC.Dialog.close,
+        "button[value='UNWRAP']:click": rc_unwrap,
         "button[value='CHANGE']:click": rc_done};
     
     /* Edit selection */
