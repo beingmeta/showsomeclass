@@ -15,17 +15,17 @@ img { max-width: 100%; height: auto;}
 
 /* Make spans more visible */
 
-body.cxSSC span:hover, body.cxSSC cite:hover,
-body.cxSSC strong:hover, body.cxSSC em:hover,
-body.cxSSC tt:hover, body.cxSSC kbd:hover,
-body.cxSSC b:hover, body.cxSSC i:hover,
-body.cxSSC samp:hover {
+span:hover, cite:hover,
+strong:hover, em:hover,
+tt:hover, kbd:hover,
+b:hover, i:hover,
+samp:hover {
     text-decoration: overline;}
-body.cxSSC .sscapp span:hover, body.cxSSC .sscapp cite:hover,
-body.cxSSC .sscapp strong:hover, body.cxSSC .sscapp em:hover,
-body.cxSSC .sscapp tt:hover, body.cxSSC .sscapp kbd:hover,
-body.cxSSC .sscapp b:hover, body.cxSSC .sscapp i:hover,
-body.cxSSC .sscapp samp:hover {
+.sscapp span:hover, .sscapp cite:hover,
+.sscapp strong:hover, .sscapp em:hover,
+.sscapp tt:hover, .sscapp kbd:hover,
+.sscapp b:hover, .sscapp i:hover,
+.sscapp samp:hover {
     text-decoration: inherit;}
 body.cxSSC .sscmarker span:hover, body.cxSSC .sscmarker cite:hover,
 body.cxSSC .sscmarker strong:hover, body.cxSSC .sscmarker em:hover,
