@@ -72,7 +72,7 @@ SSC.Editor=(function(){
     /* Adjusting nodes to match a new selector. */
 
     // Note that we don't do attributes yet 
-    function adjustNode(node,spec){
+    function adjustNode(node,spec,orig){
         var gotid=((/#[^.#\[ ]+/g).exec(spec));
         if (gotid) gotid=gotid[0];
         if (gotid) spec=spec.replace((/#[^.#\[ ]+/g),"");
@@ -103,7 +103,8 @@ SSC.Editor=(function(){
             var i=0, n_attribs=attribs.length;
             while (i<n_attribs) {
                 var attrib=attribs[i++];
-                if ((['id','class','title','style'].indexOf(attrib.name.toLowerCase()))<0)
+                if ((['id','class','title','style'].indexOf(
+                    attrib.name.toLowerCase()))<0)
                     fresh.setAttribute(attrib.name,attrib.value);}
             var children=copy(node.childNodes);
             var j=0, n_children=children.length;
@@ -124,7 +125,7 @@ SSC.Editor=(function(){
                     if (!((drops.indexOf(c))||(classes.indexOf(c))))
                         new_classes.push(c);}
                 node.className=new_classes.join(" ").trim();}}
-        else {}
+        else node.className=null;
         return node;}
 
     /* Select spec combo box */
