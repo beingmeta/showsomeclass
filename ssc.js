@@ -110,7 +110,7 @@ var SSC=(function(){
                 var prop=match.slice(2,-2);
                 var val=((data.hasOwnProperty(prop))&&(data[prop]));
                 if (val) text=
-                    text.replace(new RegExp(match,"g"),val.toString());}}
+                    text.replace(new RegExp(match,"gm"),val.toString());}}
         return text;}
     Utils.fillin=fillin;
 
