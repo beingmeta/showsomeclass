@@ -310,13 +310,13 @@ var SSC=(function(){
 
     /* Various status functions for the app */
 
-    function isenabled(){return hasClass(document.body,"cxSSC");}
-    function enable(){addClass(document.body,"cxSSC");}
-    function disable(){dropClass(document.body,"cxSSC");}
+    function isenabled(){return hasClass(document.body,"cxSSCAPP");}
+    function enable(){addClass(document.body,"cxSSCAPP");}
+    function disable(){dropClass(document.body,"cxSSCAPP");}
     function toggle(){
-        if (hasClass(document.body,"cxSSC"))
-            dropClass(document.body,"cxSSC");
-        else addClass(document.body,"cxSSC");}
+        if (hasClass(document.body,"cxSSCAPP"))
+            dropClass(document.body,"cxSSCAPP");
+        else addClass(document.body,"cxSSCAPP");}
     
     /* Selective display */
 
@@ -328,6 +328,7 @@ var SSC=(function(){
         if (toolbar) addClass(toolbar,"noinput");
         dropClass(wrappers,"sscWRAPPER");
         dropClass(selected,"sscSELECTED");
+        dropClass(document.body,"cxSSC");
         selector=false;
         if (SSC.display) SSC.display.innerHTML="";
         selected=[];
@@ -391,6 +392,7 @@ var SSC=(function(){
         selector=spec;
         selected=nodes;
         if (lim) SSC.focus(nodes[0]);
+        addClass(document.body,"cxSSC");
         window.location.hash="#"+spec;}
 
     function getOffsetTop(node){

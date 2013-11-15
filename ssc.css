@@ -1,6 +1,6 @@
 /* Generic rules */
 
-body.cxSSC { margin-top: 4em; }
+body.cxSSCAPP { margin-top: 4em; }
 body > * { margin-left: 15px; margin-right: 15px;}
 body > *.sscapp { margin-left: 0px; margin-right: 0px;}
 body > *.sscmarker { margin-left: 5px; margin-right: 5px;}
@@ -27,21 +27,21 @@ samp:hover {
 .sscapp b:hover, .sscapp i:hover,
 .sscapp samp:hover {
     text-decoration: inherit;}
-body.cxSSC .sscmarker span:hover, body.cxSSC .sscmarker cite:hover,
-body.cxSSC .sscmarker strong:hover, body.cxSSC .sscmarker em:hover,
-body.cxSSC .sscmarker tt:hover, body.cxSSC .sscmarker kbd:hover,
-body.cxSSC .sscmarker b:hover, body.cxSSC .sscmarker i:hover,
-body.cxSSC .sscmarker samp:hover {
+body.cxSSCAPP .sscmarker span:hover, body.cxSSCAPP .sscmarker cite:hover,
+body.cxSSCAPP .sscmarker strong:hover, body.cxSSCAPP .sscmarker em:hover,
+body.cxSSCAPP .sscmarker tt:hover, body.cxSSCAPP .sscmarker kbd:hover,
+body.cxSSCAPP .sscmarker b:hover, body.cxSSCAPP .sscmarker i:hover,
+body.cxSSCAPP .sscmarker samp:hover {
     text-decoration: inherit;}
 
-body.cxSSC a:hover {
+body.cxSSCAPP a:hover {
     text-decoration: overline underline;}
-body.cxSSC .sscapp a:hover, body.cxSSC .sscmarker a:hover {
+body.cxSSCAPP .sscapp a:hover, body.cxSSCAPP .sscmarker a:hover {
     text-decoration: underline;}
 
-body.cxSSC span:hover {
+body.cxSSCAPP span:hover {
     background-color: lightblue;}
-body.cxSSC .sscapp span:hover, body.cxSSC .sscmarker span:hover {
+body.cxSSCAPP .sscapp span:hover, body.cxSSCAPP .sscmarker span:hover {
     background-color: inherit;}
 
 /* Show markup blocks */
@@ -65,12 +65,12 @@ div.sscmarker:hover, div.sscapp:hover { outline: none;}
 
 /* Reset button display */
 
-body.cxSSC button.image, .sscapp button.image {
+body.cxSSCAPP button.image, .sscapp button.image {
   border: 0px; padding: 0px; margin: 0px;
   border-color: transparent;
   vertical-align: top;
   font-size: 100%;}
-body.cxSSC button.image img, .sscapp button.image img {
+body.cxSSCAPP button.image img, .sscapp button.image img {
     padding: 2px; padding-top: 0px;}
 .ssctoolbar button.image { border-radius: 0px;}
 
@@ -91,7 +91,7 @@ body.cxSSC .sscSELECTED.sscFOCUS {
     background-color: rgba(255,255,0,0.25) !important;
     outline: dotted red 2px;}
 
-body.cxSSC .sscapp {
+body.cxSSCAPP .sscapp {
     font-family: sans,sans-serif;}
 
 /* Exempt app elements themselves from the highlighting rules */
@@ -232,8 +232,8 @@ div#SSCTOOLBAR #SSCMATCHINDEX {
     border: dashed purple 3px; margin-bottom: 3px;
     border-top: 0px;}
 
-body.cxSSC .sscmarker { display: block; }
-body.cxSSC.ssc_HIDEMARKERS .sscmarker { display: none; }
+body.cxSSCAPP .sscmarker { display: block; }
+body.cxSSCAPP.ssc_HIDEMARKERS .sscmarker { display: none; }
 div.sscapp#SSCTOOLBAR button.markers img {
     background-color: silver;}
 body.ssc_HIDEMARKERS div.sscapp#SSCTOOLBAR button.markers img {
