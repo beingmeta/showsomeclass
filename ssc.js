@@ -1068,6 +1068,7 @@ SSC.Templates.sschelp=
             return;}
         setupToolbar();
         setupHelp();
+        SSC.enable();
         var hash=(location)&&(location.hash);
         if ((hash)&&(hash[0]==="#")) hash=hash.slice(1);
         if (SSC.hasOwnProperty("onclick"))
@@ -1078,7 +1079,7 @@ SSC.Templates.sschelp=
         if (SSC.hasOwnProperty("onkey"))
             addListener(window,"keydown",SSC.onkey);
         else addListener(window,"keydown",window_keydown);
-        if ((hash)&&($(hash).length)) {SSC.enable(); SSC.select(hash);}
+        if ((hash)&&($(hash).length)) SSC.select(hash);
         if (SSC.selected().length)
             setTimeout(function(){
                 SSC.focus((SSC.selected())[0]);},
