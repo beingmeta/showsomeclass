@@ -160,6 +160,7 @@ var SSC=(function(){
 	selector=false;
 	if (SSC.display) SSC.display.innerHTML="";
 	selected=[];
+	dropClass(document.body,"cxSSC");
 	if ((!(real_title))&&(document.title))
 	    real_title=document.title||"";
 	document.title="(no class!) "+real_title;}
