@@ -186,3 +186,9 @@ div.sscsavedialog table td textarea {
     div.sscsavedialog table  {
 	margin-left: 2px; margin-right: 2px;}
 }
+
+body.cxSSCAPP {
+ user-select: initial;
+ -o-user-select: initial;
+ -moz-user-select: initial;
+ -webkit-user-select: initial;}
