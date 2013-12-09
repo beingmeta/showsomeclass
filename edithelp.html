@@ -7,56 +7,59 @@
     <dfn>Show Some Class</dfn> (<abbrev>SSC</abbrev>) is a simple web
     application for visualizing and copy-editing HTML content, markup,
     and CSS classes.</p>
-  <p><strong>As the pointer moves,</strong> <dfn style="outline:
+  <p>The text appears as a single scrolling page and <dfn>page break
+    constraints</dfn> are displayed using dashed borders around blocks
+    of text.</p>
+  <p><strong>As you move your pointer</strong>, <dfn style="outline:
     dotted lightblue 1px;">block elements</dfn> are outlined; inline
     elements are <span style="text-decoration:
-    overline;">overlined</span>.  <dfn>Page break constraints</dfn>
-    are displayed using  dashed borders.</p>
+    overline;">overlined</span>.</p>
   <p><strong>Click an element</strong> to edit its tag, classes,
-    attributes, and content.</p>
-  <p><strong>Select a range of text</strong> to directly edit either
-    the selected text or the underlying HTML.</p>
-  <p><strong>Once selected</strong>, you can edit the
-    content, <dfn>merge</dfn> the underlying markup elements
-    or <dfn>wrap</dfn> the selection with new markup.</p>
+    attributes, and content.  Clicking also sets the <strong>current
+    selector</strong> (see below) for highlighting and skimming
+    similar elements.</p>
+  <p><strong>Select a range of text</strong> with the pointer to:</p>
+  <ul>
+    <li><strong>edit</strong> the text/HTML content of your selection directly,</li>
+    <li><strong>merge</strong> the underlying markup elements into a single element,</li>
+    <li><strong>wrap</strong> the selection with a new markup element.</li>
+  </ul>
   <p class="bigger">
-    <dfn>Show Some Class</dfn> also lets you visualize and change how CSS
-  classes are being applied, highlighting all elements which match
-  a <em>target selector</em>.</p>
-  <p>The <dfn>target selector</dfn> is displayed and changed with the
-    <strong>text box in the upper left corner</strong> of the browser
-    window, followed by the total number of matches and the current
-    match.</p>
-  <p><dfn>Matching elements</dfn> are highlighted; surrounding
-    elements are faded.</p>
-  <p>The <dfn>selector</dfn> can be any CSS selector
-    (e.g <samp>P.class</samp>), optionally followed by a regular
-    expression (e.g. <samp>/pattern/</samp>) matched against element
-    content.</p>
-  <p><strong>Move among matches</strong> with the <kbd>Tab</kbd>
-    and <kbd>Shift-Tab</kbd> keys or the <span class="nowrap">arrow (
-    <img src="{{imgroot}}/uparrow_white.svgz" class="intext svg"/>
-    <img src="{{imgroot}}/uparrow_white100h.png" class="intext
-    notsvg"/> <img src="{{imgroot}}/downarrow_white.svgz"
-    class="intext svg"/>
+    You can see and change how CSS classes are applied throughout your
+    content by specifying a <strong>target selector</strong>.  This is
+    any CSS selector (e.g <samp>P.class</samp>) optionally followed by
+    a regular expression (e.g. <samp>/\d+/</samp>, any digit string)
+    which is matched against element content.</p>
+  <p>The current <strong>target selector</strong> appears in an
+    editable text box on the left of the toolbar at the top of the
+    page.</p>
+  <p><strong>Matching elements</strong> are highlighted and the
+  <span style="background-color: rgba(255,255,0,0.25); outline: dotted
+  red 2px">current focus match</span> is given a colored background
+  and dotted red outline.</p>
+  <p><strong>Move among matches</strong> (change the <em>focus
+    match</em>) with the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys
+    or by using the <span class="nowrap">arrow (
+    <img src="{{imgroot}}/downarrow_white.svgz" class="intext svg"/>
     <img src="{{imgroot}}/downarrow_white100h.png" class="intext
-    notsvg"/>) icons.</span></p>
+    notsvg"/> <img src="{{imgroot}}/uparrow_white.svgz" class="intext
+    svg"/> <img src="{{imgroot}}/uparrow_white100h.png" class="intext
+    notsvg"/> ) icons in the top toolbar.</span></p>
+  <p><strong>Change all of the matching elements at once</strong> with
+    the <kbd>*</kbd> key or the
+    <img src="{{imgroot}}/changemarkup_ondark.svgz" class="intext
+    svg"/> <img src="{{imgroot}}/changemarkup_ondark100x100.png"
+    class="intext notsvg"/> icon.</p>
   <p><strong>See <em>(some of)</em> the style rules</strong> for the
     target selector with <span class="nowrap">the <kbd>S</kbd>
     key</span> or <span class="nowrap">the
     <img src="{{imgroot}}/stylebraces.svgz" class="intext svg"/>
     <img src="{{imgroot}}/stylebraces100x100.png" class="intext
     notsvg"/> icon.</span></p>
-  <p><strong>Change all of the matching elements at once</strong> with
-    the <kbd>*</kbd> key or the
-    <img src="{{imgroot}}/changemarkup_ondark.svgz" class="intext
-    svg"/> <img src="{{imgroot}}/changemarkup_ondark100x100.png"
-    class="intext notsvg"/> icon.</p>
   <p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key
     or the <img src="{{imgroot}}/redx.svgz" class="intext svg"/>
     <img src="{{imgroot}}/redx100x100.png" class="intext notsvg"/>
-    icon.</p>
-  <p><strong>Get it back</strong> with the <kbd>Enter</kbd> key
+    icon.  <strong>Get it back</strong> with the <kbd>Enter</kbd> key
     or by “clicking” the top of the screen.</p>
 </div>
 <!-- /* Emacs local variables

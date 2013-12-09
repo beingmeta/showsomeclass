@@ -213,7 +213,7 @@ div#SSCTOOLBAR #SSCMATCHINDEX {
 /* Marker classes */
 
 .sscmarker {
-    font-size: 75%; text-align: center;
+    text-align: center;
     background-color: light gray;
     border: 0px;
     display:none;}
@@ -294,6 +294,8 @@ div#SSCHELP p.bigger {
     margin-top: 1em;}
 div#SSCHELP p.bigger:first-child {
     margin-top: 0.25em;}
+div#SSCHELP ul {
+    margin-left: 4em; margin-top: 0px;}
 
 div#SSCHELP span.nobreak {
     white-space: nowrap;}

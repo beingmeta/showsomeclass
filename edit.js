@@ -187,7 +187,7 @@ SSC.Editor=(function(){
             addListener(styleinput,"keydown",ee_styleinput);}
         else dialog.removeChild(styleinput);
 
-        var related=dialog.querySelector('.sscrelated'), add_node=true;
+        var related=dialog.querySelector('.sscrelated'), add_node=true, n=0;
         if (parents.length) {
             var p=parents.length-1;
             while (p>=0) {
@@ -196,10 +196,10 @@ SSC.Editor=(function(){
                 popt.value=getID(parent);
                 if (parent===node) {
                     popt.selected=true; add_node=false;}
-                related.appendChild(popt);}}
+                related.appendChild(popt); n++;}}
         if (add_node) {
             var opt=make("OPTION",false,getSignature(node,true));
-            opt.selected=true; related.appendChild(opt);}
+            opt.selected=true; related.appendChild(opt); n++;}
         if (children.length) {
             var c=0, n_children=children.length; while (c<n_children) {
                 var child=children[c++];
@@ -207,7 +207,11 @@ SSC.Editor=(function(){
                 var copt=make("OPTION",false,prefix+getSignature(child,true));
                 copt.value=getID(child);
                 if (child===SSC.Editor.base) addClass(copt,"sscbase");
-                related.appendChild(copt);}}
+                related.appendChild(copt);n++;}}
+        if (n<=1) {
+            var nav=dialog.querySelector(".sscdomnav");
+            nav.parentNode.removeChild(nav);}
+        
         addListener(related,"change",ee_selected);
         
         // var reclasser=dialog.querySelector(".sscreclass");
@@ -464,7 +468,7 @@ SSC.Editor=(function(){
             var sel=selected[i++];
             if ((newspec.length===0)&&(classrx)) 
                 sel.className=sel.className.replace(classrx,"").
-                    replace("\s+"," ").trim();
+                    replace(/\s+/," ").trim();
             else if (newspec.length===0) {
                 var crumb=make_text("");
                 sel.parentNode.replaceChild(crumb,sel);}
@@ -1011,7 +1015,10 @@ SSC.Editor=(function(){
                 saved_ids[id]=elt;
                 elt.id=null;}}
         SSC.clear();
-        content="<html>\n"+html.innerHTML+"\n</html>";
+        var docid=html.getAttribute("data-docid");
+        if (docid)
+            content="<html data-docid='"+docid+"'>\n"+html.innerHTML+"\n</html>";
+        else content="<html>\n"+html.innerHTML+"\n</html>";
         /* Now reset things */
         SSC.select(cursel,true);
         i=0, lim=apps.length; while (i<lim) {
@@ -1050,7 +1057,7 @@ SSC.Editor=(function(){
     SSC.prelaunch=initpubpoint;
     function setupEditor(){
         addClass(document.body,"ssc_SHOWHELP");
-        addListener(window,"mouseup",editor_mouseup);
+        addListener(document.body,"mouseup",editor_mouseup);
         SSC.commands[SSC.Utils.ASTERISK]=reclass_selector;
         if (!(SSC.pubpoint)) {
             var save_button=byID("SSCEDITSAVEBUTTON");

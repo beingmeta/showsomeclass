@@ -115,16 +115,18 @@ div.ssctextedit.sscbigtext {
     height: 50%; width: 70%;
     font-size: 150%;}
 
-div.ssctextedit div.sscselection { margin-right: 4.5em;}
+div.ssctextedit div.sscselection { margin-right: 7em;}
 div.ssctextedit div.sscselection { text-align: left; }
 div.ssctextedit div.sscselection input[TYPE='TEXT'] {
     font-size: 40%; width: 100%;}
 
-div.ssctextedit div.toprow { min-height: 1.4em;}
+div.ssctextedit div.toprow {
+    text-align: left; font-size: 2em; min-height: 1em;
+    background-color: black; }
 
 div.ssctextedit input[TYPE="TEXT"] { font-size: 50%;}
 div.sscdialog.ssctextedit textarea {
-    height: 90%; width: 100%; font-size: 16px;
+    height: 90%; width: 97%; font-size: 16px;
     min-height: 2em; resize: both; clear: none;}
 div.sscdialog.ssctextedit.sscbigedit textarea { min-height: 7em;}
 div.sscdialog.ssctextedit { padding-bottom: 1ex;}
@@ -133,11 +135,13 @@ div.ssctextedit .button, div.ssctextedit button {
     float: right; vertical-align: top;
     padding-top: 0px;}
 div.ssctextedit .button.image, div.ssctextedit button.image {
-    width: 1.4em; height: 1.4em;}
-
+    width: 2em; height: 2em;}
+div.ssctextedit.sscbigtext .button.image,
+div.ssctextedit.sscbigtext button.image {
+    width: 1em; height: 1em;}
 div.ssctextedit .ssctextwrap { display: none;}
 div.ssctextedit.sscwrap .ssctextwrap {
-    display: block; margin-right: 3.5em;}
+    display: block; margin-right: 7em;}
 
 div.ssctextedit.sscwrap div.sscselection,
 div.ssctextedit.sscbigtext div.sscselection {
@@ -153,7 +157,7 @@ div.ssctextedit div.ssctextwrap {
     clear: left;}
 div.ssctextedit div.ssctextwrap input[TYPE='TEXT'] { width: 100%; }
 div.ssctextedit div.sscsignature {
-    margin-right: 4.5em; clear: left;}
+    margin-right: 7em; clear: left;}
 div.ssctextedit div.ssctextinput input[TYPE='TEXT'] { width: 100%; }
 div.ssctextedit div.sscwrapspec, div.ssctextedit div.sscmergespec {
     display: none;}
