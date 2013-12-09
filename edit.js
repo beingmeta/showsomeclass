@@ -924,6 +924,7 @@ SSC.Editor=(function(){
         else {
             SSC.Editor.selection=false;
             SSC.Editor.selected=false;}
+        SSC.setFocus(node);
         if (!(dialog)) {
             if (node)
                 SSC.Editor.dialog=dialog=makeEditElementDialog(

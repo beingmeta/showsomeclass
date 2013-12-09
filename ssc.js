@@ -406,6 +406,10 @@ var SSC=(function(){
     /* The FOCUS is used for moving back and forth through the
        selected nodes. */
     function setFocus(node,index){
+        if (focus===node) return;
+        var curfocus=document.querySelectorAll(".sscFOCUS"), foci=[];
+        var i=0, lim=curfocus.length; while (i<lim) foci.push(curfocus[i++]);
+        i=0; lim=foci.length; while (i<lim) dropClass(foci[i++],"sscFOCUS");
         if ((node)&&(typeof index!=="number"))
             index=selected.indexOf(node);
         if (byID("SSCMATCHINDEX")) byID("SSCMATCHINDEX").innerHTML=""+(index+1);
