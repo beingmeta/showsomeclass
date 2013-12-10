@@ -679,7 +679,7 @@ SSC.Editor=(function(){
             var i=0, lim=children.length;
             while (i<lim) elts.push(children[i++]);
             node.innerHTML="";
-            i=0, lim=elts.length; while (i<lim) {
+            i=0; lim=elts.length; while (i<lim) {
                 var child=elts[i++];
                 if (child.nodeType===3) {
                     if (textnode) {
@@ -701,7 +701,7 @@ SSC.Editor=(function(){
                     var grand=child.childNodes; var grandcopy=[];
                     var j=0, n=grand.length;
                     while (j<n) grandcopy.push(grand[j++]);
-                    j=0, n=grandcopy.length;
+                    j=0; n=grandcopy.length;
                     while (j<n) {
                         var grandchild=grandcopy[j++];
                         if (grandchild.nodeType===3) {
@@ -723,7 +723,7 @@ SSC.Editor=(function(){
             var i=0, lim=children.length;
             while (i<lim) elts.push(children[i++]);
             var frag=document.createDocumentFragment();
-            i=0, lim=elts.length; while (i<lim) frag.appendChild(elts[i++]);
+            i=0; lim=elts.length; while (i<lim) frag.appendChild(elts[i++]);
             return frag;}
         else return false;}
 
@@ -1022,7 +1022,7 @@ SSC.Editor=(function(){
         else content="<html>\n"+html.innerHTML+"\n</html>";
         /* Now reset things */
         SSC.select(cursel,true);
-        i=0, lim=apps.length; while (i<lim) {
+        i=0; lim=apps.length; while (i<lim) {
             app=apps[i]; crumb=crumbs[i]; i++;
             crumb.parentNode.replaceChild(app,crumb);}
         for (var tmpid in saved_ids) {

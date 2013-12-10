@@ -153,7 +153,7 @@ SSC.Dialog=(function(){
 
     function close(arg){
         if (!(arg)) arg=closing;
-        else if (typeof arg === "STRING")
+        else if (typeof arg === 'string')
             arg=byID(string);
         else if ((arg.target)||(arg.srcElement))
             arg=((arg.target)||(arg.srcElement));
@@ -181,7 +181,7 @@ SSC.Dialog=(function(){
 
     function keep(arg){
         if (!(arg)) arg=closing;
-        else if (typeof arg === "STRING")
+        else if (typeof arg === 'string')
             arg=byID(string);
         else if ((arg.target)||(arg.srcElement))
             arg=((arg.target)||(arg.srcElement));
