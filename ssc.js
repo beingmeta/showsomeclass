@@ -229,9 +229,9 @@ var SSC=(function(){
 
     /* Getting node signatures */
 
-    function getSignature(node,attribs){
+    function getSignature(node,attribs,showid){
         var classname=node.className.replace(/\bssc\w+/g,"").trim();
-        var id=node.id, tag=node.tagName;
+        var id=((showid)&&(node.id)), tag=node.tagName;
         if (id.search("sscTMP")===0) id=false;
         var sig=tag+
             ((classname)?("."):(""))+

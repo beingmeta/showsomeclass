@@ -210,6 +210,13 @@ div#SSCTOOLBAR #SSCMATCHINDEX {
 .sscapp .button img, .sscapp button img {
     height: 90%; width: auto; vertical-align: top;}
 
+button#SSCSCANLEFT {
+    position: fixed; left: 0px; bottom: 50%;
+    opacity: 0.4; width: 15%; max-width: 100px; height: auto;}
+button#SSCSCANRIGHT {
+    position: fixed; right: 0px; bottom: 50%;
+    opacity: 0.4; width: 15%; max-width: 100px; height: auto;}
+
 /* Marker classes */
 
 .sscmarker {

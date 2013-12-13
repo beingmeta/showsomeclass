@@ -223,7 +223,7 @@ SSC.Editor=(function(){
                 i=0; var n_attribs=attributes.length;
                 while (i<n_attribs) {
                     var attrib=attributes[i++]; var name=attrib.name;
-                    if ((name==='id')||(name==='class')||(name==='style'))
+                    if ((name==='class')||(name==='style'))
                         continue;
                     var tr=make_attrib_row(name,attrib.value);
                     attribtable.appendChild(tr);
