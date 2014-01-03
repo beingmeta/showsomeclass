@@ -393,7 +393,7 @@ var SSC=(function(){
         selected=nodes;
         if (lim) SSC.focus(nodes[0]);
         addClass(document.body,"cxSSC");
-        window.location.hash="#"+spec;}
+        if (spec) window.location.hash="#"+spec;}
 
     function getOffsetTop(node){
         var off=0; var scan=node;
