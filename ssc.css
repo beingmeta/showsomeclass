@@ -145,7 +145,7 @@ div#SSCTOOLBAR input[TYPE="TEXT"] {
 div#SSCTOOLBAR button, div#SSCTOOLBAR .button { max-height: 1.5em;}
 div#SSCTOOLBAR button img, div#SSCTOOLBAR .button img {
     background-color: transparent;
-    height: 1.4em; width: auto; padding-top: 3px; padding-bottom: 1px;}
+    height: 1.4em; width: auto; padding-top: 1px; padding-bottom: 1px;}
 div#SSCTOOLBAR .button.scanup img,
 div#SSCTOOLBAR button.scanup img {
     padding-top: 1px; padding-bottom: 3px;}

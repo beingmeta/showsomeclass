@@ -149,7 +149,7 @@ var SSC=(function(){
 
     var events_pat=/^(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur)$/;
     var spec_events_pat=
-        /^([^:]+):(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur)$/;
+        /^([^:]+):(click|keyup|keydown|keypress|change|touchstart|touchmove|touchend|mousedown|mouseup|mousemove|focus|blur|input)$/;
 
     function setupListeners(node,opts){
         var match=false, ex=false;
@@ -232,7 +232,7 @@ var SSC=(function(){
     function getSignature(node,attribs,showid){
         var classname=node.className.replace(/\bssc\w+/g,"").trim();
         var id=((showid)&&(node.id)), tag=node.tagName;
-        if (id.search("sscTMP")===0) id=false;
+        if ((id)&&(id.search("sscTMP")===0)) id=false;
         var sig=tag+
             ((classname)?("."):(""))+
             ((classname)?((classname.split(/\s+/)).join(".")):(""))+
@@ -359,7 +359,11 @@ var SSC=(function(){
         if (!(spec)) {disable(); return;}
         var toolbar=document.getElementById("SSCTOOLBAR");
         if (toolbar) dropClass(toolbar,"noinput");
-        var nodes=$(spec);
+        var nodes=false;
+        if (spec.search(/[#.]$/g)>=0) return;
+        else {
+            try {nodes=$(spec);}
+            catch (ex) {return;}}
         var i=0, lim=nodes.length;
         enable(); addClass(document.body,"ssc__TOOLBAR");
         while (i<lim) show(nodes[i++]);
@@ -513,6 +517,7 @@ SSC.updateSelectors=(function(){
         var tag=node.tagName; var classname=node.className;
         // Ignore yourself
         if (classname.search(/\bsscapp\b/g)>=0) return;
+        if (classname.search(/\bsscmarker\b/g)>=0) return;
         classname=classname.replace(/\bssc\w+/g,"");
         classname=classname.replace(/\bsbookauto\w*/g,"");
         classname=classname.trim();
@@ -534,16 +539,16 @@ SSC.updateSelectors=(function(){
                 var child=children[c++];
                 if (child.nodeType===1) scandom(child,counts,all);}}}
 
-    function updateSelectors(counts,dropbox){
+    function updateSelectors(counts,datalist){
         if (!(counts)) counts=SSC.countSelectors(document.body);
         var all=counts._all; var options=[];
-        if (dropbox) dropbox.innerHTML="";
+        datalist.innerHTML="";
         var i=0, lim=all.length; while (i<lim) {
             var sel=all[i++]; var count=counts[sel];
             var label=((count===1)?(" (one element)"):(" ("+count+" elements)"));
             var option=make("OPTION",false,sel+label);
             option.value=sel; options.push(option);
-            if (dropbox) dropbox.appendChild(option);}
+            datalist.appendChild(option);}
         counts._options=options;
         return counts;}
 
@@ -722,7 +727,7 @@ SSC.Templates.ssctoolbar=
     "<div class=\"combobox\">\n"+
     "  <input type=\"TEXT\" id=\"SSCINPUT\" NAME=\"SELECTOR\"\n"+
     "         placeholder=\"a CSS selector\"/>\n"+
-    "  <select id=\"SSCDROPBOX\" class=\"dropbox\"></select>\n"+
+    "  <datalist id=\"SELECTORS\"></datalist>\n"+
     "</div>\n"+
     "<span class=\"text matchphrase\" id=\"SSCMATCHPHRASE\"\n"+
     "      title=\"Tab/Shift-Tab to move among matches\">\n"+
@@ -820,8 +825,7 @@ SSC.Templates.sschelp=
                          SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
                          {imgroot: SSC.imgroot},
                          SSC.Inits.toolbar);
-        var dropbox=bySpec(toolbar,"SELECT"); {
-            SSC.selectors=SSC.updateSelectors(false,dropbox);}
+        SSC.selectors=SSC.updateSelectors(false,toolbar.getElementsByTagName("datalist")[0]);
         var tapzone=make("div","sscapp",false,
                          {id: "SSCTAPZONE",click: showToolbar});
         document.body.appendChild(toolbar);
@@ -846,7 +850,6 @@ SSC.Templates.sschelp=
             addClass("SSCTOOLBAR","showstyle");}
 
     function sscinput_focus(){
-        sscinput_complete();
         dropClass("SSCTOOLBAR","showstyle");
         addClass("SSCTOOLBAR","focused");}
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
@@ -862,8 +865,13 @@ SSC.Templates.sschelp=
             cancel(evt);}
         else if (kc===ESCAPE) {
             target.blur(); cancel(evt);}
-        else {
-            setTimeout(sscinput_complete,50);}}
+        else {}}
+
+    function sscinput_newinput(evt){
+        evt=evt||event;
+        var target=evt.target||evt.srcElement;
+        var spec=target.value;
+        SSC.select(spec,true);}
     
     var selector_complete_string=false;
     function sscinput_complete(){
@@ -1046,7 +1054,7 @@ SSC.Templates.sschelp=
         "input:keydown": sscinput_keydown,
         "input:focus": sscinput_focus,
         "input:blur": sscinput_blur,
-        "select:change": selector_selected,
+        "input:input": sscinput_newinput,
         ".markers:click": toggleMarkers,
         ".help:click": toggleHelp,
         ".hide:click": hideToolbar,

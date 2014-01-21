@@ -4,18 +4,6 @@
     <img src="{{imgroot}}/changemarkup_ondark.svgz" alt="Reclass" class="svg"/>
     <img src="{{imgroot}}/changemarkup_ondark100x100.png" alt="Reclass" class="notsvg"/>
   </button>
-  <button class="image scanup"
-          title="Go to the previous selected element (shortcut: Shift-Tab)">
-    <img class="svg" src="{{imgroot}}/uparrow_white.svgz" alt="Prev"/>
-    <img class="notsvg"
-         src="{{imgroot}}/uparrow_white100h.png" alt="Prev"/>
-  </button>
-  <button class="image scandown"
-          title="Go to the next selected element (shortcut: Tab)">
-    <img class="svg" src="{{imgroot}}/downarrow_white.svgz" alt="Next"/>
-    <img class="notsvg"
-         src="{{imgroot}}/downarrow_white100h.png" alt="Next"/>
-  </button>
   <button class="image showrules"
           title="Show some of the CSS style rules for this selector (shortcut: the 'S' key)">
     <img class="svg" src="{{imgroot}}/stylebraces.svgz"
@@ -48,33 +36,45 @@
     <img class="notsvg" src="{{imgroot}}/redx100x100.png" alt="Hide"/>
   </button>
 </div>
-<button class="sscscanleft" title="Go to previous match">
+<button class="sscscanleft scanup" title="Go to previous match (Shortcut: Shift-Tab)">
   <img class="svg" src="{{imgroot}}/scan_left.svgz" alt="Back"/>
   <img class="notsvg" src="{{imgroot}}/scan_left128x128.png" alt="Back"/>
 </button>
 <div class="combobox">
-  <input type="TEXT" id="SSCINPUT" NAME="SELECTOR"
+  <input type="TEXT" id="SSCINPUT" NAME="SELECTOR" list="SELECTORS"
          placeholder="a CSS selector"/>
-  <select id="SSCDROPBOX" class="dropbox"></select>
+  <datalist id="SELECTORS"></datalist>
 </div>
 <span class="text matchphrase" id="SSCMATCHPHRASE"
       title="Tab/Shift-Tab to move among matches">
   <span id="SSCMATCHCOUNT">some</span> matches
   <span class="sscmatchindex">(@#<span id="SSCMATCHINDEX">#</span>)</span>
 </span>
-<button class="sscscanright" title="Go to next match">
+<button class="sscscanright scandown" title="Go to next match (Shortcut: Tab)">
   <img class="svg" src="{{imgroot}}/scan_right.svgz" alt="Back"/>
   <img class="notsvg" src="{{imgroot}}/scan_right128x128.png" alt="Back"/>
 </button>
 <div class="styleinfo" id="SSCSTYLEINFO"></div>
-<button class="sscscanleft" id="SSCSCANLEFT" title="Go to previous match">
+<datalist id="STYLEGUIDE">
+  <option value="P"/><option value="H1"/><option value="H2"/><option value="H3"/>
+  <option value="H4"/><option value="H5"/><option value="H6"/><option value="H7"/>
+  <option value="DIV"/><option value="SPAN"/>
+  <option value="EM"/><option value="STRONG"/><option value="CITE"/>
+  <option value="I"/><option value="SUB"/><option value="SUP"/>
+  <option value="UL"/><option value="OL"/><option value="LI"/>
+  <option value="FIGURE"/><option value="FIGCAPTION"/>
+  <option value="BLOCKQUOTE"/><option value="ASIDE"/><option value="DETAIL"/>
+</datalist>
+<!--
+<button class="sscscanleft scanup" id="SSCSCANLEFT" title="Go to previous match">
   <img class="svg" src="{{imgroot}}/scan_left.svgz" alt="Back"/>
   <img class="notsvg" src="{{imgroot}}/scan_left128x128.png" alt="Back"/>
 </button>
-<button class="sscscanright" id="SSCSCANRIGHT" title="Go to next match">
+<button class="sscscanright scandown" id="SSCSCANRIGHT" title="Go to next match">
   <img class="svg" src="{{imgroot}}/scan_right.svgz" alt="Back"/>
   <img class="notsvg" src="{{imgroot}}/scan_right128x128.png" alt="Back"/>
 </button>
+-->
 <!--
     /* Emacs local variables
     ;;;  Local variables: ***
