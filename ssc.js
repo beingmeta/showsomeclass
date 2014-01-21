@@ -180,6 +180,7 @@ var SSC=(function(){
         if (Array.isArray(elt)) {
             var i=0, lim=elt.length;
             while (i<lim) addClass(elt[i++],classname);}
+        else if (!(classname)) {}
         else {
             var current=elt.className, pat=classPat(classname);
             if (!(current)) elt.className=classname;
@@ -194,10 +195,11 @@ var SSC=(function(){
         if (Array.isArray(elt)) {
             var i=0, lim=elt.length;
             while (i<lim) dropClass(elt[i++],classname);}
+        else if (!(classname)) {}
         else {
             var current=elt.className, pat=classPat(classname);
-            if (!(current)) elt.className=classname;
-            else if (current===classname) elt.className=null;
+            if (!(current)) {}
+            else if (current===classname) elt.className="";
             else if (current.search(pat)>=0)
                 elt.className=((current.replace(pat,"")).
                                replace(whitespace_pat," ").
