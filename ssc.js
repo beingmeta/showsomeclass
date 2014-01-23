@@ -941,6 +941,7 @@ SSC.Templates.sschelp=
     function scan_forward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
+        dropClass("SSCTOOLBAR","showstyle");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index>=max) {}
@@ -953,6 +954,7 @@ SSC.Templates.sschelp=
     function scan_backward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
+        dropClass("SSCTOOLBAR","showstyle");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index<=0) {}
