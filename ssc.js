@@ -1050,15 +1050,29 @@ SSC.Templates.sschelp=
     SSC.window_click=window_click;
     
     function toggleHelp(){
-        if (hasClass(document.body,"ssc_SHOWHELP"))
+        if (hasClass(document.body,"ssc_SHOWHELP")) {
             dropClass(document.body,"ssc_SHOWHELP");
-        else addClass(document.body,"ssc_SHOWHELP");}
+            if (window.localStorage)
+                window.localStorage.setItem("sschidehelp","yes");}
+        else {
+            if (window.localStorage)
+                window.localStorage.removeItem("sschidehelp");
+            addClass(document.body,"ssc_SHOWHELP");}}
     function hideHelp(evt){
         if (hasClass(document.body,"ssc_SHOWHELP"))
             dropClass(document.body,"ssc_SHOWHELP");
+        if (window.localStorage)
+            window.localStorage.setItem("sschidehelp","yes");
+        cancel(evt);}
+    function showHelp(evt){
+        if (!(hasClass(document.body,"ssc_SHOWHELP"))) {
+            addClass(document.body,"ssc_SHOWHELP");
+            if (window.localStorage)
+                window.localStorage.removeItem("sschidehelp");}
         cancel(evt);}
     SSC.toggleHelp=toggleHelp;
     SSC.hideHelp=hideHelp;
+    SSC.showHelp=showHelp;
 
     function toggleMarkers(){
         if (hasClass(document.body,"ssc_HIDEMARKERS"))
@@ -1117,12 +1131,12 @@ SSC.Templates.sschelp=
                 SSC.focus((SSC.selected())[0]);},
                        200);
         addClass(document.body,"ssc__TOOLBAR");
-        if (!(SSC.donthelp))
+        if (window.localStorage) {
+            if (!(window.localStorage.getItem("sschidehelp")))
+                addClass(document.body,"ssc_SHOWHELP");}
+        else if (!(SSC.donthelp))
             addClass(document.body,"ssc_SHOWHELP");
-        if (SSC.postlaunch) {
-            var postlaunch=SSC.postlaunch; SSC.postlaunch=false;
-            setTimeout(postlaunch,50);}}
-    
+        else {}}
     addListener(window,"load",loadSSC);})();
 
 /* Emacs local variables

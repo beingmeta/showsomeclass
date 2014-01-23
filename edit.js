@@ -1164,7 +1164,12 @@ SSC.Editor=(function(){
     SSC.prelaunch=initpubpoint;
     function setupEditor(){
         setupDataLists();
-        addClass(document.body,"ssc_SHOWHELP");
+        if (window.localStorage) {
+            if (!(window.localStorage.getItem("sschidehelp")))
+                addClass(document.body,"ssc_SHOWHELP");}
+        else if (!(SSC.donthelp))
+            addClass(document.body,"ssc_SHOWHELP");
+        else {}
         addListener(document.body,"mouseup",editor_mouseup);
         SSC.commands[SSC.Utils.ASTERISK]=reclass_selector;
         if (!(SSC.pubpoint)) {
