@@ -221,7 +221,10 @@ SSC.Editor=(function(){
         var styleinfo=getComputedStyle(node);
         if (spec_input) {
             if (styleinfo.display==='inline')
-                spec_input.setAttribute("list","INLINESTYLES");}
+                spec_input.setAttribute("list","INLINESTYLES");
+            else if (styleinfo.display==='block')
+                spec_input.setAttribute("list","BLOCKSTYLES");}
+        
         var styletext=(node.style.cssText).trim();
         var styleinput=dialog.querySelector(".sscstyleinput");
         if (styletext) {
@@ -920,6 +923,55 @@ SSC.Editor=(function(){
         "button.close:click": SSC.Dialog.close,
         "input[type='TEXT']:keydown": es_keydown};
 
+    /* Setting up DATALISTs */
+
+    var skip_css=SSC.skip_css;
+    var inline_pat=/^(span|em|a|strong|i|b|cite|sup|sub|dfn)[.]/i;
+    var block_pat=/^(p|div|blockquote|ul|li|ol)[.]/i;
+
+    function addToDatalist(dl,val){
+        var options=dl.querySelectorAll("OPTION");
+        var i=0, n=options.length;
+        while (i<n) {
+            var option=options[i++];
+            if (option.value===val) return;}
+        var new_option=document.createElement("OPTION");
+        new_option.value=val;
+        dl.appendChild(new_option);}
+
+    function setupDataLists(){
+        var sheets=document.styleSheets;
+        var i=0, n_sheets=sheets.length;
+        var blocklist=document.getElementById("BLOCKSTYLES");
+        var inlinelist=document.getElementById("INLINESTYLES");
+        var styleguide=document.getElementById("STYLEGUIDE");
+        var blockspecs={}, inlinespecs={};
+        while (i<n_sheets) {
+            var sheet=sheets[i++], href=sheet.href;
+            if (!(sheet.rules)) continue;
+            if ((href)&&(href.search(skip_css)>=0)) continue;
+            var rules=sheet.rules; var j=0, n_rules=rules.length;
+            while (j<n_rules) {
+                var rule=rules[j++], seltext=rule.selectorText;
+                if (!(seltext)) continue;
+                var selectors=seltext.split(",");
+                var k=0, n_selectors=selectors.length;
+                while (k<n_selectors) {
+                    var selector=selectors[k++];
+                    if ((selector.indexOf('#')>=0)||
+                        (selector.indexOf('[')>=0))
+                        continue;
+                    var clauses=selector.split(/\s+/g);
+                    var c=0, n_clauses=clauses.length;
+                    while (c<n_clauses) {
+                        var clause=clauses[c++];
+                        if (clause.indexOf('.')>=0) {
+                            if (clause.search(inline_pat)===0)
+                                addToDatalist(inlinelist,clause);
+                            if (clause.search(block_pat)===0)
+                                addToDatalist(blocklist,clause);
+                            addToDatalist(styleguide,clause);}}}}}}
+
     /* Edit handlers */
 
     function set_editnode(node){
@@ -1111,6 +1163,7 @@ SSC.Editor=(function(){
         SSC.donthelp=true;}
     SSC.prelaunch=initpubpoint;
     function setupEditor(){
+        setupDataLists();
         addClass(document.body,"ssc_SHOWHELP");
         addListener(document.body,"mouseup",editor_mouseup);
         SSC.commands[SSC.Utils.ASTERISK]=reclass_selector;
