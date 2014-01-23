@@ -73,22 +73,18 @@ SSC.Editor=(function(){
 
     // Note that we don't do attributes yet 
     function adjustNode(node,spec,orig){
-        var gotid=((/#[^.#\[ ]+/g).exec(spec));
+        var gotid=((/#[^.#\[ ]+/g).exec(spec)), tag=false, classes=[];
         if (gotid) gotid=gotid[0];
         if (gotid) spec=spec.replace((/#[^.#\[ ]+/g),"");
-        var parsed=(spec.trim()).split(/[.]/), tag=parsed[0];
-        var absolute=[], adds=[], drops=[];
-        var k=1, len=parsed.length; while (k<len) {
-            var cl=parsed[k++];
-            if (cl[0]==='-') drops.push(cl.slice(1));
-            else if (cl[0]==='+') adds.push(cl.slice(1));
-            else absolute.push(cl);}
-        if (((adds.length)||(drops.length))&&(absolute.length)) {
-            // You can't set the signature and then edit it in the same spec
-            SSC.Message("It doesn't make sense to set the signature and edit "+
-                        "it in the same specification.");
-            return false;}
-        var classname=((absolute.length)?(absolute.join(" ")):(false));
+        var parsed=(spec.trim()).split(/[.]/);
+        if (parsed.length===0)
+            tag=node.tagName;
+        else if (parsed[0]) {
+            tag=parsed[0];
+            classes=parsed.slice(1);}
+        else {
+            tag=node.tagName;
+            classes=parsed;}
         // Change the tag if needed
         if ((tag)&&(node.tagName.toLowerCase()!==tag.toLowerCase())) {
             // Some implementations don't let you set .tagName,
@@ -111,21 +107,62 @@ SSC.Editor=(function(){
             while (j<n_children) fresh.appendChild(children[j++]);
             node.parentNode.replaceChild(fresh,node);
             node=fresh;}
-        if (absolute.length)
-            node.className=absolute.join(" ").trim();
-        else if ((adds.length)||(drops.length)) {
-            var current=node.className;
-            if (!(current)) node.className=adds.join(" ");
-            else {
-                var classes=current.split(/\s+/);
-                var new_classes=add;
-                var ci=0, n_classes=classes.length;
-                while (ci<n_classes) {
-                    var c=classes[ci++];
-                    if (!((drops.indexOf(c))||(classes.indexOf(c))))
-                        new_classes.push(c);}
-                node.className=new_classes.join(" ").trim();}}
-        else node.className=null;
+        node.className=((classes.length)?(classes.join(" ")):(""));
+        if (gotid) node.id=gotid;
+        return node;}
+
+    function morphNode(node,newtag,adds,drops){
+        // Change the tag if needed
+        if (newtag) {
+            // Some implementations don't let you set .tagName,
+            //  so we make a new element and do a replace
+            var fresh=document.createElement(newtag);
+            if (node.className) fresh.className=node.className;
+            if (node.id) fresh.id=node.id;
+            if (node.title) fresh.title=node.title;
+            if ((node.style)&&(node.style.cssText))
+                fresh.setAttribute("style",node.style.cssText);
+            var attribs=node.attributes;
+            var i=0, n_attribs=attribs.length;
+            while (i<n_attribs) {
+                var attrib=attribs[i++];
+                if ((['id','class','title','style'].indexOf(
+                    attrib.name.toLowerCase()))<0)
+                    fresh.setAttribute(attrib.name,attrib.value);}
+            var children=copy(node.childNodes);
+            i=0; var n_children=children.length;
+            while (i<n_children) fresh.appendChild(children[i++]);
+            node.parentNode.replaceChild(fresh,node);
+            node=fresh;}
+        var classname=node.className;
+        if (!(classname))
+            node.className=adds.join(" ");
+        else {
+            var j=0, lim=drops.length;
+            while (j<lim) {
+                var drop=drops[j++];
+                if (!(classname)) {}
+                else if (classname===drop) classname="";
+                else {
+                    var drop_pat=new RegExp(
+                        "(^"+drop+" |"+" "+drop+" |"+" "+drop+"$)",
+                        "g");
+                    classname=classname.replace(drop_pat," ");}}
+            j=0, lim=adds.length;
+            while (j<lim) {
+                var add=adds[j++];
+                if (!(classname)) classname=add;
+                else if (classname.indexOf(" ")<0)
+                    classname=classname+" "+add;
+                else {
+                    var has_pat=new RegExp(
+                        "(^"+add+" |"+" "+add+" |"+" "+add+"$)",
+                        "g");
+                    if (classname.search(has_pat)<0)
+                        classname=classname+" "+add;}}
+            if (classname)
+                classname=classname.replace(/\s+/," ").trim();}
+        node.className=classname;
         return node;}
 
     /* Select spec combo box */
@@ -451,6 +488,26 @@ SSC.Editor=(function(){
         SSC.Editor.dialog=dialog;}
     Editor.reclass_selector=reclass_selector;
 
+    function specDiffs(selector,newspec,adds,drops){
+        var newtag=false;
+        var goal=newspec.split(".");
+        var spec=selector.split(".");
+        if ((goal.length)&&(goal[0]!=="")&&
+            (goal[0].toLowerCase()!==spec[0].toLowerCase()))
+            newtag=goal[0];
+        if (goal.length===0) {
+            var j=1; while (j<spec.length) drops.push(spec[j++]);
+            return false;}
+        goal=goal.slice(1);
+        spec=spec.slice(1);
+        var i=0, lim=goal.length; while (i<lim) {
+            if (spec.indexOf(goal[i])<0) adds.push(goal[i]);
+            i++;}
+        i=0; lim=spec.length; while (i<lim){
+            if (goal.indexOf(spec[i])<0) drops.push(spec[i]);
+            i++;}
+        return newtag;}
+
     function rc_done(evt){
         var target=((evt.nodeType)?(evt):
                     ((evt.target)||(evt.srcElement)));
@@ -459,20 +516,12 @@ SSC.Editor=(function(){
         var newspec=input.value.trim();
         var selector=SSC.selector();
         var selected=SSC.selected();
+        var adds=[], drops=[], newtag=specDiffs(selector,newspec,adds,drops);
         var classrx=false;
-        if ((selector[0])===".") {
-            var classes=selector.slice(1).split(".");
-            classrx=new RegExp("\\b("+classes.join("|")+")\\b","gi");}
         var i=0, n_selected=selected.length;
         while (i<n_selected) {
             var sel=selected[i++];
-            if ((newspec.length===0)&&(classrx)) 
-                sel.className=sel.className.replace(classrx,"").
-                    replace(/\s+/," ").trim();
-            else if (newspec.length===0) {
-                var crumb=make_text("");
-                sel.parentNode.replaceChild(crumb,sel);}
-            else adjustNode(sel,newspec);}
+            morphNode(sel,newtag,adds,drops);}
         if (newspec.length)
             setTimeout(function(){SSC.select(newspec,true);},100);
         else setTimeout(function(){SSC.select(selector,true);},100);
