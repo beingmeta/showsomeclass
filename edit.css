@@ -14,16 +14,16 @@ div.ssceditelement, div.ssceditcontent {
 div.ssceditelement {
     min-width: 15em; max-width: 75%;}
 div.ssceditelement .button.image, div.ssceditelement button.image {
-    width: 1em; height: 1em; float: right;}
+    width: 1em; height: 1em; float: right; border-radius: 0px;}
 
 div.ssceditelement div.sscsignature {
-    margin-right: 2.2em; clear: left; width: auto;}
+    margin-right: 2.5em; clear: left; width: auto;}
 
 div.ssceditelement .button.contract, div.ssceditelement button.contract {
     display: none;}
 
 div.ssceditelement div.buttons {
-    text-align: left; padding-bottom: 1ex;}
+    text-align: left; padding-bottom: 1ex; margin-top: 0.5ex;}
 div.ssceditelement div.buttons button {
     font-size: 16px; float: right;
     margin-left: 0.5ex; margin-right: 0px;
@@ -68,7 +68,8 @@ div.ssceditcontent { width: 75%;}
 div.ssceditcontent div.title {
     text-align: left; margin-right: 2em;}
 div.ssceditcontent .button.image, div.ssceditcontent button.image {
-    width: 1em; height: 1em; float: right;}
+    width: 1em; height: 1em; float: right;
+    border-radius: 0px;}
 
 div.ssceditcontent textarea { height: 7em; font-size: 16px;}
 
@@ -85,7 +86,7 @@ div.sscreclass {
 div.sscreclass div.title {
     text-align: left; margin-right: 2em;}
 div.sscreclass .button.image, div.sscreclass button.image {
-    width: 1em; height: 1em; float: right;}
+    width: 1em; height: 1em; float: right; border-radius: 0px;}
 div.sscdialog.sscreclass div.buttons {
     text-align: left;}
 div.sscdialog.sscreclass div.buttons .button,
@@ -135,10 +136,10 @@ div.ssctextedit .button, div.ssctextedit button {
     float: right; vertical-align: top;
     padding-top: 0px;}
 div.ssctextedit .button.image, div.ssctextedit button.image {
-    width: 2em; height: 2em;}
+    width: 2em; height: 2em; border-radius: 0px;}
 div.ssctextedit.sscbigtext .button.image,
 div.ssctextedit.sscbigtext button.image {
-    width: 1em; height: 1em;}
+    width: 1em; height: 1em; border-radius: 0px;}
 div.ssctextedit .ssctextwrap { display: none;}
 div.ssctextedit.sscwrap .ssctextwrap {
     display: block; margin-right: 7em;}

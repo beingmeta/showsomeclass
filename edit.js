@@ -217,6 +217,11 @@ SSC.Editor=(function(){
                               {signature: getSignature(node,true),
                                imgroot: SSC.imgroot},
                               SSC.Inits.editelement);
+        var spec_input=dialog.querySelector("INPUT.sscspecinput");
+        var styleinfo=getComputedStyle(node);
+        if (spec_input) {
+            if (styleinfo.display==='inline')
+                spec_input.setAttribute("list","INLINESTYLES");}
         var styletext=(node.style.cssText).trim();
         var styleinput=dialog.querySelector(".sscstyleinput");
         if (styletext) {
