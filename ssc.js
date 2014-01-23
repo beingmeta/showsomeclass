@@ -558,15 +558,30 @@ SSC.updateSelectors=(function(){
 
 SSC.getStyleInfo=(function(){
 
+    var skip_css=
+        /(codexapp.css|fdjt.css|app.css|showsomeclass)/g;
+
+    function ciRegex(string){
+        var clauses=[];
+        var i=0, len=string.length;
+        while (i<len) {
+            var c=string[i++];
+            clauses.push("["+c.toUpperCase()+c.toLowerCase()+"]");}
+        return clauses.join();}
+
     function getRules(sel,results,seen){
         var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
-        var pat=((sel.indexOf('.')>=0)?
-                 (new RegExp(sel.replace(".","\\.")+"\\b","gi")):
-                 (new RegExp(sel+"[ ,\n]","gi")));
+        var dot=sel.indexOf('.');
+        var pat=((dot===0)?(new RegExp(sel.replace(".","\\.")+"\\b","g")):
+                 (dot<0)?(ciRegex(sel)):
+                 (new RegExp("\\b"+ciRegex(sel.slice(0,dot))+
+                             sel.slice(dot).replace(".","\\.")+"\\b",
+                             "gi")));
         if (!(results)) results=[];
         while (i<n_sheets) {
-            var sheet=sheets[i++];
+            var sheet=sheets[i++], href=sheet.href;
             if (!(sheet.rules)) continue;
+            if ((href)&&(href.search(skip_css)>=0)) continue;
             var rules=sheet.rules; var j=0, n_rules=rules.length;
             while (j<n_rules) {
                 var rule=rules[j++], text=rule.cssText;
