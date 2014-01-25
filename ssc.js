@@ -817,7 +817,7 @@ SSC.Templates.sschelp=
 (function(){
     var make=SSC.Utils.make, text=SSC.Utils.make, fillin=SSC.Utils.fillin;
     var hasClass=SSC.Utils.hasClass, addClass=SSC.Utils.addClass;
-    dropClass=SSC.Utils.dropClass, getParent=SSC.Utils.getParent;
+    var dropClass=SSC.Utils.dropClass, getParent=SSC.Utils.getParent;
     var addListener=SSC.Utils.addListener, cancel=SSC.Utils.cancel;
     var bySpec=SSC.Utils.bySpec, byID=SSC.Utils.byID;
     var RETURN=SSC.Utils.RETURN, ESCAPE=SSC.Utils.ESCAPE, TAB=SSC.Utils.TAB;

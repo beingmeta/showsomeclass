@@ -148,7 +148,7 @@ SSC.Editor=(function(){
                         "(^"+drop+" |"+" "+drop+" |"+" "+drop+"$)",
                         "g");
                     classname=classname.replace(drop_pat," ");}}
-            j=0, lim=adds.length;
+            j=0; lim=adds.length;
             while (j<lim) {
                 var add=adds[j++];
                 if (!(classname)) classname=add;
