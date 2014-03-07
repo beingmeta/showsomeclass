@@ -1136,7 +1136,12 @@ SSC.Templates.sschelp=
                 addClass(document.body,"ssc_SHOWHELP");}
         else if (!(SSC.donthelp))
             addClass(document.body,"ssc_SHOWHELP");
-        else {}}
+        else {}
+        if (SSC.postlaunch) {
+            var postlaunchfn=SSC.postlaunch; SSC.postlaunch=false;
+            setTimeout(function(){
+                postlaunchfn(); SSC.prelaunch=false;},50);
+            return;}}
     addListener(window,"load",loadSSC);})();
 
 /* Emacs local variables
