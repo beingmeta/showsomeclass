@@ -27,7 +27,7 @@ var SSC=(function(){
 	else {
 	    var current=elt.className, pat=classPat(classname);
 	    if (!(current)) elt.className=classname;
-	    else if (current===classname) elt.className=null;
+	    else if (current===classname) elt.className="";
 	    else if (current.search(pat)>=0)
 		elt.className=((current.replace(pat,"")).
 			       replace(whitespace_pat," ").
@@ -252,7 +252,7 @@ var SSC=(function(){
 	    node.parentNode.replaceChild(fresh,node);
 	    return fresh;}
 	if (classname) node.className=classname;
-	else node.className=null;
+	else node.className="";
 	return node;}
 
     /* Finally, return the object */
