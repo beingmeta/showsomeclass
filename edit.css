@@ -33,9 +33,9 @@ div.ssceditelement span.sscdomnav {
     width: auto; margin-top: 4px;
     float: right; font-variant: small-caps;
     white-space: nowrap; vertical-align: top;
-    font-size: 50%;}
+    font-size: 75%;}
 div.ssceditelement span.sscdomnav select.sscrelated {
-    font-size: 75%; max-width: 15em;
+    max-width: 15em;
     display: inline; vertical-align: top;
     font-variant: none;}
 

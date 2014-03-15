@@ -994,7 +994,7 @@ SSC.Editor=(function(){
         var node=false, selector=false, selection=false;
         if (arg.nodeType) node=arg;
         else if ((typeof arg === "string")&&
-                 (document.getElementById(arg)))
+                 (document.getElementById(arg))) 
             node=document.getElementById(arg);
         else if (typeof arg === "string") {
             var candidates=SSC.$(arg);
@@ -1016,9 +1016,13 @@ SSC.Editor=(function(){
         if (current_dialog) {
             SSC.Editor.dialog=false;
             SSC.Dialog.close(current_dialog);}
-        if (node) set_editnode(node);
-        else set_editnode(false);
-        if (selector) SSC.select(selector);
+        if (node) {
+            selector=getSignature(node);
+            SSC.select(selector);
+            set_editnode(node);}
+        else {
+            set_editnode(false);
+            if (selector) SSC.select(selector);}
         if (selection) {
             var range=safeRange(selection);
             SSC.Editor.selection=range;
@@ -1043,8 +1047,7 @@ SSC.Editor=(function(){
         var input=bySpec(dialog,'.sscinitfocus');
         if (input) {
             input.focus();
-            input.selectionStart=input.selectionEnd;}
-        if (node) SSC.select(getSignature(node));}
+            input.selectionStart=input.selectionEnd;}}
 
     // App state related fields
     Editor.node=false; Editor.base=false; Editor.dialog=false;
