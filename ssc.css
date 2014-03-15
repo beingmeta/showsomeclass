@@ -166,22 +166,34 @@ div#SSCTOOLBAR button:first-child:before, div#SSCTOOLBAR .button:first-child:bef
 body.ssc__TOOLBAR div#SSCTOOLBAR { top: 0px;}
 body.ssc__TOOLBAR div#SSCTAPZONE { display: none; }
 
-div#SSCTOOLBAR div#SSCSTYLEINFO {
-    position: absolute; top: 1.7em; 
-    background-color: black; padding: 1em;
+div#SSCSTYLEINFO {
+    position: fixed; top: 5em; padding: 1em;
     /* left: 10em; max-width: 50%; */
-    left: 10%; max-width: 80%;
-    border-bottom-left-radius: 1em;
-    border-bottom-right-radius: 1em;
+    left: 10%; max-width: 80%; max-height: 50%;
+    background-color: rgba(0,0,0,0.8); color: ivory; font-size: 20px;
+    border-color: solid purple 0.2em;
+    border-radius: 1em;
+    overflow: auto;
     display: none;}
-body.ssc__TOOLBAR div#SSCTOOLBAR.showstyle div#SSCSTYLEINFO {
+div#SSCSTYLEINFO:hover { 
+  background-color: rgba(0,0,0,0.95);}
+body.ssc__TOOLBAR.ssc__SHOWSTYLE div#SSCSTYLEINFO {
     display: block;}
-div#SSCTOOLBAR.showstyle button.showrules img {
+body.ssc_SHOWSTYLE button.showrules img {
     background-color: silver;}
 
-div#SSCTOOLBAR .styleinfo p {
-    margin-left: 1em; text-indent: -1em;}
-div#SSCTOOLBAR .styleinfo p span.prop { white-space: nowrap; }
+body.ssc__SHOWSTYLE div.sscdialog { display: none; }
+
+.sscstyleinfo p {
+    margin-left: 1em; text-indent: -1em; margin-bottom: 1ex;
+    font-size: 90%; color: lightgray;}
+.sscstyleinfo p .propname { color: lightblue; }
+.sscstyleinfo p span.prop { white-space: nowrap; }
+.sscstyleinfo p[id] {
+  font-size: 110%; cursor: pointer; color: white;}
+.sscstyleinfo p input.addprop {
+  width: 12em; float: right;
+  font-size: 14px; margin-bottom: 0.5ex;}
 
 div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 div#SSCTOOLBAR #SSCMATCHPHRASE .sscmatchindex { font-size: 70%;}

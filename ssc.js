@@ -304,6 +304,8 @@ var SSC=(function(){
     var selected=[];
     // Which of those nodes, if any, is the application focus
     var focus=false;
+    // The CSS rules which might apply to the current selection
+    var selected_rules=[];
     // The index of the focus in selected.  This is helpful for
     //  tabbing forward and backward in the sequence.
     var focus_index=false;
@@ -328,6 +330,7 @@ var SSC=(function(){
         var selected=copy(document.querySelectorAll(".sscSELECTED"));
         var toolbar=document.getElementById("SSCTOOLBAR");
         if (toolbar) addClass(toolbar,"noinput");
+        if (focus) dropClass(focus,"sscFOCUS");
         dropClass(wrappers,"sscWRAPPER");
         dropClass(selected,"sscSELECTED");
         dropClass(document.body,"cxSSC");
@@ -361,6 +364,7 @@ var SSC=(function(){
         if (!(spec)) {disable(); return;}
         var toolbar=document.getElementById("SSCTOOLBAR");
         if (toolbar) dropClass(toolbar,"noinput");
+        var rules=[];
         var nodes=false;
         if (spec.search(/[#.]$/g)>=0) return;
         else {
@@ -378,28 +382,51 @@ var SSC=(function(){
             input.title="matches "+nodes.length+" elements";}
         if (count) count.innerHTML=""+nodes.length;
         if (styleinfo) {
-            var rules=SSC.getStyleInfo(spec);
+            rules=SSC.getStyleInfo(spec);
             if (rules.length===0)
                 styleinfo.innerHTML="No matching rules found";
             else styleinfo.innerHTML="";
+            rules.reverse();
             var r=0, n_rules=rules.length;
             while (r<n_rules) {
-                var rule=rules[r++]; var p=make("p"); var body=rule.indexOf('{');
-                p.appendChild(make("strong",false,rule.slice(0,body).trim()));
-                p.appendChild(text(" { "));
-                var clauses=rule.slice(body+1), semi=clauses.indexOf(';');
-                while (semi>0) {
-                    p.appendChild(make("span","prop",(clauses.slice(0,semi)).trim()+";"));
-                    p.appendChild(text(" "));
-                    clauses=clauses.slice(semi+1);
-                    semi=clauses.indexOf(';');}
-                p.appendChild(text(clauses));
-                styleinfo.appendChild(p);}}
+                var rule=rules[r], p=false;
+                if (SSC.renderCSSRule)
+                    p=SSC.renderCSSRule(rule,r);
+                if (!(p)) p=renderCSSRuleText(rule,r);
+                r++; styleinfo.appendChild(p);
+                styleinfo.appendChild(make_text("\n"));}}
         selector=spec;
         selected=nodes;
+        selected_rules=rules;
         if (lim) SSC.focus(nodes[0]);
         addClass(document.body,"cxSSC");
         if (spec) window.location.hash="#"+spec;}
+
+    function renderCSSRuleText(rule,i){
+        var text, sel, body=false, addprop=false;
+        var p=make("p","sscstylerule");
+        text=rule;
+        body=text.indexOf('{');
+        sel=make("strong",false,text.slice(0,body).trim());
+        p.appendChild(sel);
+        p.appendChild(make_text(" { "));
+        if (text.length>40)
+            p.appendChild(document.createElement("BR"));
+        var clauses=text.slice(body+1), semi=clauses.indexOf(';');
+        while (semi>0) {
+            var prop_text=clauses.slice(0,semi).trim();
+            var colon=prop_text.indexOf(':');
+            var propname=((colon>0)&&(prop_text.slice(0,colon).trim()));
+            var propval=((colon>0)&&(prop_text.slice(colon+1).trim()));
+            var prop=make("span","prop");
+            prop.appendChild(make("span","propname",propname+":"));
+            prop.appendChild(make_text(" "+propval+";"));
+            p.appendChild(prop);
+            p.appendChild(make_text(" "));
+            clauses=clauses.slice(semi+1);
+            semi=clauses.indexOf(';');}
+        p.appendChild(make_text(clauses));
+        return p;}
 
     function getOffsetTop(node){
         var off=0; var scan=node;
@@ -456,6 +483,7 @@ var SSC=(function(){
         select: select, clear: clear, setFocus: setFocus, focus: focusfn, 
         selector: function getselector(){ return selector;},
         selected: function getselected(){ return selected;},
+        rules: function getrules(){ return selected_rules;},
         refresh: function refresh(){select(selector,true);},
         focusIndex: function focusIndex(){ return focus_index;},
         getFocus: function(){return focus;},
@@ -564,21 +592,27 @@ SSC.getStyleInfo=(function(){
     SSC.skip_css=skip_css;
 
     function ciRegex(string){
+        // Makes a case insensitive regex string, used for tag names
         var clauses=[];
         var i=0, len=string.length;
         while (i<len) {
             var c=string[i++];
-            clauses.push("["+c.toUpperCase()+c.toLowerCase()+"]");}
+            clauses.push("["+c.toUpperCase()+"|"+c.toLowerCase()+"]");}
         return clauses.join();}
+
+    var selstart="(^|[#.[\\], \t\n])", selend="([#.[\\], \t\n]|$)";
+    function sel2RegExp(sel){
+        var dot=sel.indexOf('.');
+        return ((dot===0)?
+                (new RegExp(sel.replace(".","\\.")+selend,"g")):
+                (dot<0)?
+                (new RegExp(selstart+ciRegex(sel)+selend,"g")):
+                (new RegExp(selstart+ciRegex(sel.slice(0,dot))+
+                            sel.slice(dot).replace(".","\\.")+selend,
+                            "g")));}
 
     function getRules(sel,results,seen){
         var sheets=document.styleSheets; var i=0, n_sheets=sheets.length;
-        var dot=sel.indexOf('.');
-        var pat=((dot===0)?(new RegExp(sel.replace(".","\\.")+"\\b","g")):
-                 (dot<0)?(ciRegex(sel)):
-                 (new RegExp("\\b"+ciRegex(sel.slice(0,dot))+
-                             sel.slice(dot).replace(".","\\.")+"\\b",
-                             "gi")));
         if (!(results)) results=[];
         while (i<n_sheets) {
             var sheet=sheets[i++], href=sheet.href;
@@ -587,11 +621,19 @@ SSC.getStyleInfo=(function(){
             var rules=sheet.rules; var j=0, n_rules=rules.length;
             while (j<n_rules) {
                 var rule=rules[j++], text=rule.cssText;
-                if (text.search(/.ssc\w+/g)>=0) continue;
-                if (text.search(pat)>=0) {
-                    var norm=text.replace(/\s+/g," ");
-                    if (seen[norm]) continue; else seen[norm]=norm;
-                    results.push(text);}}}
+                var seltext=rule.selectorText||text;
+                if (seltext.search(/.ssc\w+/g)>=0) continue;
+                if (!(Array.isArray(sel))) sel=[sel];
+                var k=0, n_sel=sel.length; while (k<n_sel) {
+                    var pat=sel[k++];
+                    if (seltext.search(pat)>=0) {
+                        var norm=text.replace(/\s+/g," ");
+                        if (seen[norm]) continue; else seen[norm]=norm;
+                        if (!(href)) results.push(rule);
+                        else results.push(text);
+                        break;}} /* selector pats */
+            } /* rules */
+        } /* sheets */ 
         return results;}
 
     function getStyleInfo(selector){
@@ -601,9 +643,10 @@ SSC.getStyleInfo=(function(){
         var selectors=SSC.possibleSelectors(
             ((parsed[0]!=="")&&(parsed[0])),parsed.slice(1));
         selectors.sort(function(x,y){return x.length-y.length;});
-        var results=[], seen={};
         var i=0, lim=selectors.length;
-        while (i<lim) getRules(selectors[i++],results,seen);
+        while (i<lim) {selectors[i]=sel2RegExp(selectors[i]); i++;}
+        var results=[], rules=[], seen={};
+        getRules(selectors,results,seen);
         return results;}
 
     getStyleInfo.getRules=getRules;
@@ -756,7 +799,6 @@ SSC.Templates.ssctoolbar=
     "<span class=\"text inputhelp\" id=\"SSCINPUTHELP\">\n"+
     "  enter a CSS selector (like <samp>P.<em>class</em></samp>)\n"+
     "</span>\n"+
-    "<div class=\"styleinfo\" id=\"SSCSTYLEINFO\"></div>\n"+
     "<!--\n"+
     "    /* Emacs local variables\n"+
     "    ;;;  Local variables: ***\n"+
@@ -844,11 +886,16 @@ SSC.Templates.sschelp=
                          SSC.Templates.toolbar||SSC.Templates.ssctoolbar,
                          {imgroot: SSC.imgroot},
                          SSC.Inits.toolbar);
-        SSC.selectors=SSC.updateSelectors(false,toolbar.getElementsByTagName("datalist")[0]);
+        var styleinfo=make("div","sscapp sscstyleinfo");
+        styleinfo.id="SSCSTYLEINFO";
+        addListener(styleinfo,"mouseup",cancel);
+        SSC.selectors=SSC.updateSelectors(
+            false,toolbar.getElementsByTagName("datalist")[0]);
         var tapzone=make("div","sscapp",false,
                          {id: "SSCTAPZONE",click: showToolbar});
         document.body.appendChild(toolbar);
-        document.body.appendChild(tapzone);}
+        document.body.appendChild(tapzone);
+        document.body.appendChild(styleinfo);}
 
     function showToolbar(evt){
         evt=evt||event;
@@ -856,20 +903,20 @@ SSC.Templates.sschelp=
         addClass(document.body,"ssc__TOOLBAR");
         cancel(evt);}
     function hideToolbar(){
-        dropClass("SSCTOOLBAR","showstyle");
+        dropClass(document.body,"ssc__SHOWSTYLE");
         dropClass(document.body,"ssc__TOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
     /* Toolbar event handlers */
 
     function toggleStyleInfo(){
-        if (hasClass("SSCTOOLBAR","showstyle"))
-            dropClass("SSCTOOLBAR","showstyle");
+        if (hasClass(document.body,"ssc__SHOWSTYLE"))
+            dropClass(document.body,"ssc__SHOWSTYLE");
         else if (SSC.selector())
-            addClass("SSCTOOLBAR","showstyle");}
+            addClass(document.body,"ssc__SHOWSTYLE");}
 
     function sscinput_focus(){
-        dropClass("SSCTOOLBAR","showstyle");
+        dropClass(document.body,"ssc__SHOWSTYLE");
         addClass("SSCTOOLBAR","focused");}
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
 
@@ -943,7 +990,7 @@ SSC.Templates.sschelp=
     function scan_forward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
-        dropClass("SSCTOOLBAR","showstyle");
+        dropClass(document.body,"ssc__SHOWSTYLE");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index>=max) {}
@@ -956,7 +1003,7 @@ SSC.Templates.sschelp=
     function scan_backward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
-        dropClass("SSCTOOLBAR","showstyle");
+        dropClass(document.body,"ssc__SHOWSTYLE");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index<=0) {}
@@ -985,16 +1032,16 @@ SSC.Templates.sschelp=
             return;
         if (key===OPENBRACE) {
             if (hasClass(document.body,"ssc__TOOLBAR")) {
-                if (hasClass("SSCTOOLBAR","showstyle"))
-                    dropClass("SSCTOOLBAR","showstyle");
-                else addClass("SSCTOOLBAR","showstyle");}
+                if (hasClass(document.body,"ssc__SHOWSTYLE"))
+                    dropClass(document.body,"ssc__SHOWSTYLE");
+                else addClass(document.body,"ssc__SHOWSTYLE");}
             else {
-                addClass("SSCTOOLBAR","showstyle");
+                addClass(document.body,"ssc__SHOWSTYLE");
                 addClass(document.body,"ssc__TOOLBAR");}}
         else if (key===ESCAPE) {
             var changed=false;
             // Close any windows which are up
-            dropClass("SSCTOOLBAR","showstyle");
+            dropClass(document.body,"ssc__SHOWSTYLE");
             dropClass(document.body,"ssc__TOOLBAR");
             if (!(SSC.isenabled())) SSC.enable();
             else {

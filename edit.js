@@ -237,18 +237,19 @@ SSC.Editor=(function(){
             var p=parents.length-1;
             while (p>=0) {
                 var parent=parents[p--];
-                var popt=make("OPTION",false,getSignature(parent,true));
+                var popt=make("OPTION",false,"@ "+getSignature(parent,true));
                 popt.value=getID(parent);
                 if (parent===node) {
                     popt.selected=true; add_node=false;}
                 related.appendChild(popt); n++;}}
         if (add_node) {
-            var opt=make("OPTION",false,getSignature(node,true));
+            var opt=make("OPTION",false,"@ "+getSignature(node,true));
+            opt.value=getID(node);
             opt.selected=true; related.appendChild(opt); n++;}
         if (children.length) {
             var c=0, n_children=children.length; while (c<n_children) {
                 var child=children[c++];
-                var prefix=((child===SSC.Editor.base)?("*** "):(""));
+                var prefix=((child===SSC.Editor.base)?("@ *> "):(" @ > "));
                 var copt=make("OPTION",false,prefix+getSignature(child,true));
                 copt.value=getID(child);
                 if (child===SSC.Editor.base) addClass(copt,"sscbase");
@@ -992,6 +993,7 @@ SSC.Editor=(function(){
 
     function Editor(arg,dialog){
         var node=false, selector=false, selection=false;
+        dropClass(document.body,"ssc__SHOWSTYLE");
         if (arg.nodeType) node=arg;
         else if ((typeof arg === "string")&&
                  (document.getElementById(arg))) 
@@ -1096,6 +1098,8 @@ SSC.Editor=(function(){
 
     function editor_mouseup(evt){
         evt=evt||event;
+        var target=evt.target||evt.srcElement;
+        if (getParent(target,"sscapp")) return;
         var sel=window.getSelection();
         if ((sel)&&
             ((sel.anchorNode!==sel.focusNode)||
@@ -1103,13 +1107,162 @@ SSC.Editor=(function(){
             Editor(window.getSelection());
             cancel(evt);}}
 
+    /* Editing CSS */
+
+    function renderEditableCSSRule(rule,i){
+        var rule_id="SSCSTYLERULE"+i;
+        var text, sel, body=false, addprop=false;
+        var p=make("p","sscstylerule");
+        if (typeof rule === "string") {
+            text=rule;
+            body=text.indexOf('{');
+            sel=make("strong",false,text.slice(0,body).trim());}
+        else {
+            addprop=make("input","addprop");
+            addprop.type="text"; addprop.value="";
+            addListener(addprop,"keydown",css_addprop_onkey);
+            addprop.setAttribute("placeholder","add property: value"); 
+            p.appendChild(addprop);
+            text=rule.cssText; p.id=rule_id;
+            body=text.indexOf('{');
+            sel=make("strong","selector",text.slice(0,body).trim());
+            sel.setAttribute("contenteditable","true");
+            addListener(sel,"keydown",css_selector_onkey);}
+        p.appendChild(sel);
+        p.appendChild(make_text(" { "));
+        if (text.length>40)
+            p.appendChild(document.createElement("BR"));
+        var clauses=text.slice(body+1), semi=clauses.indexOf(';');
+        while (semi>0) {
+            var prop_text=clauses.slice(0,semi).trim();
+            var colon=prop_text.indexOf(':');
+            var propname=((colon>0)&&(prop_text.slice(0,colon).trim()));
+            var propval=((colon>0)&&(prop_text.slice(colon+1).trim()));
+            var prop=make("span","prop");
+            prop.appendChild(make("span","propname",propname+":"));
+            prop.appendChild(make_text(" "+propval+";"));
+            if ((addprop)&&(propname)) {
+                prop.setAttribute("data-propname",propname);
+                prop.setAttribute("contenteditable","true");
+                addListener(prop,"keydown",css_prop_onkey);}
+            p.appendChild(prop);
+            p.appendChild(make_text(" "));
+            clauses=clauses.slice(semi+1);
+            semi=clauses.indexOf(';');}
+        p.appendChild(make_text(clauses));
+        return p;}
+    SSC.renderCSSRule=renderEditableCSSRule;
+
+    var modified_stylesheets=[];
+    function stylesheetModified(ss){
+        var i=0, lim=modified_stylesheets.length;
+        while (i<lim)
+            if (ss===modified_stylesheets[i++]) return;
+        modified_stylesheets.push(ss);}
+
+    function update_selector(selector){
+        var rulenode=selector;
+        var selected_rules=SSC.rules();
+        while (rulenode) {
+            if ((rulenode.className)&&
+                (rulenode.className.search(/\bsscstylerule\b/g)>=0))
+                break;
+            else rulenode=rulenode.parentNode;}
+        if ((!(rulenode))||(!(rulenode.id))) return;
+        var rulenum=parseInt(rulenode.id.slice("SSCSTYLERULE".length),10);
+        var rule=selected_rules[rulenum];
+        if ((!(rule))&&(typeof rule === "string")) return;
+        rule.selectorText=selector.innerText;
+        stylesheetModified(rule.parentStyleSheet);
+        rulenode.parentNode.replaceChild(
+            renderEditableCSSRule(rule,rulenum),
+            rulenode);}
+    function css_selector_onkey(evt){
+        var target=evt.target||evt.srcElement;
+        var kc=evt.keyCode;
+        if (kc===13) {
+            update_selector(target);
+            target.blur();
+            cancel(evt);}}
+
+    function update_prop(prop){
+        var rulenode=prop;
+        var selected_rules=SSC.rules();
+        while (rulenode) {
+            if ((rulenode.className)&&
+                (rulenode.className.search(/\bsscstylerule\b/g)>=0))
+                break;
+            else rulenode=rulenode.parentNode;}
+        if ((!(rulenode))||(!(rulenode.id))) return;
+        var rulenum=parseInt(rulenode.id.slice("SSCSTYLERULE".length),10);
+        var rule=selected_rules[rulenum];
+        if ((!(rule))&&(typeof rule === "string")) return;
+        var proptext=prop.innerText;
+        if (proptext.indexOf(';')>0)
+            proptext=proptext.slice(0,proptext.indexOf(';'));
+        proptext=proptext.trim();
+        if (proptext.length===0) {
+            if (prop.getAttribute("data-propname"))
+                delete rule.style[prop.getAttribute("data-propname")];}
+        else {
+            var colon=proptext.indexOf(':');
+            if (colon<=0) return;
+            var propname=proptext.slice(0,colon).trim();
+            var propval=proptext.slice(colon+1).trim();
+            rule.style[propname]=propval;}
+        stylesheetModified(rule.parentStyleSheet);
+        rulenode.parentNode.replaceChild(
+            renderEditableCSSRule(rule,rulenum),
+            rulenode);}
+    function css_prop_onkey(evt){
+        var target=evt.target||evt.srcElement;
+        var kc=evt.keyCode;
+        if (kc===13) {
+            update_prop(target);
+            target.blur();
+            cancel(evt);}}
+    
+    function css_addprop_onkey(evt){
+        var selected_rules=SSC.rules();
+        var target=evt.target||evt.srcElement;
+        var kc=evt.keyCode, rulenode=target;
+        if (kc!==13) return; else cancel(evt);
+        while (rulenode) {
+            if ((rulenode.className)&&
+                (rulenode.className.search(/\bsscstylerule\b/g)>=0))
+                break;
+            else rulenode=rulenode.parentNode;}
+        if ((!(rulenode))||(!(rulenode.id))) return;
+        var rulenum=parseInt(rulenode.id.slice("SSCSTYLERULE".length),10);
+        var rule=selected_rules[rulenum];
+        if ((!(rule))&&(typeof rule === "string")) return;
+        var proptext=target.value;
+        if (proptext.indexOf(';')>0)
+            proptext=proptext.slice(0,proptext.indexOf(';'));
+        proptext=proptext.trim();
+        if (proptext.length===0) {
+            delete rule.style[prop.title];}
+        else {
+            var colon=proptext.indexOf(':');
+            if (colon<=0) return;
+            var propname=proptext.slice(0,colon).trim();
+            var propval=proptext.slice(colon+1).trim();
+            rule.style[propname]=propval;
+            target.value="";}
+        stylesheetModified(rule.parentStyleSheet);
+        rulenode.parentNode.replaceChild(
+            renderEditableCSSRule(rule,rulenum),
+            rulenode);}
+
     function save_current(){
         var content=false;
         var html=document.querySelector('HTML');
         var elts=SSC.Utils.tmpid_elts;
         var cursel=SSC.selector();
+        var focus=SSC.getFocus();
         var saved_ids={}, apps=[], crumbs=[];
         var matches=document.querySelectorAll('.sscapp,.sscmarker');
+        var bodyclass=document.body.className;
 	var app, crumb;
         var i=0, lim=matches.length; while (i<lim) {
             apps.push(matches[i++]);}
@@ -1125,12 +1278,21 @@ SSC.Editor=(function(){
                 saved_ids[id]=elt;
                 elt.id=null;}}
         SSC.clear();
+        document.body.className=
+            bodyclass.replace(
+                    /\b(cxSSC|cxSSCAPP|ssc__\w+)\b/g,"").
+            replace(/\s+/," ").trim();
+        /* Update any modified style sheets */
+        updateModifiedStyleSheets();
         var docid=html.getAttribute("data-docid");
         if (docid)
             content="<html data-docid='"+docid+"'>\n"+html.innerHTML+"\n</html>";
         else content="<html>\n"+html.innerHTML+"\n</html>";
         /* Now reset things */
+        document.body.className=bodyclass;
         SSC.select(cursel,true);
+        if (focus) SSC.setFocus(focus);
+
         i=0; lim=apps.length; while (i<lim) {
             app=apps[i]; crumb=crumbs[i]; i++;
             crumb.parentNode.replaceChild(app,crumb);}
@@ -1148,6 +1310,20 @@ SSC.Editor=(function(){
             SSC.dialog=dialog;
             document.body.appendChild(dialog);
             dialog.style.display='block';}}
+
+    function updateModifiedStyleSheets(){
+        var i=0, n_sheets=modified_stylesheets.length;
+        while (i<n_sheets) {
+            var sheet=modified_stylesheets[i++];
+            var sheet_elt=sheet.ownerNode;
+            var sheet_text="";
+            var rules=sheet.rules;
+            var j=0, n_rules=rules.length;
+            while (j<n_rules) {
+                var rule=rules[j++];
+                sheet_text=sheet_text+rule.cssText+"\n";}
+            sheet_elt.innerHTML=sheet_text;}
+        modified_stylesheets=[];}
 
     function initpubpoint(){
         var pubpoint=false;
