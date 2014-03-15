@@ -418,7 +418,8 @@ var SSC=(function(){
         i=0; lim=foci.length; while (i<lim) dropClass(foci[i++],"sscFOCUS");
         if ((node)&&(typeof index!=="number"))
             index=selected.indexOf(node);
-        if (byID("SSCMATCHINDEX")) byID("SSCMATCHINDEX").innerHTML=""+(index+1);
+        if ((typeof index === "number")&&(byID("SSCMATCHINDEX")))
+            byID("SSCMATCHINDEX").innerHTML=""+(index+1);
         if (focus) dropClass(focus,"sscFOCUS");
         if (node) addClass(node,"sscFOCUS");
         focus=node; focus_index=index;

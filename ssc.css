@@ -187,14 +187,15 @@ div#SSCTOOLBAR #SSCMATCHPHRASE { white-space: nowrap;}
 div#SSCTOOLBAR #SSCMATCHPHRASE .sscmatchindex { font-size: 70%;}
 div#SSCTOOLBAR #SSCMATCHINDEX {
     background-color: rgba(255,255,0,0.75); color: black;
-    padding-left: 1em;}
+    padding-left: 1em; padding-right: 0.5ex;
+    border-radius: 1ex;}
 
 /* Buttons */
 
 .sscapp .button, div.sscapp button {
     padding: 2px; padding-right: 1ex; padding-left: 1ex;
     border-radius: 1ex; margin-top: 2px;
-    background-color: silver;
+    background-color: gray;
     vertical-align: top;
     font-weight: bold;
     cursor: pointer;}
