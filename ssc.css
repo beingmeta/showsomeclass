@@ -1,9 +1,9 @@
 /* Generic rules */
 
-body.cxSSCAPP { margin-top: 4em; }
-body > * { margin-left: 15px; margin-right: 15px;}
-body > *.sscapp { margin-left: 0px; margin-right: 0px;}
-body > *.sscmarker { margin-left: 5px; margin-right: 5px;}
+body.cxSSCAPP {
+  margin-left: 15px; margin-right: 15px;
+  margin-top: 4em; }
+body > *.sscapp { }
 
 img.svg { display: none;}
 body.haveSVG img.svg { display: inline;}

@@ -909,11 +909,17 @@ SSC.Templates.sschelp=
 
     /* Toolbar event handlers */
 
-    function toggleStyleInfo(){
+    function toggleStyleInfo(evt){
+        evt=evt||event;
+        var target=evt.target||evt.srcElement;
         if (hasClass(document.body,"ssc__SHOWSTYLE"))
             dropClass(document.body,"ssc__SHOWSTYLE");
         else if (SSC.selector())
-            addClass(document.body,"ssc__SHOWSTYLE");}
+            addClass(document.body,"ssc__SHOWSTYLE");
+        while (target) {
+            if (target.tagName!=="BUTTON") {
+                target.blur(); return;}
+            else target=target.parentNode;}}
 
     function sscinput_focus(){
         dropClass(document.body,"ssc__SHOWSTYLE");
