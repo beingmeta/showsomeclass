@@ -1276,7 +1276,7 @@ SSC.Editor=(function(){
             var elt=elts[j++]; var id=elt.id;
             if ((id)&&(id.search("sscTMP")===0)) {
                 saved_ids[id]=elt;
-                elt.id=null;}}
+                elt.id="";}}
         SSC.clear();
         document.body.className=
             bodyclass.replace(
