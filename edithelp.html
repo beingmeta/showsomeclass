@@ -4,19 +4,19 @@
 </button>
 <div class="helpcontent">
   <p class="bigger">
-    This is
+    This is <em>&ldquo;Show Some Class&rdquo;</em>,
     the <span class="spressoname"><em>s</em>Presso</span> <strong>copy
     editor</strong> for HTML (and
     especially <span class="sbooksname"><em>s</em>Books</span>)
     content.  It's a simple web application for visualizing and
     copy-editing HTML content, markup, and CSS classes.</p>
-  <p>The text appears as a single scrolling page and <dfn>page break
-    constraints</dfn> are displayed using dashed borders around blocks
-    of text.</p>
-  <p><strong>As you move your pointer</strong>, <dfn style="outline:
-    dotted lightblue 1px;">block elements</dfn> are outlined; inline
-    elements are <span style="text-decoration:
-    overline;">overlined</span>.</p>
+  <p>The text appears as a single scrolling page with <dfn>page break
+    constraints</dfn> (important for rendering in book form) displayed
+    using dashed borders around blocks of text.</p>
+  <p><strong>As you move your pointer</strong> around the
+    document, <dfn style="outline: dotted lightblue 1px;">block
+    elements</dfn> are outlined; inline elements
+    are <span style="text-decoration: overline;">overlined</span>.</p>
   <p><strong>Click an element</strong> to edit its tag, classes,
     attributes, and content.  Clicking also sets the <strong>current
     selector</strong> (see below) for highlighting and skimming
@@ -24,7 +24,8 @@
   <p><strong>Select a range of text</strong> with the pointer to:</p>
   <ul>
     <li><strong>edit</strong> the text/HTML content of your selection directly,</li>
-    <li><strong>merge</strong> the underlying markup elements into a single element,</li>
+    <li><strong>merge</strong> the underlying markup elements of your
+    selection into a single element,</li>
     <li><strong>wrap</strong> the selection with a new markup element.</li>
   </ul>
   <p class="bigger">
@@ -32,14 +33,17 @@
     content by specifying a <strong>target selector</strong>.  This is
     any CSS selector (e.g <samp>P.class</samp>) optionally followed by
     a regular expression (e.g. <samp>/\d+/</samp> matches any digit
-    string) which is matched against element content.</p>
+    string) which is matched against element content.  For example,
+    <samp>LI.paragraph/peace workers/</samp> matches all list items
+    with the class <samp>paragraph</samp> which contains the phrase
+    &ldquo;peace workers&rdquo; in its content.</p>
   <p>The <strong>target selector</strong> appears in the
     editable text box on the left of the toolbar at the top of the
     page.</p>
-  <p><strong>Matching elements</strong> are highlighted and the
+  <p><strong>Matching elements</strong> are highlighted and the current
   <span style="background-color: rgba(255,255,0,0.25); outline: dotted
-  red 2px">current focus match</span> is given a colored background
-  and dotted red outline.</p>
+  red 2px">focus match</span> is given a colored background and dotted
+  red outline.</p>
   <p><strong>Move among matches</strong> (change the <em>focus
     match</em>) with the <kbd>Tab</kbd> and <kbd>Shift-Tab</kbd> keys
     or by using the <span class="nowrap">arrow (
@@ -48,17 +52,20 @@
     notsvg"/> <img src="{{imgroot}}/uparrow_white.svgz" class="intext
     svg"/> <img src="{{imgroot}}/uparrow_white100h.png" class="intext
     notsvg"/> ) icons in the top toolbar.</span></p>
-  <p><strong>Change all of the matching elements at once</strong> with
-    the <kbd>*</kbd> key or the
+  <p><strong>Change the tag or class of all of the matching elements
+    at once</strong> with the <kbd>*</kbd> key or the
     <img src="{{imgroot}}/changemarkup_ondark.svgz" class="intext
     svg"/> <img src="{{imgroot}}/changemarkup_ondark100x100.png"
-    class="intext notsvg"/> icon.</p>
+    class="intext notsvg"/> icon in the toolbar.</p>
   <p><strong>See <em>(some of)</em> the style rules</strong> for the
     target selector with <span class="nowrap">the <kbd>S</kbd>
     key</span> or <span class="nowrap">the
     <img src="{{imgroot}}/stylebraces.svgz" class="intext svg"/>
     <img src="{{imgroot}}/stylebraces100x100.png" class="intext
-    notsvg"/> icon.</span></p>
+    notsvg"/> icon.</span>  If these rules are unique to the document
+    (either in the body or in the title's <samp>custom.css</samp>
+    file, you can edit them directly and your changes will be saved
+    with your other edits.</p>
   <p><strong>Hide the toolbar</strong> with the <kbd>Escape</kbd> key
     or the <img src="{{imgroot}}/redx.svgz" class="intext svg"/>
     <img src="{{imgroot}}/redx100x100.png" class="intext notsvg"/>
