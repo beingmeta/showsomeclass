@@ -167,7 +167,7 @@ SSC.Editor=(function(){
 
     /* Select spec combo box */
     function classinput_keydown(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         var target=evt.target||evt.srcElement;
         if (kc===RETURN) {}
@@ -199,7 +199,7 @@ SSC.Editor=(function(){
         dropbox.appendChild(frag);}
 
     function classinput_selected(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var box=getParent(target,"classcombobox");
         var input=box.querySelector("INPUT");
@@ -301,7 +301,7 @@ SSC.Editor=(function(){
     /* Edit Element handlers */
     
     function ee_specinput(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) {
@@ -312,7 +312,7 @@ SSC.Editor=(function(){
                 set_editnode(false);}
             cancel(evt);}}
     function ee_ok(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var form=getParent(target,"ssceditelement");
         var specinput=bySpec(form,"input[name='SPEC']");
@@ -330,7 +330,7 @@ SSC.Editor=(function(){
         set_editnode(false);
         cancel(evt);}
     function ee_styleinput(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) {
@@ -344,17 +344,17 @@ SSC.Editor=(function(){
             cancel(evt);
             return;}}
     function ee_expand(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         if (dialog) addClass(dialog,"sscexpanded");}
     function ee_contract(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         if (dialog) dropClass(dialog,"sscexpanded");}
     function ee_buttonclick(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var button=evt.target||evt.srcElement;
         while (button) {
             if (button.tagName==='BUTTON') break;
@@ -392,7 +392,7 @@ SSC.Editor=(function(){
             SSC.Dialog.close(SSC.getDialog(button));}
         else {}}
     function ee_attrib(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) {
@@ -429,7 +429,7 @@ SSC.Editor=(function(){
                     todrop.parentNode.removeChild(todrop);}
             cancel(evt);}}
     function ee_selected(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var targetid=target.value;
         var gotoelt=document.getElementById(targetid);
@@ -462,7 +462,7 @@ SSC.Editor=(function(){
         return dialog;}
 
     function ec_done(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var button=evt.target||evt.srcElement;
         var dialog=getDialog(button);
         var input=dialog.querySelector('TEXTAREA');
@@ -553,7 +553,7 @@ SSC.Editor=(function(){
         SSC.Dialog.close(dialog);}
 
     function rc_keydown(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) {cancel(evt); rc_done(evt);}}
@@ -833,7 +833,7 @@ SSC.Editor=(function(){
         parent.removeChild(after);}
 
     function es_done(evt){
-        evt=evt||event; var target=evt.target||evt.srcElement;
+        evt=evt||window.event; var target=evt.target||evt.srcElement;
         var dialog=getDialog(target), range=SSC.Editor.selection;
         var textinput=dialog.querySelector("textarea[name='SELECTION']");
         var wrapinput=dialog.querySelector("input[name='WRAPSPEC']");
@@ -880,12 +880,12 @@ SSC.Editor=(function(){
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) return es_done(evt);}
     function es_cancel(evt){
-        evt=evt||event; var target=evt.target||evt.srcElement;
+        evt=evt||window.event; var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         Dialog.close(dialog);
         cancel(evt);}
     function es_wrap_click(evt){
-        evt=evt||event; var target=evt.target||evt.srcElement;
+        evt=evt||window.event; var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         if (!(dialog)) return;
         else if (hasClass(dialog,"sscwrap"))
@@ -897,7 +897,7 @@ SSC.Editor=(function(){
             if (input) input.focus();}
         cancel(evt);}
     function es_merge_click(evt){
-        evt=evt||event; var target=evt.target||evt.srcElement;
+        evt=evt||window.event; var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         if (!(dialog)) return;
         else if (hasClass(dialog,"sscmerge"))
@@ -1055,7 +1055,7 @@ SSC.Editor=(function(){
     Editor.node=false; Editor.base=false; Editor.dialog=false;
 
     function editor_click(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         if ((SSC.Editor.selection)&&(SSC.Editor.selected)) {
             var now=(new Date()).getTime();
             if ((now-SSC.Editor.selected)<1000) {
@@ -1097,7 +1097,7 @@ SSC.Editor=(function(){
     SSC.onclick=editor_click;
 
     function editor_mouseup(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         if (getParent(target,"sscapp")) return;
         var sel=window.getSelection();
@@ -1363,7 +1363,7 @@ SSC.Editor=(function(){
     SSC.Templates.helptext=SSC.Templates.edithelp;
 
     function cancel_save(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var dialog=getDialog(target);
         SSC.Dialog.close(dialog);

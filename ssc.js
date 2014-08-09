@@ -898,7 +898,7 @@ SSC.Templates.sschelp=
         document.body.appendChild(styleinfo);}
 
     function showToolbar(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         SSC.enable();
         addClass(document.body,"ssc__TOOLBAR");
         cancel(evt);}
@@ -910,7 +910,7 @@ SSC.Templates.sschelp=
     /* Toolbar event handlers */
 
     function toggleStyleInfo(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         if (hasClass(document.body,"ssc__SHOWSTYLE"))
             dropClass(document.body,"ssc__SHOWSTYLE");
@@ -927,7 +927,7 @@ SSC.Templates.sschelp=
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
 
     function sscinput_keydown(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var kc=evt.keyCode;
         var target=evt.target||evt.srcElement;
         if (kc===RETURN) {
@@ -940,7 +940,7 @@ SSC.Templates.sschelp=
         else {}}
 
     function sscinput_newinput(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var spec=target.value;
         SSC.select(spec,true);}
@@ -978,7 +978,7 @@ SSC.Templates.sschelp=
         dropbox.appendChild(frag);}
 
     function selector_selected(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var target=evt.target||evt.srcElement;
         var input=byID("SSCINPUT");
         if (target.value) {
@@ -1026,7 +1026,7 @@ SSC.Templates.sschelp=
     var commands=SSC.commands={};
 
     function window_keydown(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var key=evt.keyCode;
         var target=evt.target||evt.srcElement;
         if ((usekeys.indexOf(key)<0)&&(!(commands[key])))
@@ -1071,7 +1071,7 @@ SSC.Templates.sschelp=
     SSC.window_keydown=window_keydown;
 
     function window_click(evt){
-        evt=evt||event;
+        evt=evt||window.event;
         var selection=window.getSelection();
         if ((selection)&&
             ((selection.anchorNode!==selection.focusNode)||
