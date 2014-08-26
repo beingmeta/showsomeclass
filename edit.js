@@ -324,8 +324,8 @@ SSC.Editor=(function(){
             return;}
         if ((specinput)&&(specinput.value)) 
             node=adjustNode(node,specinput.value);
-        if ((styleinput)&&(styleinput.value))
-            node.style=styleinput.value;
+        if ((styleinput)&&(typeof styleinput.value == "string"))
+            node.setAttribute("style",styleinput.value);
         SSC.Dialog.close(SSC.Editor.dialog);
         set_editnode(false);
         cancel(evt);}
@@ -339,7 +339,7 @@ SSC.Editor=(function(){
             var newstyle=target.value.trim();
             if ((!(newstyle))||(newstyle.length===0)) {
                 SSC.Editor.node.style='';
-                target.style.display='none__none';}
+                target.style.display='none';}
             else SSC.Editor.node.style=newstyle;
             cancel(evt);
             return;}}
@@ -394,9 +394,9 @@ SSC.Editor=(function(){
     function ee_attrib(evt){
         evt=evt||window.event;
         var kc=evt.keyCode;
+        var target=evt.target||evt.srcElement;
         if (kc===ESCAPE) {close_editor(); return;}
         else if (kc===RETURN) {
-            var target=evt.target||evt.srcElement;
             var node=SSC.Editor.node;
             var name=target.name;
             var value=target.value.trim();
@@ -427,7 +427,8 @@ SSC.Editor=(function(){
                 todrop=dialog.querySelector("tr[NAME='"+name+"']");
                 if ((todrop)&&(todrop.parentNode))
                     todrop.parentNode.removeChild(todrop);}
-            cancel(evt);}}
+            cancel(evt);}
+        else addClass(target,"sscmodified");}
     function ee_selected(evt){
         evt=evt||window.event;
         var target=evt.target||evt.srcElement;
@@ -1284,6 +1285,7 @@ SSC.Editor=(function(){
             replace(/\s+/," ").trim();
         /* Update any modified style sheets */
         updateModifiedStyleSheets();
+        markInjected();
         var docid=html.getAttribute("data-docid");
         if (docid)
             content="<html data-docid='"+docid+"'>\n"+html.innerHTML+"\n</html>";
@@ -1310,6 +1312,18 @@ SSC.Editor=(function(){
             SSC.dialog=dialog;
             document.body.appendChild(dialog);
             dialog.style.display='block';}}
+
+    function markInjected(){
+        var scripts=document.getElementsByTagName("SCRIPT");
+        var i=0, lim=scripts.length; while (i<lim) {
+            var script=scripts[i++];
+            if (!(script.getAttribute("data-original")))
+                script.setAttribute("data-injected","yes");}
+        var styles=document.getElementsByTagName("STYLE");
+        i=0; lim=styles.length; while (i<lim) {
+            var style=styles[i++];
+            if (!(style.getAttribute("data-original")))
+                style.setAttribute("data-injected","yes");}}
 
     function updateModifiedStyleSheets(){
         var i=0, n_sheets=modified_stylesheets.length;

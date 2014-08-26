@@ -374,13 +374,14 @@ var SSC=(function(){
         enable(); addClass(document.body,"ssc__TOOLBAR");
         while (i<lim) show(nodes[i++]);
         document.title=spec+" (x"+nodes.length+") "+real_title;
-        var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT");
+        var input=byID("SSCINPUT"), count=byID("SSCMATCHCOUNT"), ind=byID("SSCMATCHINDEX");
         var styleinfo=byID("SSCSTYLEINFO");
         if (input) {
             input.value=spec; input.defaultValue=spec;
             if (toolbar) dropClass(toolbar,"modified");
             input.title="matches "+nodes.length+" elements";}
         if (count) count.innerHTML=""+nodes.length;
+        if (ind) ind.innerHTML=((nodes.length===0)?("?"):("0"));
         if (styleinfo) {
             rules=SSC.getStyleInfo(spec);
             if (rules.length===0)

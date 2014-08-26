@@ -52,6 +52,8 @@ div.ssceditelement table.sscattribs td {
     padding-left: 1ex; vertical-align: baseline;}
 div.ssceditelement table.sscattribs input[TYPE="TEXT"] {
     font-size: 16px; width: 100%;}
+div.ssceditelement table.sscattribs input[TYPE="TEXT"].sscmodified {
+    color: red;}
 
 /* Expansion rules */
 
