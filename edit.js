@@ -982,10 +982,13 @@ SSC.Editor=(function(){
     /* Edit handlers */
 
     function set_editnode(node){
-        if (SSC.Editor.node) dropClass(SSC.Editor.node,"sscEDITING");
+        if (SSC.Editor.node) {
+            // SSC.Editor.node.contentEditable=false;
+            dropClass(SSC.Editor.node,"sscEDITING");}
         var base=SSC.Editor.base;
         SSC.Editor.node=node;
         if (node) {
+            // node.contentEditable=true;
             if (!((base)&&(hasParent(base,node))))
                 SSC.Editor.base=node;}}
 
