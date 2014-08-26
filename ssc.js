@@ -904,7 +904,7 @@ SSC.Templates.sschelp=
         addClass(document.body,"ssc__TOOLBAR");
         cancel(evt);}
     function hideToolbar(){
-        dropClass(document.body,"ssc__SHOWSTYLE");
+        dropClass(document.body,"ssc_SHOWSTYLE");
         dropClass(document.body,"ssc__TOOLBAR");}
     SSC.showToolbar=showToolbar; SSC.hideToolbar=hideToolbar;
 
@@ -913,17 +913,18 @@ SSC.Templates.sschelp=
     function toggleStyleInfo(evt){
         evt=evt||window.event;
         var target=evt.target||evt.srcElement;
-        if (hasClass(document.body,"ssc__SHOWSTYLE"))
-            dropClass(document.body,"ssc__SHOWSTYLE");
-        else if (SSC.selector())
-            addClass(document.body,"ssc__SHOWSTYLE");
+        if (hasClass(document.body,"ssc_SHOWSTYLE"))
+            dropClass(document.body,"ssc_SHOWSTYLE");
+        else if (SSC.selector()) {
+            dropClass(document.body,"ssc_SHOWHELP");
+            addClass(document.body,"ssc_SHOWSTYLE");}
         while (target) {
             if (target.tagName!=="BUTTON") {
                 target.blur(); return;}
             else target=target.parentNode;}}
 
     function sscinput_focus(){
-        dropClass(document.body,"ssc__SHOWSTYLE");
+        dropClass(document.body,"ssc_SHOWSTYLE");
         addClass("SSCTOOLBAR","focused");}
     function sscinput_blur(){dropClass("SSCTOOLBAR","focused");}
 
@@ -997,7 +998,7 @@ SSC.Templates.sschelp=
     function scan_forward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
-        dropClass(document.body,"ssc__SHOWSTYLE");
+        dropClass(document.body,"ssc_SHOWSTYLE");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index>=max) {}
@@ -1010,7 +1011,7 @@ SSC.Templates.sschelp=
     function scan_backward(evt) {
         var index=SSC.focusIndex();
         var max=SSC.selected().length-1;
-        dropClass(document.body,"ssc__SHOWSTYLE");
+        dropClass(document.body,"ssc_SHOWSTYLE");
         if (max<0) {}
         else if (typeof index === "number") {
             if (index<=0) {}
@@ -1039,16 +1040,16 @@ SSC.Templates.sschelp=
             return;
         if (key===OPENBRACE) {
             if (hasClass(document.body,"ssc__TOOLBAR")) {
-                if (hasClass(document.body,"ssc__SHOWSTYLE"))
-                    dropClass(document.body,"ssc__SHOWSTYLE");
-                else addClass(document.body,"ssc__SHOWSTYLE");}
+                if (hasClass(document.body,"ssc_SHOWSTYLE"))
+                    dropClass(document.body,"ssc_SHOWSTYLE");
+                else addClass(document.body,"ssc_SHOWSTYLE");}
             else {
-                addClass(document.body,"ssc__SHOWSTYLE");
+                addClass(document.body,"ssc_SHOWSTYLE");
                 addClass(document.body,"ssc__TOOLBAR");}}
         else if (key===ESCAPE) {
             var changed=false;
             // Close any windows which are up
-            dropClass(document.body,"ssc__SHOWSTYLE");
+            dropClass(document.body,"ssc_SHOWSTYLE");
             dropClass(document.body,"ssc__TOOLBAR");
             if (!(SSC.isenabled())) SSC.enable();
             else {

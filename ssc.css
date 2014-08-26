@@ -177,12 +177,15 @@ div#SSCSTYLEINFO {
     display: none;}
 div#SSCSTYLEINFO:hover { 
   background-color: rgba(0,0,0,0.95);}
-body.ssc__TOOLBAR.ssc__SHOWSTYLE div#SSCSTYLEINFO {
+body.ssc__TOOLBAR.ssc_SHOWSTYLE div#SSCSTYLEINFO {
     display: block;}
-body.ssc_SHOWSTYLE button.showrules img {
+body.ssc__TOOLBAR.ssc_SHOWSTYLE.ssc_SHOWHELP div#SSCSTYLEINFO {
+    display:none; }
+body.ssc_SHOWSTYLE div#SSCTOOLBAR button.showrules img,
+body.ssc_RECLASS div#SSCTOOLBAR button.reclass img {
     background-color: silver;}
 
-body.ssc__SHOWSTYLE div.sscdialog { display: none; }
+body.ssc_SHOWSTYLE div.sscdialog { display: none; }
 
 .sscstyleinfo p {
     margin-left: 1em; text-indent: -1em; margin-bottom: 1ex;

@@ -495,6 +495,8 @@ SSC.Editor=(function(){
         if (SSC.Editor.dialog) close_editor();
         var dialog=makeReclassElementsDialog(SSC.selector());
         document.body.appendChild(dialog);
+        dropClass(document.body,"ssc_SHOWHELP");
+        addClass(document.body,"ssc_RECLASS");
         SSC.Editor.dialog=dialog;}
     Editor.reclass_selector=reclass_selector;
 
@@ -535,6 +537,7 @@ SSC.Editor=(function(){
         if (newspec.length)
             setTimeout(function(){SSC.select(newspec,true);},100);
         else setTimeout(function(){SSC.select(selector,true);},100);
+        dropClass(document.body,"ssc_RECLASS");
         SSC.Dialog.close(dialog);}
     function rc_unwrap(evt){
         var target=((evt.nodeType)?(evt):
@@ -551,6 +554,7 @@ SSC.Editor=(function(){
             while (j<n) frag.appendChild(children[j++]);
             sel.parentNode.replaceChild(frag,sel);}
         setTimeout(function(){SSC.select(selector,true);},100);
+        dropClass(document.body,"ssc_RECLASS");
         SSC.Dialog.close(dialog);}
 
     function rc_keydown(evt){
@@ -562,7 +566,8 @@ SSC.Editor=(function(){
     SSC.Inits.reclass={
         classname: "sscreclass",
         ".sscnewspec:keydown": rc_keydown,
-        "button.close:click": SSC.Dialog.close,
+        "button.close:click":
+        function (x) {SSC.Dialog.close(x); dropClass(document.body,"ssc_RECLASS");},
         "button[value='UNWRAP']:click": rc_unwrap,
         "button[value='CHANGE']:click": rc_done};
     
@@ -994,7 +999,7 @@ SSC.Editor=(function(){
 
     function Editor(arg,dialog){
         var node=false, selector=false, selection=false;
-        dropClass(document.body,"ssc__SHOWSTYLE");
+        dropClass(document.body,"ssc_SHOWSTYLE");
         if (arg.nodeType) node=arg;
         else if ((typeof arg === "string")&&
                  (document.getElementById(arg))) 
@@ -1371,7 +1376,11 @@ SSC.Editor=(function(){
                 save_button.parentNode.removeChild(save_button);}}
     SSC.postlaunch=setupEditor;
 
-    SSC.Inits.toolbar[".reclass:click"]=reclass_selector;
+    SSC.Inits.toolbar[".reclass:click"]=function(evt){
+        if (hasClass(document.body,"ssc_RECLASS")) {
+            if (SSC.Editor.dialog) SSC.Dialog.close(SSC.Editor.dialog);
+            dropClass(document.body,"ssc_RECLASS");}
+        else reclass_selector(evt);};
     SSC.Inits.toolbar[".save:click"]=save_current;
 
     SSC.Templates.helptext=SSC.Templates.edithelp;
