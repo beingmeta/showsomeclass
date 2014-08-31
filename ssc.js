@@ -599,7 +599,7 @@ SSC.getStyleInfo=(function(){
         while (i<len) {
             var c=string[i++];
             clauses.push("["+c.toUpperCase()+"|"+c.toLowerCase()+"]");}
-        return clauses.join();}
+        return clauses.join("");}
 
     var selstart="(^|[#.[\\], \t\n])", selend="([#.[\\], \t\n]|$)";
     function sel2RegExp(sel){

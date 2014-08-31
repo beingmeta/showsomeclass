@@ -188,7 +188,7 @@ body.ssc_RECLASS div#SSCTOOLBAR button.reclass img {
 body.ssc_SHOWSTYLE div.sscdialog { display: none; }
 
 .sscstyleinfo p {
-    margin-left: 1em; text-indent: -1em; margin-bottom: 1ex;
+    margin: 1em; text-indent: -1em; margin-bottom: 1ex;
     font-size: 90%; color: lightgray;}
 .sscstyleinfo p .propname { color: lightblue; }
 .sscstyleinfo p span.prop { white-space: nowrap; }
