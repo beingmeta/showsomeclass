@@ -1003,6 +1003,13 @@ SSC.Editor=(function(){
     function Editor(arg,dialog){
         var node=false, selector=false, selection=false;
         dropClass(document.body,"ssc_SHOWSTYLE");
+        var source=edit_source(arg);
+        if (source) {
+            var rootid=document.documentElement.getAttribute("data-sourceid");
+            if ((source.getAttribute)&&
+                (rootid!==source.getAttribute("data-sourceid"))) {
+                alert("This node is externally sourced and cannot be edited");
+                return;}}
         if (arg.nodeType) node=arg;
         else if ((typeof arg === "string")&&
                  (document.getElementById(arg))) 
@@ -1059,6 +1066,23 @@ SSC.Editor=(function(){
         if (input) {
             input.focus();
             input.selectionStart=input.selectionEnd;}}
+
+    function edit_source(arg){
+        if (arg.nodeType) {
+            var scan=arg; while (scan) {
+                if ((scan.getAttribute)&&(scan.getAttribute("data-sourceid"))) 
+                    return scan;
+                else scan=scan.parentNode;}
+            return false;}
+        var results=[], src;
+        if (arg.anchorNode) {
+            src=edit_source(arg.anchorNode);
+            if (src) results.push(src);}
+        if (arg.focusNode) {
+            src=edit_source(arg.focusNode);
+            if (src) results.push(src);}
+        if (results.length) return results;
+        else return false;}
 
     // App state related fields
     Editor.node=false; Editor.base=false; Editor.dialog=false;
