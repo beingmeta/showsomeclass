@@ -617,9 +617,10 @@ SSC.getStyleInfo=(function(){
         if (!(results)) results=[];
         while (i<n_sheets) {
             var sheet=sheets[i++], href=sheet.href;
-            if (!(sheet.rules)) continue;
+            if ((!(sheet.cssRules))&&(!(sheet.rules))) continue;
             if ((href)&&(href.search(skip_css)>=0)) continue;
-            var rules=sheet.rules; var j=0, n_rules=rules.length;
+            var rules=sheet.cssRules||sheet.rules;
+            var j=0, n_rules=rules.length;
             while (j<n_rules) {
                 var rule=rules[j++], text=rule.cssText;
                 var seltext=rule.selectorText||text;
