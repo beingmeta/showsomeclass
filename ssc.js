@@ -589,7 +589,7 @@ SSC.updateSelectors=(function(){
 SSC.getStyleInfo=(function(){
 
     var skip_css=
-        /(codexapp.css|fdjt.css|app.css|showsomeclass)/g;
+        /(metabook.css|bundle.css|codexapp.css|fdjt.css|app.css|showsomeclass)/g;
     SSC.skip_css=skip_css;
 
     function ciRegex(string){
