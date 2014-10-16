@@ -1313,7 +1313,7 @@ SSC.Editor=(function(){
         SSC.clear();
         document.body.className=
             bodyclass.replace(
-                    /\b(cxSSC|cxSSCAPP|ssc__\w+)\b/g,"").
+                    /\b(_SSC|_SSCAPP|cxSSC|cxSSCAPP|ssc__\w+)\b/g,"").
             replace(/\s+/," ").trim();
         /* Update any modified style sheets */
         updateModifiedStyleSheets();

@@ -314,13 +314,13 @@ var SSC=(function(){
 
     /* Various status functions for the app */
 
-    function isenabled(){return hasClass(document.body,"cxSSCAPP");}
-    function enable(){addClass(document.body,"cxSSCAPP");}
-    function disable(){dropClass(document.body,"cxSSCAPP");}
+    function isenabled(){return hasClass(document.body,"_SSCAPP");}
+    function enable(){addClass(document.body,"_SSCAPP");}
+    function disable(){dropClass(document.body,"_SSCAPP");}
     function toggle(){
-        if (hasClass(document.body,"cxSSCAPP"))
-            dropClass(document.body,"cxSSCAPP");
-        else addClass(document.body,"cxSSCAPP");}
+        if (hasClass(document.body,"_SSCAPP"))
+            dropClass(document.body,"_SSCAPP");
+        else addClass(document.body,"_SSCAPP");}
     
     /* Selective display */
 
@@ -333,7 +333,7 @@ var SSC=(function(){
         if (focus) dropClass(focus,"sscFOCUS");
         dropClass(wrappers,"sscWRAPPER");
         dropClass(selected,"sscSELECTED");
-        dropClass(document.body,"cxSSC");
+        dropClass(document.body,"_SSC");
         selector=false;
         if (SSC.display) SSC.display.innerHTML="";
         selected=[];
@@ -400,7 +400,7 @@ var SSC=(function(){
         selected=nodes;
         selected_rules=rules;
         if (lim) SSC.focus(nodes[0]);
-        addClass(document.body,"cxSSC");
+        addClass(document.body,"_SSC");
         if (spec) window.location.hash="#"+spec;}
 
     function renderCSSRuleText(rule,i){
