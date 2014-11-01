@@ -549,7 +549,7 @@ SSC.Editor=(function(){
         while (i<n_selected) {
             var sel=selected[i++];
             var frag=document.createDocumentFragment();
-            var children=[].concat(sel.childNodes);
+            var children=copy(sel.childNodes);
             var j=0, n=children.length;
             while (j<n) frag.appendChild(children[j++]);
             sel.parentNode.replaceChild(frag,sel);}
