@@ -50,5 +50,5 @@ div.sscdialog div.buttons button, div.sscdialog div.buttons .button {
 
 @media (max-width: 700px) {
     div.sscdialog table th { display: none;}
-    div.sscdialog table td { font-size: 80%:}
+    div.sscdialog table td { font-size: 80%;}
 }
