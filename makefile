@@ -11,7 +11,7 @@ AUTOPREFIXER:=`which autoprefixer`
 %.hint: %.js
 	@JSHINT=`which jshint`; if test "x$${JSHINT}" = "x"; then touch $@; else $${JSHINT} $^ | tee $@; fi
 
-default: app.js app.css ../showsomeclass.js ../showsomeclass.css templates.js hints TAGS
+default: app.js app.css ../showsomeclass.js templates.js hints TAGS
 
 JAVASCRIPT_SOURCES=ssc.js dialog.js edit.js
 HINTS=ssc.hint dialog.hint edit.hint
